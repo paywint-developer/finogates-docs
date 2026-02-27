@@ -1,0 +1,72 @@
+---
+title: "Overview"
+description: "Add, retrieve, list, and delete bank accounts saved for a user's payees."
+icon: "book-open"
+---
+
+Payee Bank Accounts allow you to store and manage external bank accounts for the individuals or businesses a user pays.  
+These accounts can be selected when sending ACH payments or bank-based payouts.
+
+You can:
+
+- Add a bank account for a payee  
+- Retrieve details of a saved payee bank account  
+- List all bank accounts linked to a payee  
+- Remove an account when it is no longer needed  
+
+Each bank account is tied to both a **user** and one of their **payees**, keeping records organized and easy to manage.
+
+---
+
+## Available APIs
+
+<CardGroup cols={3}>
+
+  <Card title="Add Payee Bank Account" icon="plus" href="/api-reference/payees/bank-accounts/add" arrow="true">
+    Register a new external bank account for a payee.
+  </Card>
+
+  <Card title="Get Payee Bank Account" icon="bank" href="/api-reference/payees/bank-accounts/get" arrow="true">
+    Retrieve complete details for a specific payee bank account.
+  </Card>
+
+  <Card title="List Payee Bank Accounts" icon="list" href="/api-reference/payees/bank-accounts/list" arrow="true">
+    View all stored bank accounts for a payee.
+  </Card>
+
+</CardGroup>
+
+<CardGroup cols={3}>
+
+  <Card title="Delete Payee Bank Account" icon="trash" href="/api-reference/payees/bank-accounts/delete" arrow="true">
+    Remove a bank account from a payee’s profile.
+  </Card>
+
+</CardGroup>
+
+---
+
+## How Payee Bank Accounts Work
+
+Payee bank accounts are maintained separately from a user’s own bank accounts.  
+They are typically used when:
+
+- A user pays payees through ACH  
+- A payee prefers receiving funds directly into their bank  
+- Multiple payees require different payout destinations  
+
+### Accuracy & Confirmation
+
+Since bank information is added directly through your application, **user should confirm the account details with the payee before using it for payouts**.  
+This ensures correctness and follows common industry practice for external recipient bank accounts.
+
+(There is no micro-deposit verification for payee bank accounts, because they are owned by the recipient—not the sender—and verification typically happens through your platform’s own onboarding or validation process.)
+
+---
+
+## Best Practices
+
+- Allow users to double-check routing and account numbers before saving  
+- Use clear nicknames (e.g., “Business Checking – Wells Fargo”) to help identify accounts  
+- Mask account numbers in your UI to protect sensitive data  
+- Remove old or unused bank accounts to keep the payee’s profile clean  

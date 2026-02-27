@@ -1,0 +1,125 @@
+---
+title: "Overview"
+description: "Link, verify, retrieve, list, and manage user debit and credit cards."
+icon: "book-open"
+---
+
+Users can link debit or credit cards to their Paywint profile so they can fund payments or receive withdrawals.  
+Paywint handles all sensitive card data through secure, time-limited links, ensuring that no card information ever touches your servers.
+
+The card flow is straightforward:
+
+- **Add Card** — Create a secure link for the user to add a new card  
+- **Update Card** — Only required when Paywint asks the user to complete missing information or verification steps  
+
+---
+
+## Card Features
+
+You can:
+
+- Provide users a secure link to add a card  
+- Allow required updates when Paywint flags missing steps  
+- Retrieve card details and verification requirements  
+- List all cards for a user  
+- Delete a card when needed  
+
+Cards may be used for:
+
+- Funding payments  
+- Receiving withdrawals (when configured for that purpose)  
+
+---
+
+## Available APIs
+
+<CardGroup cols={3}>
+
+  <Card title="Add Card" icon="plus" href="/api-reference/cards/add" arrow="true">
+    Generate a secure link for adding a new card.
+  </Card>
+
+  <Card title="Update Card" icon="refresh-cw" href="/api-reference/cards/update" arrow="true">
+    Generate a secure link only when the user must complete required steps.
+  </Card>
+
+  <Card title="Get Card" icon="credit-card" href="/api-reference/cards/get" arrow="true">
+    Retrieve card details and required action flags.
+  </Card>
+
+</CardGroup>
+
+<CardGroup cols={3}>
+
+  <Card title="List Cards" icon="list" href="/api-reference/cards/list" arrow="true">
+    Fetch all cards linked to a user.
+  </Card>
+
+  <Card title="Delete Card" icon="trash" href="/api-reference/cards/delete" arrow="true">
+    Remove a card from the user’s account.
+  </Card>
+
+</CardGroup>
+
+---
+
+## How the Card Flow Works
+
+<Steps>
+
+  <Step title="1. Generate a secure link">
+    Call <code>[Add Card](/api-reference/cards/add)</code> to create a secure link for adding a new card.  
+    The link is valid for 30 minutes and must be opened immediately.
+  </Step>
+
+  <Step title="2. User enters card information">
+    The user adds their card on the Paywint-hosted page.  
+    Sensitive card details never go through your platform.
+  </Step>
+
+  <Step title="3. Card becomes available">
+    Once completed, the card is ready for payments or withdrawals based on its purpose.
+  </Step>
+
+</Steps>
+
+---
+
+## When the User Must Update Their Card
+
+The **Update Card** flow is not for general editing.  
+A user only needs to update a card when Paywint determines that:
+
+- Required card images are missing  
+- Additional verification is needed for withdrawals  
+- Payment confirmation is required before new payments  
+- A security or compliance check requires the user to re-authenticate the card  
+
+In these cases, **Paywint temporarily restricts the card** until the user completes the update link.
+
+Call the update endpoint to generate a secure link, and the user finishes the required step in the Paywint-hosted form.
+
+---
+
+## Card Status Flags
+
+When retrieving a card, these flags indicate required user actions:
+
+| Flag | Meaning |
+|------|---------|
+| **card_images_required** | User must upload images before the card is usable. |
+| **withdrawal_confirm_required** | Additional setup needed for withdrawal capability. |
+| **payment_confirm_required** | Extra verification required before processing new payments. |
+| **is_limited** | User reached their daily spending limit (withdrawals still allowed). |
+
+If any of the first three flags are true, direct the user through the **Update Card** flow.
+
+---
+
+## Best Practices
+
+- Always open add/update secure links immediately after generation  
+- Do not reuse expired links (valid for 30 minutes)  
+- Use card flags to determine when an update is required  
+- Display only masked card details (e.g., last 4 digits)  
+

@@ -1,0 +1,90 @@
+---
+title: "Basic URL Requirements"
+description: "Core rules every document URL must follow before being submitted to Paywint APIs."
+icon: "check-circle"
+---
+
+## Overview
+
+All document URLs submitted to Paywint—such as for KYC/KYB verification—must follow strict security and format rules. These requirements ensure the file can be safely downloaded, scanned, and processed by our systems.
+
+---
+
+## Required Standards
+
+Every URL must satisfy **all** of the following:
+
+### **1. HTTPS Only**
+URLs must use secure HTTPS protocol.
+
+
+[https://example.com/file.pdf](https://example.com/file.pdf)   ✔ Allowed   
+[http://example.com/file.pdf](http://example.com/file.pdf)    ✖ Rejected
+
+
+---
+
+### **2. Publicly Accessible**
+The document must be accessible **without authentication**, cookies, or login screens.
+
+- No temporary session URLs  
+- No dashboard pages  
+- No signed URLs that expire in seconds (unless still accessible during upload)
+
+---
+
+### **3. Direct File Link**
+The URL must point directly to the actual **file**, not a webpage or preview viewer.
+
+
+[https://storage.com/docs/id-proof.png](https://storage.com/docs/id-proof.png)       ✔ Direct file   
+[https://drive.google.com/file/d/123/view](https://drive.google.com/file/d/123/view)    ✖ Preview page
+
+
+---
+
+### **4. Valid URL Format**
+URLs must be properly formatted, parseable, and under **2,048 characters**.
+
+Avoid:
+- Spaces in URLs  
+- Misencoded characters  
+- Query parameters that don’t resolve to a file  
+
+---
+
+### **5. Stable Hosting**
+The URL should remain available long enough for processing.  
+Paywint downloads the file once during validation, so the URL must not:
+
+- Expire immediately  
+- Rotate tokens unexpectedly  
+- Redirect excessively  
+
+---
+
+## Valid Example
+
+[https://secure-docs.example.com/business-license.pdf](https://secure-docs.example.com/business-license.pdf)
+
+
+## Invalid Examples
+
+
+[http://example.com/file.pdf](http://example.com/file.pdf)                 (not HTTPS)  
+[https://example.com/view?file=doc.pdf](https://example.com/view?file=doc.pdf)       (not a direct link)  
+[https://private-server.local/doc.png](https://private-server.local/doc.png)        (private/internal network)  
+
+
+---
+
+## Summary Checklist
+
+Before submitting a URL, ensure it:
+
+- Uses **HTTPS**
+- Is **publicly reachable**
+- Links **directly to the file**
+- Points to a **supported file type**
+- Is **properly formatted**
+- Is **stable and valid** at request time

@@ -1,0 +1,105 @@
+---
+title: "Overview"
+description: "Create, update, retrieve, list, and delete payees linked to a user."
+icon: "book-open"
+---
+
+Payees represent the individuals or businesses that a user can send payments to.  
+This includes contacts receiving payments through ACH, cards, wallet transfers, mailed checks, or any supported method.
+
+The Payee Management API allows you to store and maintain a user’s payment recipients so they can quickly send payments without re-entering details each time.
+
+---
+
+## What This API Covers
+
+With the Payee Management APIs, you can:
+
+- Create new payees for a user  
+- Store basic contact information such as name, email, and phone  
+- Update payee details  
+- Retrieve a specific payee  
+- List all payees associated with a user  
+- Remove a payee when no longer needed  
+
+A payee may include either an **email** or a **phone number with country code**, and a name is always required.
+
+---
+
+## Available APIs
+
+<CardGroup cols={3}>
+
+  <Card title="Create Payee" icon="user-plus" href="/api-reference/payees/create" arrow="true">
+    Register a new payee under a specific user.
+  </Card>
+
+  <Card title="Update Payee" icon="pencil" href="/api-reference/payees/update" arrow="true">
+    Modify the name of an existing payee.
+  </Card>
+
+  <Card title="Get Payee" icon="user" href="/api-reference/payees/get" arrow="true">
+    Retrieve stored contact details for a specific payee.
+  </Card>
+
+</CardGroup>
+
+<CardGroup cols={3}>
+
+  <Card title="List Payees" icon="list" href="/api-reference/payees/list" arrow="true">
+    Fetch all payees created under a user, with pagination support.
+  </Card>
+
+  <Card title="Delete Payee" icon="trash" href="/api-reference/payees/delete" arrow="true">
+    Remove a payee from the user’s contact list.
+  </Card>
+
+</CardGroup>
+
+---
+
+## When Payees Are Used
+
+Payees are used whenever a user sends a payment to another person or entity, including:
+
+- ACH or card-based payments  
+- Wallet-to-wallet transfers  
+- Mailed check payments
+
+Storing payees makes the payment flow simpler, faster, and less error-prone.
+
+---
+
+## Manage Payee's
+
+<Steps>
+
+  <Step title="1. Create a payee for the user">
+    Use <code>[Create Payee](/api-reference/payees/create)</code> with the payee’s name and at least one contact method.
+  </Step>
+
+  <Step title="2. Retrieve or list payees when preparing a payment">
+    Before sending a payment, fetch a specific payee or list all payees for selection.
+  </Step>
+
+  <Step title="3. Update payee details when needed">
+    The payee’s name can be modified using  
+    <code>[Update Payee](/api-reference/payees/update)</code>.
+  </Step>
+
+  <Step title="4. Delete unused payees">
+    If a payee is no longer relevant, remove them using  
+    <code>[Delete Payee](/api-reference/payees/delete)</code>.
+  </Step>
+
+</Steps>
+
+---
+
+## Best Practices
+
+- Require users to provide at least one reliable contact detail (email or phone)  
+- Display the payee name and contact details to confirm the correct recipient  
+- Encourage users to keep their payee list up-to-date  
+- Use pagination when listing payees for users with large recipient lists  
+

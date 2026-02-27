@@ -1,0 +1,116 @@
+---
+title: "Overview"
+description: "Manage mailing addresses and check settings used for sending physical checks."
+icon: "book-open"
+---
+
+Paywint supports sending physical mailed checks as one of its payment methods.  
+Before a check can be issued, each user must have:
+
+- A valid **check mailing address**, and  
+- Optional **check configuration settings** such as custom logo or signature.
+
+This section provides the APIs needed to manage check-related details for your users.
+
+---
+
+## What This API Covers
+
+The Check Management API allows you to:
+
+- Create and maintain a user's **check mailing address**
+- Update address details at any time
+- Configure check appearance (logo, signature)
+- Reset branding back to Paywint defaults
+- Support mailed-check payments created through the Payments API
+
+These APIs do **not** send a check directly.  
+Checks are delivered through the [Mail Check](/api-reference/payments/mail-check) endpoint inside the [Payments](/api-reference/payments/overview) section.
+
+---
+
+## Available APIs
+
+<CardGroup cols={3}>
+
+
+
+  <Card title="Add Check Address" icon="map-pin" href="/api-reference/checks/add-address" arrow="true">
+    Create a new mailing address used for sending physical checks.
+  </Card>
+
+  <Card title="Update Check Address" icon="pencil" href="/api-reference/checks/update-address" arrow="true">
+    Modify an existing check mailing address for the user.
+  </Card>
+
+  <Card title="Update Check Config" icon="cog" href="/api-reference/checks/update-config" arrow="true">
+    Configure check branding, including logo and signature image.
+  </Card>
+
+</CardGroup>
+
+---
+
+### Check Payment Execution
+
+<CardGroup cols={1}>
+  <Card
+    title="Send Check by Mail"
+    icon="money-check"
+    href="/api-reference/payments/mail-check"
+    arrow="true"
+  >
+    Create and send a physical mailed check using the stored address and check configuration.
+    <br />
+    <small>This endpoint is part of the Payments API.</small>
+  </Card>
+</CardGroup>
+
+---
+
+## When Check Management Is Used
+
+You should manage check settings when:
+
+- A user wants payments delivered as physical checks
+- The mailing address changes
+- A business wants custom branding (logo or signature) on mailed checks
+- You want to reset a user's check branding back to the Paywint default
+
+These settings ensure every mailed check contains accurate address information and optional branded elements.
+
+---
+
+## Easily manage checks
+
+<Steps>
+
+  <Step title="1. Add the user's check mailing address">
+    Call <code>[Add Check Address](/api-reference/checks/add-address)</code> to store the recipient address used for mailing checks.
+  </Step>
+
+  <Step title="2. (Optional) Configure check branding">
+    Use <code>[Update Check Config](/api-reference/checks/update-config)</code> to include a logo or signature.  
+    This step is optional—Paywint uses a default design if none is provided.
+  </Step>
+
+  <Step title="3. Update address or branding as needed">
+    At any time, you may update the user’s details using the corresponding endpoints.
+  </Step>
+
+  <Step title="4. Create a mailed check payment">
+    When sending a payment using the Payments API with the **Mail Check** method,  
+    Paywint uses the stored address and configuration to issue the check.
+  </Step>
+
+</Steps>
+
+---
+
+## Best Practices
+
+- Always keep the user's check address up-to-date before issuing mailed checks  
+- Use publicly accessible HTTPS URLs for logos and signatures  
+- Allow users to preview their check branding inside your application  
+- If branding is optional for your use case, rely on Paywint’s default settings
+

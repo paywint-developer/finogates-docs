@@ -1,0 +1,64 @@
+---
+title: "payment.mailed"
+description: "Sent when a check payment has been mailed."
+icon: "mail"
+---
+
+The `payment.mailed` event is sent when a **check-based payment** has been **successfully handed off for mailing**.
+
+This event indicates that the physical mailing process has started. Delivery to the recipient may take additional time depending on the selected mailing method.
+
+---
+
+## Example Payload
+
+```json
+{
+  "event": "payment.mailed",
+  "id": "5869eaba-ecea-4640-85ad-8e2dd93243d6",
+  "data": {
+    "payment_id": "5869eaba-ecea-4640-85ad-8e2dd93243d6",
+    "status": "mailed",
+    "amount": 200.0
+  },
+  "eventGeneratedTime": 1756729948.128641
+}
+````
+
+---
+
+## Data Fields
+
+<ResponseField name="payment_id" type="string">
+  Unique identifier of the payment transaction.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Current payment status. Always <code>mailed</code> for this event.
+</ResponseField>
+
+<ResponseField name="amount" type="float">
+  Payment amount expressed in the major currency unit (for example, USD).
+</ResponseField>
+
+---
+
+## Handling the Event
+
+Use this event to:
+
+* Mark the payment as mailed in your system
+* Notify the payer or recipient that the check is in transit
+* Track check-based payment lifecycle stages
+* Support customer inquiries about mailed payments
+
+---
+
+## Related Events
+
+* [payment.initiated](/webhooks/events/payment/initiated)
+* [payment.processing](/webhooks/events/payment/processing)
+* [payment.settling](/webhooks/events/payment/settling)
+* [payment.success](/webhooks/events/payment/success)
+* [payment.failed](/webhooks/events/payment/failed)
+* [payment.rejected](/webhooks/events/payment/rejected)

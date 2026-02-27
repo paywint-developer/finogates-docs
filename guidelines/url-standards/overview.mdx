@@ -1,0 +1,108 @@
+---
+title: "URL Standards Overview"
+description: "Overview of URL requirements and validation rules for submitting documents through the Paywint API."
+icon: "link"
+---
+
+## Overview
+
+Some Paywint API endpoints—such as KYB verification, document submission, and compliance checks—require you to provide direct URLs to documents.  
+These URLs must follow specific standards to ensure they are secure, accessible, and valid for automated processing.
+
+This section outlines all requirements for document URLs, including security rules, file guidelines, storage recommendations, and troubleshooting steps.
+
+---
+
+## What This Section Covers
+
+<CardGroup cols={2}>
+  <Card
+    title="Basic Requirements"
+    href="/guidelines/url-standards/basic-requirements"
+    icon="check-circle"
+    arrow="true"
+  >
+    Core rules every document URL must follow, including HTTPS and accessibility.
+  </Card>
+
+  <Card
+    title="Security Rules"
+    href="/guidelines/url-standards/security-rules"
+    icon="shield-check"
+    arrow="true"
+  >
+    Allowed protocols, network restrictions, and security validations applied.
+  </Card>
+
+  <Card
+    title="File Requirements"
+    href="/guidelines/url-standards/file-rules"
+    icon="file-check"
+    arrow="true"
+  >
+    Supported file types, maximum file size, and download behavior.
+  </Card>
+
+  <Card
+    title="Cloud Storage Guidelines"
+    href="/guidelines/url-standards/cloud-storage"
+    icon="cloud"
+    arrow="true"
+  >
+    How to generate direct download URLs from Google Drive, Dropbox, AWS S3, and more.
+  </Card>
+
+  <Card
+    title="Troubleshooting"
+    href="/guidelines/url-standards/troubleshooting"
+    icon="cog"
+    arrow="true"
+  >
+    Common errors, causes, and recommended fixes.
+  </Card>
+
+  <Card
+    title="Examples"
+    href="/guidelines/url-standards/examples"
+    icon="list"
+    arrow="true"
+  >
+    Valid and invalid URL examples for quick reference.
+  </Card>
+</CardGroup>
+
+---
+
+## Why URL Standards Matter
+
+Paywint validates each document URL to ensure:
+
+- The file is safe and accessible  
+- The host is publicly reachable  
+- The URL resolves correctly  
+- The content meets size and type requirements  
+
+Following these guidelines prevents delays in verification and ensures smooth document processing.
+
+---
+
+## When You Need These Guidelines
+
+These URL rules apply whenever you submit a document through Paywint, including:
+
+- KYB verification  
+- Uploading compliance documentation  
+- Business identity verification  
+- Proof-of-address checks  
+- Any endpoint that accepts a document URL  
+
+For API-specific requirements, refer to the corresponding endpoint documentation.
+
+---
+
+## Next Steps
+
+Choose a section to continue:
+
+- Start with **[Basic Requirements](/guidelines/url-standards/basic-requirements)**  
+- Or explore the entire URL Standards collection using the left sidebar navigation

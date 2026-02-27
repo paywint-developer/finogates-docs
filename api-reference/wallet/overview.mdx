@@ -1,0 +1,89 @@
+---
+title: "Overview"
+description: "Access, fund, and withdraw from a user’s Paywint wallet."
+icon: "book-open"
+---
+
+Every Paywint user automatically receives a wallet when their account is created.  
+The wallet stores funds, supports instant internal transfers, and can be used to pay other users or move money to external bank accounts or cards.
+
+This section provides APIs to retrieve wallet details, add funds, and withdraw funds.
+
+---
+
+## What the Wallet Supports
+
+The Paywint wallet functions as a digital balance assigned to each user. It can be used for:
+
+- Holding funds  
+- Paying other Paywint users  
+- Funding through a linked bank account  
+- Withdrawing to a bank account or card  
+- Using wallet balance as a payment method for transactions  
+
+You do not need to create the wallet manually—Paywint creates it automatically upon first retrieval.
+
+---
+
+## Available APIs
+
+<CardGroup cols={3}>
+
+  <Card
+    title="Get Wallet"
+    icon="wallet"
+    href="/api-reference/wallet/get"
+    arrow="true"
+  >
+    Retrieve a user's wallet, including current and available balance.
+  </Card>
+
+  <Card
+    title="Fund Wallet"
+    icon="upload"
+    href="/api-reference/wallet/fund"
+    arrow="true"
+  >
+    Add funds to the wallet using the user’s linked bank account.
+  </Card>
+
+  <Card
+    title="Withdraw Funds"
+    icon="download"
+    href="/api-reference/wallet/withdraw"
+    arrow="true"
+  >
+    Move money out of the wallet to a bank account or card.
+  </Card>
+
+</CardGroup>
+
+---
+
+## How It Works
+
+<Steps>
+
+  <Step title="Retrieve the wallet">
+    Call <code>Get Wallet</code> to fetch a user’s wallet balance.  
+    If the wallet does not exist yet, Paywint will automatically create one.
+  </Step>
+
+  <Step title="Fund the wallet">
+    Use <code>Fund Wallet</code> to transfer money from a linked bank account into the wallet balance.
+  </Step>
+
+  <Step title="Withdraw funds">
+    Use <code>Withdraw Funds</code> to move money from the wallet to a bank account or card.
+  </Step>
+
+</Steps>
+
+---
+
+## Best Practices
+
+- Always call <code>Get Wallet</code> before funding or withdrawing to fetch the latest balance  
+- Funding uses the user’s verified bank accounts  
+- Withdrawal methods may require bank or card verification  
+- Wallet balances update instantly after most internal transfers  

@@ -1,0 +1,89 @@
+---
+title: "Overview"
+description: "Open and manage Paywint–issued digital bank accounts for your users."
+icon: "book-open"
+---
+
+
+Paywint Bank Accounts provide users with a verified digital bank account issued directly by Paywint.  
+These accounts function like standard bank accounts but operate entirely digitally.  
+Once opened, users can use their Paywint bank account to make payments, receive transfers, and handle various financial operations both within and outside Paywint.
+
+---
+
+## Account Types
+
+#### PAYWINT_SAVINGS
+For individual users.  
+Requires the user to have **KYC verified**.
+
+#### PAYWINT_BUSINESS
+For business or entity users.  
+Requires the user to have **both KYC and KYB verified**.
+
+Each account requires a unique nickname, and users may open multiple Paywint accounts within allowed limits.
+
+---
+
+## How It Works
+
+<Steps>
+
+  <Step title="1. Check user eligibility">
+    Ensure the user has completed the required verification:
+    - PAYWINT_SAVINGS: KYC approval  
+    - PAYWINT_BUSINESS: KYC and KYB approval
+  </Step>
+
+  <Step title="2. Open a Paywint bank account">
+    Call <code>[Open Paywint Bank Account](/api-reference/paywint-bank-accounts/open)</code> 
+    with the account type and a unique nickname.  
+    The account is created instantly if the user is eligible.
+  </Step>
+
+  <Step title="3. Use the new bank account">
+    Once created, the user receives access to a fully functional digital bank account that can be used to:
+    - Make payments within Paywint  
+    - Receive incoming transfers  
+    - Perform internal and external fund movements  
+    - Use the account like a normal bank account for supported external purposes
+  </Step>
+
+  <Step title="4. View account transactions">
+    Use <code>[List Paywint Bank Account Transactions](/api-reference/paywint-bank-accounts/list-transactions)</code>
+    to retrieve transaction history for the Paywint bank account.
+  </Step>
+
+</Steps>
+
+---
+
+## Transaction Sync Behavior
+
+- When transaction history is requested for the first time, Paywint initiates a one-time background sync to fetch the latest bank transactions.  
+- This process may take up to one minute.  
+- Newly synced transactions will appear in subsequent requests.
+
+---
+
+## Available APIs
+
+<CardGroup cols={2}>
+  <Card
+    title="Open Paywint Bank Account"
+    href="/api-reference/paywint-bank-accounts/open"
+    arrow="true"
+    icon="external-link"
+  >
+    Create a new Paywint digital bank account.
+  </Card>
+
+  <Card
+    title="List Transactions"
+    href="/api-reference/paywint-bank-accounts/list-transactions"
+    arrow="true"
+    icon="list"
+  >
+    Retrieve all transactions associated with a Paywint bank account.
+  </Card>
+</CardGroup>

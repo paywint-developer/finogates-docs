@@ -1,0 +1,167 @@
+---
+title: "Overview"
+description: "Securely accept payments online."
+icon: "book-open"
+---
+
+
+Use a prebuilt checkout page to start accepting online payments.
+
+
+<Tabs>
+
+  <Tab title="Embedded form (iFrame)">
+    Embed the Paywint checkout inside your website using an iFrame.  
+    This option keeps customers inside your UI while Paywint handles all sensitive data and compliance.
+
+    <Frame>
+      <img src="/assets/checkout/embedded-form.png" alt="Embedded checkout form" />
+    </Frame>
+
+    <Steps>
+      <Step title="Create a payment link">
+        Your backend calls 
+        [Create Payment Link](/api-reference/payments/checkout/create-payment-link) 
+        with the amount and payer information.
+      </Step>
+
+      <Step title="Receive the checkout URL">
+        Paywint returns a <code>payment_link</code> URL representing the checkout session.
+      </Step>
+
+      <Step title="Embed the checkout">
+        You load the <code>payment_link</code> inside an <code>&lt;iframe&gt;</code> on your website.
+      </Step>
+
+      <Step title="Customer completes the payment">
+        The customer reviews and completes the payment inside the embedded checkout.
+      </Step>
+
+      <Step title="Receive lifecycle webhooks">
+        Paywint sends webhook notifications to your server as the payment progresses  
+        (session opened, status updates, and final result).  
+        For full event details, see the [Webhooks](/webhooks/overview) documentation.
+      </Step>
+
+      <Step title="Redirect the customer">
+        After the checkout finishes, Paywint redirects the customer to the **Redirect URL**  
+        that you configure in your merchant dashboard.  
+        The redirect includes the final payment status, and your application should handle  
+        the next steps based on that status.
+        </Step>
+    </Steps>
+  </Tab>
+
+
+
+
+
+  <Tab title="Paywint-hosted page (redirect)">
+    Redirect customers to Paywint-hosted checkout page.
+
+    This option gives you the fastest setup with no front-end integration work.
+    Customers leave your site, complete the payment on Paywint’s secure checkout page,
+    and are redirected back to you once the payment finishes.
+
+    <Frame>
+      <img src="/assets/checkout/hosted-page.png" alt="Hosted checkout page" />
+    </Frame>
+
+    <Steps>
+      <Step title="Create a payment link">
+        Your backend calls 
+        [Create Payment Link](/api-reference/payments/checkout/create-payment-link) 
+        with the relevant payment details.
+      </Step>
+
+      <Step title="Receive the checkout URL">
+        Paywint returns a <code>payment_link</code> URL that represents the hosted checkout page.
+      </Step>
+
+      <Step title="Redirect the customer">
+        Your front-end navigates the customer to the <code>payment_link</code>  
+        (typically by opening it in a new window or redirecting the browser).
+      </Step>
+
+      <Step title="Customer completes the payment">
+        The customer completes the entire checkout process on Paywint’s hosted page.  
+        All sensitive data entry and validation is handled by Paywint.
+      </Step>
+
+      <Step title="Receive lifecycle webhooks">
+        As the payment moves through different states, Paywint sends corresponding webhook
+        notifications to your server.  
+        Refer to the [Webhooks](/webhooks/overview) documentation for all available event types.
+      </Step>
+
+      <Step title="Customer is returned to your application">
+        After the checkout completes, Paywint redirects the customer to the **Redirect URL**  
+        configured in your merchant dashboard.  
+        The redirect includes the final payment status, and your application should display  
+        a confirmation, error message, or next step based on that status.
+      </Step>
+    </Steps>
+  </Tab>
+
+
+
+
+
+
+  <Tab title="Inline Elements (Coming Soon)">
+    Build a fully custom checkout experience using Paywint-managed UI components.   
+    It uses a new **Session API** and a **client-side SDK** that is currently under development.
+
+    <Frame>
+      <img src="/assets/checkout/embedded-components.png" alt="Embedded components" />
+    </Frame>
+
+    <Steps>
+      <Step title="Create a Checkout Session">
+        Your backend calls the (upcoming) **Checkout Session API**, passing the payer details,  
+        amount, and any optional metadata.  
+        Paywint returns a short-lived <code>session_token</code>.
+      </Step>
+
+      <Step title="Initialize the Inline Elements SDK">
+        On your front-end, load the Paywint Checkout SDK and pass the <code>session_token</code>,  
+        enabled payment methods (wallet, card), amount, and user details.  
+        The SDK returns Payment Elements, which you can place anywhere inside your UI.
+      </Step>
+
+      <Step title="Render the Elements">
+        Add the generated UI components (for example, card input, wallet,  
+        and confirmation button) into your page.  
+        These components are fully customizable and adapt to your layout.
+      </Step>
+
+      <Step title="SDK verifies the session">
+        When initialized, the SDK calls Paywint’s backend with the provided session token.  
+        Paywint verifies the session, validates the payer, and sends an OTP to the user  
+        (valid for 15 minutes) to authorize the payment.
+      </Step>
+
+      <Step title="Customer enters OTP and completes payment">
+        The user enters the OTP and provides required payment details in the Elements UI.  
+        The SDK sends this information to Paywint’s backend to complete the payment.
+      </Step>
+
+      <Step title="Receive the payment outcome">
+        After processing the payment, Paywint:
+        - Responds to the SDK with the payment result  
+        - Sends webhook notifications to your backend  
+        - Updates the payment’s lifecycle status  
+        
+        Your front-end can display a success, failure, or expired OTP message based on  
+        the result returned by the SDK.
+      </Step>
+    </Steps>
+
+    <Note>
+      Inline Elements is currently in development.  
+      The full API reference, SDK functions, and sample integrations will be added  
+      as the feature becomes available.
+    </Note>
+  </Tab>
+
+</Tabs>

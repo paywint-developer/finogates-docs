@@ -1,0 +1,128 @@
+---
+title: "Overview"
+description: "Create, track, and manage payments using wallet, ACH, card, Paywint Bank, or mailed checks."
+icon: "book-open"
+---
+
+The Payments API enables secure and flexible money movement between users and payees.  
+Payments can be funded through a user’s **wallet**, **linked card**, **bank (ACH)**, or **Paywint Bank account**, or delivered by **mailing a physical check**.
+
+---
+
+## Send & Manage Payments
+
+<CardGroup cols={2}>
+
+  <Card
+    title="Create Payment"
+    icon="dollar"
+    href="/api-reference/payments/create"
+    arrow="true"
+  >
+    Initiate a payment from a user to another user or payee.  
+    Handles validation, fees, settlement flow, and lifecycle events.
+  </Card>
+
+  <Card
+    title="Mail Check"
+    icon="money-check"
+    href="/api-reference/payments/mail-check"
+    arrow="true"
+  >
+    Create and mail a physical check to a payee’s address, with fee calculation and attachment support.
+  </Card>
+
+  <Card
+    title="Get Payment"
+    icon="receipt"
+    href="/api-reference/payments/get"
+    arrow="true"
+  >
+    Retrieve full details of a payment including status, timestamps, fees, and method.
+  </Card>
+
+  <Card
+    title="List Payments"
+    icon="list"
+    href="/api-reference/payments/list"
+    arrow="true"
+  >
+    List all payments across your platform with filtering and pagination.
+  </Card>
+
+  <Card
+    title="List User Payments"
+    icon="list"
+    href="/api-reference/payments/list-sent"
+    arrow="true"
+  >
+    Retrieve all payments initiated by a specific user.
+  </Card>
+
+  <Card
+    title="List Received Payments"
+    icon="list"
+    href="/api-reference/payments/list-received"
+    arrow="true"
+  >
+    Retrieve all payments received by a specific user.
+  </Card>
+
+</CardGroup>
+
+---
+
+## How Payments Work
+
+Before sending a payment, ensure that:
+
+1. **The payer is a registered user**
+2. **The recipient exists as payee with a saved card, bank, or mailing address**
+
+Once this setup is complete, payments can be created using the  
+**[Create Payment](/api-reference/payments/create)** API.
+
+---
+
+## Supported Payment Methods
+
+### **Wallet**
+**Delivery:** Instant  
+**Funding source:** User wallet  
+**Notes:** Fastest method; funds are transferred immediately.
+
+---
+
+### **Card**
+**Delivery:** 1–2 business days  
+**Funding source:** Linked card  
+**Notes:** Uses standard card settlement timelines.
+
+---
+
+### **Bank ACH**
+**Delivery:** 3–4 business days  
+**Funding source:** Linked bank account  
+**Notes:** Well suited for high-value transfers; follows ACH settlement timelines.
+
+---
+
+### **Paywint Bank Account**
+**Delivery:** Instant  
+**Funding source:** Paywint digital bank account  
+**Notes:** Fully traceable and optimized for transfers.
+
+---
+
+### **Physical Check**
+**Delivery:** Based on mail type  
+**Funding source:** Wallet  
+**Notes:** Supports USPS First Class, Certified, Two-Day, and Overnight; optional PDF attachments up to 10 pages (7MB max).
+
+
+---
+
+
+For collecting money **from customers** through checkout or invoicing, see:  
+ **[Accept Payments](/api-reference/payments/checkout/overview)**
+

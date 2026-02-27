@@ -1,0 +1,80 @@
+---
+title: "Overview"
+description: "Retrieve wallet balance information for a specific user."
+icon: "book-open"
+---
+
+The **Wallet API** allows you to retrieve wallet information associated with a specific Paywint user.
+
+This API provides balance visibility and wallet metadata.
+If a wallet does not already exist for the user, it is automatically created when this endpoint is called.
+
+---
+
+## What This API Provides
+
+The Wallet API enables your integration to:
+
+- Retrieve wallet balance information
+- View current and available balances
+- Access wallet metadata
+- Ensure a wallet exists for the user
+
+The response includes:
+
+- Current balance  
+- Available balance  
+- Wallet identifiers  
+- System-generated metadata  
+- Query timestamp  
+
+All balances are returned in USD unless otherwise configured for your account.
+
+---
+
+## Balance Definitions
+
+| Field | Description |
+|--------|------------|
+| Current Balance | Total funds recorded in the wallet. |
+| Available Balance | Funds available for withdrawal or payment. |
+
+
+## Available API
+
+<CardGroup cols={1}>
+
+  <Card title="Get Wallet" icon="wallet" href="/api-reference/developer/wallet/get-wallet" arrow="true">
+    Retrieve wallet balance and metadata for a user.
+  </Card>
+
+</CardGroup>
+
+---
+
+## Typical Integration Flow
+
+<Steps>
+
+  <Step title="1. Retrieve wallet information">
+    Call <code>Get Wallet</code> to obtain the user's current and available balances.
+  </Step>
+
+  <Step title="2. Validate available balance">
+    Ensure sufficient available funds before creating a payment or transfer.
+  </Step>
+
+  <Step title="3. Display balance in your application">
+    Use the returned balance values to update dashboards or account summaries.
+  </Step>
+
+</Steps>
+
+---
+
+## Best Practices
+
+- Always check the available balance before initiating a transaction.
+- Do not rely solely on cached balance values for critical payment decisions.
+- Use server-side validation when enforcing balance requirements.
+- Secure API credentials and avoid exposing them in client-side code.

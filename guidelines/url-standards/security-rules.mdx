@@ -1,0 +1,42 @@
+---
+title: "Security Rules"
+description: "Security restrictions for document URLs."
+icon: "shield-check"
+---
+
+## Allowed Protocols
+
+Only secure **HTTPS** URLs are supported.
+
+Blocked schemes include:
+
+- `http://`
+- `file://`
+- `ftp://`
+- `javascript://`
+- `data://`
+
+---
+
+## Network Restrictions
+
+URLs cannot resolve to:
+
+- Private IP ranges (e.g., `192.168.x.x`, `10.x.x.x`)
+- `localhost` or `127.0.0.1`
+- Internal corporate servers
+- Non-public networks
+- Administrative service ports
+
+Paywint must be able to access the file over the public internet.
+
+---
+
+## Why These Restrictions Exist
+
+These rules prevent:
+
+- Exposure of internal systems  
+- Security vulnerabilities  
+- Attempts to bypass public hosting  
+- API failures due to inaccessible resources  

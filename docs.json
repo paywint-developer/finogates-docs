@@ -1,122 +1,326 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Mint Starter Kit",
+  "name": "Paywint API Documentation",
   "colors": {
     "primary": "#16A34A",
     "light": "#07C983",
     "dark": "#15803D"
   },
-  "favicon": "/favicon.svg",
+  "favicon": "/favicon.ico",
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "Get Started",
+        "icon": "rocket",
+        "pages": [
+          "get-started/overview",
+          "get-started/quickstart",
+          "get-started/environments",
+          "get-started/authentication"
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "icon": "square-terminal",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "Users",
+            "expanded": false,
             "pages": [
-              "index",
-              "quickstart",
-              "development"
+              "api-reference/users/overview",
+              "api-reference/users/create",
+              "api-reference/users/list",
+              "api-reference/users/get"
             ]
           },
           {
-            "group": "Customization",
+            "group": "KYC & KYB",
+            "expanded": false,
             "pages": [
-              "essentials/settings",
-              "essentials/navigation"
+              "api-reference/compliance/overview",
+              "api-reference/compliance/kyc/create-enquiry-link",
+              "api-reference/compliance/kyc/get",
+              "api-reference/compliance/kyb/submit",
+              "api-reference/compliance/kyb/get"
             ]
           },
           {
-            "group": "Writing content",
+            "group": "Wallet",
+            "expanded": false,
             "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
+              "api-reference/wallet/overview",
+              "api-reference/wallet/get",
+              "api-reference/wallet/fund",
+              "api-reference/wallet/withdraw"
             ]
           },
           {
-            "group": "AI tools",
+            "group": "Payments",
+            "expanded": false,
             "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
+              "api-reference/payments/overview",
+              "api-reference/payments/create",
+              "api-reference/payments/mail-check",
+              "api-reference/payments/get",
+              "api-reference/payments/list",
+              "api-reference/payments/list-sent",
+              "api-reference/payments/list-received"
+            ]
+          },
+          {
+            "group": "Accept Payments",
+            "expanded": false,
+            "pages": [
+              "api-reference/payments/checkout/overview",
+              "api-reference/payments/checkout/create-payment-link"
+            ]
+          },
+          {
+            "group": "Bank Accounts",
+            "expanded": false,
+            "pages": [
+              "api-reference/bank-accounts/overview",
+              "api-reference/bank-accounts/add",
+              "api-reference/bank-accounts/get",
+              "api-reference/bank-accounts/set-default",
+              "api-reference/bank-accounts/list",
+              "api-reference/bank-accounts/release-micro-deposit",
+              "api-reference/bank-accounts/verify-micro-deposit",
+              "api-reference/bank-accounts/delete"
+            ]
+          },
+          {
+            "group": "Paywint Bank Accounts",
+            "expanded": false,
+            "pages": [
+              "api-reference/paywint-bank-accounts/overview",
+              "api-reference/paywint-bank-accounts/open",
+              "api-reference/paywint-bank-accounts/list-transactions"
+            ]
+          },
+          {
+            "group": "Cards",
+            "expanded": false,
+            "pages": [
+              "api-reference/cards/overview",
+              "api-reference/cards/add",
+              "api-reference/cards/update",
+              "api-reference/cards/get",
+              "api-reference/cards/list",
+              "api-reference/cards/delete"
+            ]
+          },
+          {
+            "group": "Check",
+            "expanded": false,
+            "pages": [
+              "api-reference/checks/overview",
+              "api-reference/checks/add-address",
+              "api-reference/checks/config-settings",
+              "api-reference/checks/retrieve-address-settings",
+              "api-reference/checks/update-address"
+            ]
+          },
+          {
+            "group": "Payee Management",
+            "expanded": false,
+            "pages": [
+              "api-reference/payees/overview",
+              "api-reference/payees/create",
+              "api-reference/payees/update",
+              "api-reference/payees/get",
+              "api-reference/payees/list",
+              "api-reference/payees/delete"
+            ]
+          },
+          {
+            "group": "Payee Bank Accounts",
+            "expanded": false,
+            "pages": [
+              "api-reference/payees/bank-accounts/overview",
+              "api-reference/payees/bank-accounts/add",
+              "api-reference/payees/bank-accounts/get",
+              "api-reference/payees/bank-accounts/list",
+              "api-reference/payees/bank-accounts/delete"
+            ]
+          },
+          {
+            "group": "Payee Cards",
+            "expanded": false,
+            "pages": [
+              "api-reference/payees/cards/overview",
+              "api-reference/payees/cards/add",
+              "api-reference/payees/cards/get",
+              "api-reference/payees/cards/list",
+              "api-reference/payees/cards/delete"
+            ]
+          },
+          {
+            "group": "Payee Addresses",
+            "expanded": false,
+            "pages": [
+              "api-reference/payees/addresses/overview",
+              "api-reference/payees/addresses/add",
+              "api-reference/payees/addresses/list",
+              "api-reference/payees/addresses/update",
+              "api-reference/payees/addresses/delete"
             ]
           }
         ]
       },
       {
-        "tab": "API reference",
+        "tab": "Webhooks",
+        "icon": "webhook",
+        "pages": [
+          "webhooks/overview",
+          "webhooks/setup",
+          "webhooks/signature-verification",
+          "webhooks/events",
+          "webhooks/event-types",
+          "webhooks/retry-behavior"
+        ]
+      },
+      {
+        "tab": "Guidelines",
+        "icon": "list-check",
         "groups": [
           {
-            "group": "API documentation",
+            "group": "URL Standards",
             "pages": [
-              "api-reference/introduction"
+              "guidelines/url-standards/overview",
+              "guidelines/url-standards/basic-requirements",
+              "guidelines/url-standards/security-rules",
+              "guidelines/url-standards/file-rules",
+              "guidelines/url-standards/cloud-storage",
+              "guidelines/url-standards/troubleshooting",
+              "guidelines/url-standards/examples"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resources",
+        "icon": "book-open",
+        "pages": [
+          "resources/changelog"
+        ]
+      },
+      {
+        "tab": "Developer API Reference",
+        "icon": "square-terminal",
+        "groups": [
+          {
+            "group": "Payment",
+            "pages": [
+              "api-reference/developer/payment/overview",
+              "api-reference/developer/payment/create-payment",
+              "api-reference/developer/payment/get-payment",
+              "api-reference/developer/payment/list-sent-payments",
+              "api-reference/developer/payment/list-received-payments"
             ]
           },
           {
-            "group": "Endpoint examples",
+            "group": "Wallet",
             "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+              "api-reference/developer/wallet/overview",
+              "api-reference/developer/wallet/get-wallet"
+            ]
+          },
+          {
+            "group": "Paywint Cards",
+            "expanded": false,
+            "pages": [
+              "api-reference/developer/paywint-cards/overview",
+              "api-reference/developer/paywint-cards/issue-card",
+              "api-reference/developer/paywint-cards/reload-card",
+              "api-reference/developer/paywint-cards/list-cards",
+              "api-reference/developer/paywint-cards/get-card"
+            ]
+          },
+          {
+            "group": "Payee Management",
+            "expanded": false,
+            "pages": [
+              "api-reference/developer/payees/overview",
+              "api-reference/developer/payees/create",
+              "api-reference/developer/payees/list",
+              "api-reference/developer/payees/get",
+              "api-reference/developer/payees/update",
+              "api-reference/developer/payees/delete"
+            ]
+          },
+          {
+            "group": "Payee Addresses",
+            "expanded": false,
+            "pages": [
+              "api-reference/developer/payees/address/overview",
+              "api-reference/developer/payees/address/create-address",
+              "api-reference/developer/payees/address/list-address",
+              "api-reference/developer/payees/address/get-address",
+              "api-reference/developer/payees/address/update-address",
+              "api-reference/developer/payees/address/set-default-address",
+              "api-reference/developer/payees/address/delete-address"
             ]
           }
         ]
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
-        }
-      ]
-    }
+    ]
+  },
+  "styling": {
+    "eyebrows": "breadcrumbs"
+  },
+  "interaction": {
+    "drilldown": false
   },
   "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
+    "light": "/assets/logo/app-logo-dark.png",
+    "dark": "/assets/logo/app-logo-light.png"
+  },
+  "fonts": {
+    "family": "Inter",
+    "weight": 400
   },
   "navbar": {
     "links": [
       {
+        "label": "Dashboard",
+        "href": "https://app.paywint.com"
+      },
+      {
         "label": "Support",
-        "href": "mailto:hi@mintlify.com"
+        "href": "mailto:support@paywint.com"
       }
     ],
     "primary": {
       "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
+      "label": "Developer Docs",
+      "href": "https://docs.paywint.com"
     }
-  },
-  "contextual": {
-    "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
+      "youtube": "https://www.youtube.com/@paywint",
+      "facebook": "https://www.facebook.com/paywintonline",
+      "instagram": "https://www.instagram.com/paywint",
+      "x": "https://x.com/paywint",
+      "linkedin": "https://www.linkedin.com/company/paywint",
+      "threads": "https://www.threads.net/@paywint"
     }
+  },
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/get-started/overview"
+    }
+  ],
+  "api": {
+    "openapi": {
+      "source": "https://api.sandbox.paywint.com/openapi.json",
+      "directory": "api-reference"
+    }
+  },
+  "seo": {
+    "indexing": "all"
   }
 }

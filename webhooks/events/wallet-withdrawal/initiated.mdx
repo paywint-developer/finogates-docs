@@ -1,0 +1,63 @@
+---
+title: "wallet.withdrawal.initiated"
+description: "Sent when a wallet withdrawal request is initiated."
+icon: "play-circle"
+---
+
+The `wallet.withdrawal.initiated` event is sent when a wallet withdrawal request has been **successfully initiated**.
+
+This indicates that the withdrawal process has started but has not yet entered processing or settlement.
+
+---
+
+## Example Payload
+
+```json
+{
+  "event": "wallet.withdrawal.initiated",
+  "id": "6d6a74ab-89ae-4b2e-bcd1-a04307d7df99",
+  "data": {
+    "payment_id": "6d6a74ab-89ae-4b2e-bcd1-a04307d7df99",
+    "status": "initiated",
+    "amount": 500.0
+  },
+  "eventGeneratedTime": 1756729948.128641
+}
+````
+
+---
+
+## Data Fields
+
+<ResponseField name="payment_id" type="string">
+  Unique identifier of the wallet withdrawal transaction.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Current withdrawal status. Always <code>initiated</code> for this event.
+</ResponseField>
+
+<ResponseField name="amount" type="float">
+  Withdrawal amount expressed in the major currency unit (for example, USD).
+</ResponseField>
+
+---
+
+## Handling the Event
+
+Use this event to:
+
+* Record the initiation of a wallet withdrawal
+* Transition the withdrawal into an active state
+* Prevent duplicate withdrawal attempts
+* Monitor withdrawal flow progression
+
+---
+
+## Related Events
+
+* [wallet.withdrawal.processing](/webhooks/events/wallet/withdrawal-processing)
+* [wallet.withdrawal.settling](/webhooks/events/wallet/withdrawal-settling)
+* [wallet.withdrawal.success](/webhooks/events/wallet/withdrawal-success)
+* [wallet.withdrawal.failed](/webhooks/events/wallet/withdrawal-failed)
+* [wallet.withdrawal.rejected](/webhooks/events/wallet/withdrawal-rejected)

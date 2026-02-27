@@ -1,0 +1,212 @@
+---
+title: "Overview"
+description: "KYC and KYB verification flows for users and businesses on Paywint."
+icon: "book-open"
+---
+
+
+Paywint uses industry-standard identity and business verification to ensure secure and compliant financial operations.  
+Compliance applies **only to specific payment methods** and **not** to wallet-to-wallet transfers.
+
+You can initiate and manage both **KYC (Know Your Customer)** and **KYB (Know Your Business)** through the API.
+
+---
+
+## KYC Verification (Individuals)
+
+KYC is handled through Paywint’s integrated **Persona** flow.  
+Your platform calls the API to obtain a **verification link**, and the user completes KYC in a hosted or embedded Persona widget.
+
+<CardGroup cols={2}>
+  <Card title="Submit KYC" icon="external-link" href="/api-reference/compliance/kyc/create-enquiry-link" arrow="true">
+    Retrieve a verification link to initiate or resume KYC for a user.
+  </Card>
+  
+  <Card title="Get KYC Status" icon="list" href="/api-reference/compliance/kyc/get" arrow="true">
+    Fetch KYC details after verification is completed.
+  </Card>
+</CardGroup>
+
+---
+
+## How KYC Works
+
+When you call the **Submit KYC** endpoint, Paywint returns:
+
+- `inquiry_url` → Persona verification link  
+- `is_kyc_pending` → Whether verification is still needed  
+
+Open this link in:
+
+<Tabs>
+
+  <Tab title="Embedded (iFrame)">
+    Embed the Persona identity verification flow directly inside your application using an iFrame.  
+    This option keeps users fully within your UI while Paywint and Persona handle document capture, identity validation, and compliance processing behind the scenes.
+
+    <Frame>
+      <img src="/assets/compliance/kyc-embedded.png" alt="Embedded checkout form" />
+    </Frame>
+
+    <Steps>
+      <Step title="Call Submit KYC">
+        Your backend calls  
+        [Submit KYC](/api-reference/compliance/kyc/create-enquiry-link)  
+        to retrieve the <code>inquiry_url</code>.
+      </Step>
+
+      <Step title="Embed the widget">
+        Load the <code>inquiry_url</code> in an <code>&lt;iframe&gt;</code>.
+      </Step>
+
+      <Step title="User completes verification">
+        The user uploads ID documents and completes all required steps directly inside your flow.
+      </Step>
+
+      <Step title="Persona completion">
+        When the user presses the “Done” button in Persona, Paywint receives a redirect callback.
+      </Step>
+
+      <Step title="Paywint sends webhook">
+        After verification data is processed, Paywint sends a lifecycle webhook to your server.
+      </Step>
+
+      <Step title="Fetch KYC">
+        Your server calls [Get KYC](/api-reference/compliance/kyc/get) to retrieve verification details and status.
+      </Step>
+    </Steps>
+  </Tab>
+
+
+
+  <Tab title="Hosted Page">
+    Redirect users to Persona’s secure hosted verification page.  
+    This option requires no front-end development and provides the quickest way to start collecting identity information for compliance.
+
+    <Frame>
+      <img src="/assets/compliance/kyc-hosted.png" alt="Embedded checkout form" />
+    </Frame>
+
+    <Steps>
+      <Step title="Call Submit KYC">
+        Your backend requests the <code>inquiry_url</code> using  
+        [Submit KYC](/api-reference/compliance/kyc/create-enquiry-link).
+      </Step>
+
+      <Step title="Redirect the user">
+        Your front-end redirects the user to the hosted Persona page.
+      </Step>
+
+      <Step title="User completes KYC">
+        The user finishes verification on Persona’s hosted page.
+      </Step>
+
+      <Step title="Redirect callback">
+        Persona notifies Paywint when the flow is completed.  
+        Paywint then redirects the user to your configured redirect URL.
+      </Step>
+
+      <Step title="Webhook notification">
+        Paywint sends a compliance webhook to your backend when KYC data is processed.
+      </Step>
+
+      <Step title="Fetch updated KYC">
+        Your server fetches the user’s updated verification details using [Get KYC](/api-reference/compliance/kyc/get).
+      </Step>
+    </Steps>
+  </Tab>
+</Tabs>
+
+---
+
+## KYB Verification (Businesses)
+
+KYB verifies business information such as legal entity details, documents, EIN, and formation data.
+
+<CardGroup cols={2}>
+  <Card title="Submit KYB" icon="external-link" href="/api-reference/compliance/kyb/submit" arrow="true">
+    Submit business information and mandatory supporting documents.
+  </Card>
+  
+  <Card title="Get KYB Status" icon="list" href="/api-reference/compliance/kyb/get" arrow="true">
+    Retrieve business verification results and document metadata.
+  </Card>
+</CardGroup>
+
+---
+
+## How KYB Works
+
+Submitting KYB requires:
+
+- Business details (name, address, EIN, entity type, etc.)
+- At least **two** publicly accessible document URLs  
+  (You can link to your documentation page about document URL requirements)
+
+<Callout type="info" emoji="📄">
+  Looking for document upload rules?  
+  See **[Document Upload Guidelines](/guidelines/url-standards/overview)**  
+</Callout>
+
+
+<Steps>
+  <Step title="Submit KYB">
+    Make call to [Submit KYB](/api-reference/compliance/kyb/submit) with business information and document URLs.
+  </Step>
+
+  <Step title="Paywint validates documents">
+    Paywint checks required fields and validates submitted URLs.
+  </Step>
+
+  <Step title="Verification processing">
+    KYB review is completed asynchronously by Paywint and compliance partners.
+  </Step>
+
+  <Step title="Webhook delivered">
+    Once processing is complete, Paywint sends a webhook notifying you of changes in KYB status.
+  </Step>
+
+  <Step title="Retrieve KYB record">
+    Your server calls [Get KYB](/api-reference/compliance/kyb/get) to read the latest business verification data.
+  </Step>
+</Steps>
+
+---
+
+
+## When Compliance Is Required
+
+
+| Feature                        | Requires KYC?                           | Requires KYB?                        |
+|--------------------------------|-----------------------------------------|--------------------------------------|
+| Wallet-to-wallet payments      | <Icon icon="x" size={10} /> No          | <Icon icon="x" size={10} /> No       |
+| Adding a bank account          | <Icon icon="x" size={10} /> No          | <Icon icon="x" size={10} /> No       |
+| Wallet-Funding                 | <Icon icon="check" size={10} /> Yes     | <Icon icon="check" size={10} /> Yes  |
+| ACH transfers                  | <Icon icon="check" size={10} /> Yes     | <Icon icon="check" size={10} /> Yes  |
+| Card payouts                   | <Icon icon="check" size={10} /> Yes     | <Icon icon="x" size={10} /> No       |
+| Business account features      | <Icon icon="check" size={10} /> Yes     | <Icon icon="check" size={10} /> Yes  |
+| High-risk/regulated use cases  | <Icon icon="check" size={10} /> Yes     | <Icon icon="check" size={10} /> Yes  |
+
+
+## Webhooks
+
+Paywint sends webhook notifications as KYC or KYB verification progresses.  
+These include:
+
+- Verification started  
+- Data received  
+- User/business status updated  
+- Verification completed or requiring additional documents
+
+> Exact event names and payloads are listed in  
+> **[Webhook Event Types](/webhooks/event-types)**.
+
+---
+
+## Best Practices
+
+- Always open Persona in a secure frame or new tab.  
+- Use `Get KYC` and `Get KYB` after receiving webhook notifications.  
+- Use descriptive business documents and ensure they are publicly accessible URLs.  
+- Ensure your compliance webhook endpoint is always available.
+

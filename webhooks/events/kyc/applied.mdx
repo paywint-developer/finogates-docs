@@ -1,0 +1,59 @@
+---
+title: "kyc.applied"
+description: "Sent when a user submits KYC details."
+icon: "file-text"
+---
+
+The `kyc.applied` event is sent when a user has **submitted their KYC information** and the verification process has been initiated.
+
+At this stage, the KYC is under review and no final decision has been made.
+
+---
+
+## Example Payload
+
+```json
+{
+  "event": "kyc.applied",
+  "id": "fb081022-a61a-4875-9536-988ac535b85a",
+  "data": {
+    "user_id": "fb081022-a61a-4875-9536-988ac535b85a",
+    "kyc_status": "applied"
+  },
+  "eventGeneratedTime": 1756721043.214908
+}
+````
+
+---
+
+## Data Fields
+
+<ResponseField name="user_id" type="string">
+  Unique identifier of the user who submitted KYC information.
+</ResponseField>
+
+<ResponseField name="kyc_status" type="string">
+  Current KYC status. Always <code>applied</code> for this event.
+</ResponseField>
+
+---
+
+## Handling the Event
+
+Use this event to:
+
+* Mark the user as KYC submitted
+* Disable restricted features until verification completes
+* Trigger internal compliance workflows
+* Track KYC progression
+
+---
+
+## Related Events
+
+* [kyc.approved](/webhooks/events/kyc/approved)
+* [kyc.rejected](/webhooks/events/kyc/rejected)
+* [kyc.failed](/webhooks/events/kyc/failed)
+* [kyc.completed](/webhooks/events/kyc/completed)
+* [kyc.deleted](/webhooks/events/kyc/deleted)
+

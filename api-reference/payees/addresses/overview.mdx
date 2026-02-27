@@ -1,0 +1,71 @@
+---
+title: "Overview"
+description: "Create, list, update, and delete mailing addresses saved for a user's payees."
+icon: "book-open"
+---
+
+Payee Addresses allow you to store and manage mailing destinations for each payee.  
+These addresses are commonly used when sending physical check payments, and each payee can maintain multiple saved locations.
+
+You can:
+
+- Add a new address for a payee  
+- Retrieve the full list of addresses saved for a payee  
+- Update an existing address  
+- Delete an address that is no longer needed  
+
+Every address is stored under a **user → payee → address** structure, ensuring that information is organized and linked to the correct recipient.
+
+---
+
+## Available APIs
+
+<CardGroup cols={3}>
+
+  <Card title="Add Payee Address" icon="plus" href="/api-reference/payees/addresses/add" arrow="true">
+    Create a new mailing address for a payee.
+  </Card>
+
+  <Card title="List Payee Addresses" icon="list" href="/api-reference/payees/addresses/list" arrow="true">
+    Retrieve all addresses associated with a payee.
+  </Card>
+
+  <Card title="Update Payee Address" icon="edit" href="/api-reference/payees/addresses/update" arrow="true">
+    Modify an existing payee address.
+  </Card>
+
+</CardGroup>
+
+<CardGroup cols={3}>
+
+  <Card title="Delete Payee Address" icon="trash" href="/api-reference/payees/addresses/delete" arrow="true">
+    Remove a saved address from a payee's profile.
+  </Card>
+
+</CardGroup>
+
+---
+
+## How Payee Addresses Work
+
+Payee Addresses are helpful when:
+
+- A payee has multiple office locations  
+- A payee frequently changes their mailing destination  
+- You need to select where physical checks should be mailed  
+
+Each payee can store up to **20 addresses**, allowing flexible address management across different locations and business units.
+
+### Address Accuracy
+
+Because addresses are provided through your application,  
+**you should ensure payees review and confirm their address details before mailing checks**.  
+This helps maintain accurate delivery information and reduces the risk of returned or delayed mailings.
+
+---
+
+## Best Practices
+
+- Use meaningful names (e.g., “Headquarters”, “Billing Office”, “Warehouse”)
+- Validate ZIP codes and country formats in your UI  
+- Remove outdated addresses to keep payee data organized  

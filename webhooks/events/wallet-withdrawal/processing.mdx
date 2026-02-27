@@ -1,0 +1,63 @@
+---
+title: "wallet.withdrawal.processing"
+description: "Sent when a wallet withdrawal enters processing."
+icon: "loader"
+---
+
+The `wallet.withdrawal.processing` event is sent when a wallet withdrawal request has **entered the processing stage**.
+
+This indicates that the withdrawal is actively being handled and has not yet completed or failed.
+
+---
+
+## Example Payload
+
+```json
+{
+  "event": "wallet.withdrawal.processing",
+  "id": "6d6a74ab-89ae-4b2e-bcd1-a04307d7df99",
+  "data": {
+    "payment_id": "6d6a74ab-89ae-4b2e-bcd1-a04307d7df99",
+    "status": "processed",
+    "amount": 500.0
+  },
+  "eventGeneratedTime": 1756729948.128641
+}
+````
+
+---
+
+## Data Fields
+
+<ResponseField name="payment_id" type="string">
+  Unique identifier of the wallet withdrawal transaction.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Current withdrawal status. For this event, the value is <code>processed</code>.
+</ResponseField>
+
+<ResponseField name="amount" type="float">
+  Withdrawal amount expressed in the major currency unit (for example, USD).
+</ResponseField>
+
+---
+
+## Handling the Event
+
+Use this event to:
+
+* Update the withdrawal state to processing
+* Display an in-progress withdrawal status to the user
+* Monitor withdrawal execution
+* Prepare for settlement or completion events
+
+---
+
+## Related Events
+
+* [wallet.withdrawal.initiated](/webhooks/events/wallet/withdrawal-initiated)
+* [wallet.withdrawal.settling](/webhooks/events/wallet/withdrawal-settling)
+* [wallet.withdrawal.success](/webhooks/events/wallet/withdrawal-success)
+* [wallet.withdrawal.failed](/webhooks/events/wallet/withdrawal-failed)
+* [wallet.withdrawal.rejected](/webhooks/events/wallet/withdrawal-rejected)

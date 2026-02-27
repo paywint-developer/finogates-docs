@@ -1,0 +1,70 @@
+---
+title: "payment.refund"
+description: "Sent when a payment amount is successfully refunded."
+icon: "rotate-ccw"
+---
+
+The `payment.refund` event is sent when a payment amount has been **successfully refunded** and the refund process has completed.
+
+This event represents a completed refund transaction associated with an existing payment.
+
+---
+
+## Example Payload
+
+```json
+{
+  "event": "payment.refund",
+  "id": "a70f3889-7a4f-4ec0-a3c0-652fdfa323db",
+  "data": {
+    "payment_id": "a70f3889-7a4f-4ec0-a3c0-652fdfa323db",
+    "status": "completed",
+    "amount": 1000.0,
+    "refund_transaction_id": "539d185f-8586-4714-bde5-351a6c38a191"
+  },
+  "eventGeneratedTime": 1756731284.557921
+}
+````
+
+---
+
+## Data Fields
+
+<ResponseField name="payment_id" type="string">
+  Unique identifier of the original payment.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Refund status. Always <code>completed</code> for this event.
+</ResponseField>
+
+<ResponseField name="amount" type="float">
+  Refunded amount represented as a decimal in the transaction currency.
+</ResponseField>
+
+<ResponseField name="refund_transaction_id" type="string">
+  Unique identifier for the refund transaction.
+</ResponseField>
+
+
+## Handling the Event
+
+Use this event to:
+
+* Record completed refund transactions
+* Update balances or accounting records
+* Synchronize refund state across systems
+* Track refunded amounts independently of payment execution
+
+---
+
+## Related Events
+
+* [payment.opened](/webhooks/events/payment/opened)
+* [payment.initiated](/webhooks/events/payment/initiated)
+* [payment.processing](/webhooks/events/payment/processing)
+* [payment.settling](/webhooks/events/payment/settling)
+* [payment.success](/webhooks/events/payment/success)
+* [payment.rejected](/webhooks/events/payment/rejected)
+* [payment.fee-refunded](/webhooks/events/payment/fee-refunded)
+* [payment.failed](/webhooks/events/payment/failed)

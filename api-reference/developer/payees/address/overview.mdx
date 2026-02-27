@@ -1,0 +1,93 @@
+---
+title: "Overview"
+description: "Manage address records associated with a payee."
+icon: "book-open"
+---
+
+The **Payee Address API** allows you to create and manage address records associated with an existing payee.
+
+A payee address represents the physical mailing or address linked to a recipient identity.
+
+Payee records must exist before an address can be attached.
+
+---
+
+## What This API Provides
+
+The Payee Address API enables your integration to:
+
+- Add an address to an existing payee
+- Retrieve a stored payee address
+- Update address details
+- Delete an address when it is no longer valid
+
+All address fields should follow standard US postal formatting when applicable.
+
+---
+
+## Available APIs
+
+<CardGroup cols={3}>
+
+  <Card title="Create Address" icon="plus-circle" href="/api-reference/developer/payees/address/create-address" arrow="true">
+    Attach a new address to an existing payee.
+  </Card>
+
+  <Card title="List Addresses" icon="list" href="/api-reference/developer/payees/address/list-address" arrow="true">
+    Retrieve all addresses associated with a payee.
+  </Card>
+
+  <Card title="Get Address" icon="map-pin" href="/api-reference/developer/payees/address/get-address" arrow="true">
+    Retrieve a specific address by ID.
+  </Card>
+
+</CardGroup>
+
+<CardGroup cols={3}>
+
+  <Card title="Update Address" icon="pencil" href="/api-reference/developer/payees/address/update-address" arrow="true">
+    Modify an existing address record.
+  </Card>
+
+  <Card title="Set Default Address" icon="check-circle" href="/api-reference/developer/payees/address/set-default-address" arrow="true">
+    Mark an address as the default address for the payee.
+  </Card>
+
+  <Card title="Delete Address" icon="trash" href="/api-reference/developer/payees/address/delete-address" arrow="true">
+    Remove an address from a payee.
+  </Card>
+
+</CardGroup>
+
+---
+
+## Typical Integration Flow
+
+<Steps>
+
+  <Step title="1. Ensure payee exists">
+    Create the payee using the Payee API before attaching an address.
+  </Step>
+
+  <Step title="2. Create the address">
+    Call <code>[Create Payee Address](/api-reference/developer/payees/address/create-address)</code> with properly formatted address fields.
+  </Step>
+
+  <Step title="3. Maintain accuracy">
+    Update address details if the recipient relocates or information changes.
+  </Step>
+
+  <Step title="4. Remove outdated addresses">
+    Delete addresses that are no longer valid.
+  </Step>
+
+</Steps>
+
+---
+
+## Best Practices
+
+- Store state values using two-letter abbreviations (example: `CA`, `NY`, `TX`).
+- Use ISO country codes (example: `US`).
+- Validate ZIP codes before submission.
+- Avoid storing multiple conflicting addresses for the same payee unless required by your business logic.

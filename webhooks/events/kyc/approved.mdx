@@ -1,0 +1,58 @@
+---
+title: "kyc.approved"
+description: "Sent when KYC verification is successfully approved."
+icon: "check-circle"
+---
+
+The `kyc.approved` event is sent when a user's KYC verification has been **successfully approved**.
+
+This indicates that the user has passed identity verification and is eligible to access KYC-restricted features.
+
+---
+
+## Example Payload
+
+```json
+{
+  "event": "kyc.approved",
+  "id": "e61a0dbd-22b3-4ff2-9da1-bd4097ed273c",
+  "data": {
+    "user_id": "e61a0dbd-22b3-4ff2-9da1-bd4097ed273c",
+    "kyc_status": "approved"
+  },
+  "eventGeneratedTime": 1756729948.128641
+}
+````
+
+---
+
+## Data Fields
+
+<ResponseField name="user_id" type="string">
+  Unique identifier of the user whose KYC verification was approved.
+</ResponseField>
+
+<ResponseField name="kyc_status" type="string">
+  Final KYC status. Always <code>approved</code> for this event.
+</ResponseField>
+
+---
+
+## Handling the Event
+
+Use this event to:
+
+* Enable all KYC-restricted features
+* Allow wallet funding, withdrawals, and payments
+* Update the user’s compliance state
+* Record approval for auditing and regulatory reporting
+
+---
+
+## Related Events
+
+* [kyc.applied](/webhooks/events/kyc/applied)
+* [kyc.completed](/webhooks/events/kyc/completed)
+* [kyc.rejected](/webhooks/events/kyc/rejected)
+* [kyc.failed](/webhooks/events/kyc/failed)
+* [kyc.deleted](/webhooks/events/kyc/deleted)

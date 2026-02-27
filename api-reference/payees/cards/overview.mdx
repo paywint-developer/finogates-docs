@@ -1,0 +1,73 @@
+---
+title: "Overview"
+description: "Add, retrieve, list, and delete payment cards saved for a user's payees."
+icon: "book-open"
+---
+
+Payee Cards allow your users to save and manage payment cards for their payees.  
+These cards can be selected when sending card-based payouts or reimbursements.
+
+You can:
+
+- Add a new card for a payee  
+- Retrieve a saved payee card  
+- List all cards associated with a payee  
+- Delete a card when it is no longer needed  
+
+Payee cards are stored under a specific **user → payee** relationship, keeping each card organized and scoped to the correct recipient.
+
+---
+
+## Available APIs
+
+<CardGroup cols={3}>
+
+  <Card title="Add Payee Card" icon="plus" href="/api-reference/payees/cards/add" arrow="true">
+    Save a new card to a payee’s profile.
+  </Card>
+
+  <Card title="Get Payee Card" icon="credit-card" href="/api-reference/payees/cards/get" arrow="true">
+    Retrieve details for a specific saved card.
+  </Card>
+
+  <Card title="List Payee Cards" icon="list" href="/api-reference/payees/cards/list" arrow="true">
+    View all cards stored for a payee.
+  </Card>
+
+</CardGroup>
+
+<CardGroup cols={3}>
+
+  <Card title="Delete Payee Card" icon="trash" href="/api-reference/payees/cards/delete" arrow="true">
+    Remove a saved card from a payee's account.
+  </Card>
+
+</CardGroup>
+
+---
+
+## How Payee Cards Work
+
+Payee cards are managed separately from the user's own cards.  
+They are typically used when:
+
+- A user needs to send card-based payouts to a payee  
+- A payee requests a specific card to receive funds  
+- Multiple payees require different payout destinations  
+
+### Accuracy & Confirmation
+
+Since payee card details are supplied through your application,  
+**user should confirm the card details with the payee before using it for payouts**.
+
+This follows standard industry practice for recipient-side payment methods,  
+and provides an extra layer of assurance before attempting a transfer.
+
+---
+
+## Best Practices
+
+- Display only masked card numbers in your UI  
+- Allow clear nicknames such as John's Visa” or "Ham's Personal Mastercard”  
+- Encourage users to confirm expiration dates before saving  
+- Remove outdated or expired cards to keep the payee’s profile current  

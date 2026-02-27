@@ -1,0 +1,62 @@
+---
+title: "wallet.funding.processing"
+description: "Sent when a wallet funding request enters processing."
+icon: "loader"
+---
+
+The `wallet.funding.processing` event is sent when a wallet funding request has **entered the processing stage**.
+
+This indicates that the funding request is actively being handled by the payment network or internal systems.
+
+---
+
+## Example Payload
+
+```json
+{
+  "event": "wallet.funding.processing",
+  "id": "1a073f1c-6770-4851-b06a-9e707da01559",
+  "data": {
+    "payment_id": "1a073f1c-6770-4851-b06a-9e707da01559",
+    "status": "processing",
+    "amount": 200.0
+  },
+  "eventGeneratedTime": 1756729948.128641
+}
+````
+
+---
+
+## Data Fields
+
+<ResponseField name="payment_id" type="string">
+  Unique identifier of the wallet funding transaction.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Current funding status. Always <code>processing</code> for this event.
+</ResponseField>
+
+<ResponseField name="amount" type="float">
+  Funding amount expressed in the major currency unit (for example, USD).
+</ResponseField>
+
+---
+
+## Handling the Event
+
+Use this event to:
+
+* Update the funding state to processing
+* Display pending or in-progress status to the user
+* Monitor funding execution and timing
+* Prepare for settlement or completion events
+
+---
+
+## Related Events
+
+* [wallet.funding.initiated](/webhooks/events/wallet/funding-initiated)
+* [wallet.funding.success](/webhooks/events/wallet/funding-success)
+* [wallet.funding.failed](/webhooks/events/wallet/funding-failed)
+* [wallet.funding.rejected](/webhooks/events/wallet/funding-rejected)

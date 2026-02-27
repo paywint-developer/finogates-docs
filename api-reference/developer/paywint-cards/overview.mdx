@@ -1,0 +1,87 @@
+---
+title: "Overview"
+description: "Issue, retrieve, and manage Paywint cards for payees."
+icon: "book-open"
+---
+
+Paywint cards let you deliver spend-ready balances to payees without handling sensitive card data.  
+You request a Paywint card from Paywint, share the generated link or token with the recipient, and track the card through its lifecycle with Paywint APIs.
+
+---
+
+## Prerequisites
+
+1. Create the payee profile by following <code>[Create Payee](/api-reference/developer/payees/create)</code>.  
+2. Add at least one address for that payee via <code>[Create Payee Address](/api-reference/developer/payees/create-address)</code> so Paywint can route and track the delivery.
+
+---
+
+## Paywint card capabilities
+
+You can:
+
+- Issue a new Paywint card for a payee with a specified amount and currency.  
+- Retrieve the full Paywint card payload (numbers, expiration, status flags) using the issued `request_id`.  
+- List every Paywint card that you have issued.  
+- Reload an existing Paywint card to add more funds when the card still needs a top-up.
+
+---
+
+## How the Paywint card flow works
+
+<Steps>
+
+  <Step title="1. Request a new card">
+    Call <code>[Issue Paywint Card For Payee](/api-reference/developer/paywint-cards/issue-card)</code> with the payee identity, amount, currency, and any metadata that ties the card back to your system.
+  </Step>
+
+  <Step title="2. Deliver card details">
+    The response includes a `request_id` and the encrypted card payload. Store the `request_id` and share the payload with the payee through your secure channels.
+  </Step>
+
+    <Step title="3. Track card status">
+    Use <code>[List Paywint Cards](/api-reference/developer/paywint-cards/list-cards)</code> to see every card for the user, or call <code>[Get Paywint Card](/api-reference/developer/paywint-cards/get-card)</code> when you need the latest metadata for a specific issuance.
+  </Step>
+
+    <Step title="4. Reload when needed">
+    If the card needs more value, call <code>[Reload Paywint Card](/api-reference/developer/paywint-cards/reload-card)</code> to top it up without issuing a new card.
+  </Step>
+
+</Steps>
+
+---
+
+## Available APIs
+
+<CardGroup cols={2}>
+
+  <Card title="Issue Paywint Card" href="/api-reference/developer/paywint-cards/issue-card" icon="plus" arrow="true">
+    Generate a Paywint card for a given payee and amount.
+  </Card>
+
+  <Card title="Get Paywint Card" href="/api-reference/developer/paywint-cards/get-card" icon="credit-card" arrow="true">
+    Retrieve the issued card payload using the `request_id`.
+  </Card>
+
+</CardGroup>
+
+<CardGroup cols={2}>
+
+  <Card title="List Paywint Cards" href="/api-reference/developer/paywint-cards/list-cards" icon="list" arrow="true">
+    List every Paywint card associated with a user to monitor outstanding balances.
+  </Card>
+
+  <Card title="Reload Paywint Card" href="/api-reference/developer/paywint-cards/reload-card" icon="refresh" arrow="true">
+    Add value to an existing Paywint card when the balance needs replenishing.
+  </Card>
+
+</CardGroup>
+
+---
+
+## Best practices
+
+- Treat the `request_id` as the canonical reference for every Paywint card issuance.  
+ - Share card details with payees securely, then delete or mask raw values on your end.  
+- Call `List Paywint Cards` regularly to reconcile what your system issued versus what remains outstanding.  
+- Use the reload API only when your compliance rules allow topping up previously issued cards.

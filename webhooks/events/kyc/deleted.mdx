@@ -1,0 +1,57 @@
+---
+title: "kyc.deleted"
+description: "Sent when a user's KYC record is deleted or reset."
+icon: "trash-2"
+---
+
+The `kyc.deleted` event is sent when a user's KYC record has been **deleted or reset**.
+
+This typically occurs during re-verification flows, compliance corrections, or administrative actions.
+
+---
+
+## Example Payload
+
+```json
+{
+  "event": "kyc.deleted",
+  "id": "cc46bc2f-8a50-4f78-8a29-0df5d77c491c",
+  "data": {
+    "user_id": "cc46bc2f-8a50-4f78-8a29-0df5d77c491c",
+    "kyc_status": "pending"
+  },
+  "eventGeneratedTime": 1756729948.128641
+}
+````
+
+---
+
+## Data Fields
+
+<ResponseField name="user_id" type="string">
+  Unique identifier of the user whose KYC record was deleted.
+</ResponseField>
+
+<ResponseField name="kyc_status" type="string">
+  Reset KYC status, typically <code>pending</code> after deletion.
+</ResponseField>
+
+---
+
+## Handling the Event
+
+Use this event to:
+
+* Reset internal KYC state for the user
+* Require the user to resubmit identity documents
+* Revoke KYC-dependent permissions
+* Record compliance resets for auditing
+
+---
+
+## Related Events
+
+* [kyc.applied](/webhooks/events/kyc/applied)
+* [kyc.rejected](/webhooks/events/kyc/rejected)
+* [kyc.failed](/webhooks/events/kyc/failed)
+* [kyc.completed](/webhooks/events/kyc/completed)

@@ -1,0 +1,65 @@
+---
+title: "payment.settling"
+description: "Sent when a payment is in the process of being settled."
+icon: "credit-card"
+---
+
+The `payment.settling` event is sent when a payment has completed processing and the **settlement process has begun**.
+
+This state indicates that the payment amount is being **settled to the destination card** and has not yet reached final settlement.
+
+---
+
+## Example Payload
+
+```json
+{
+  "event": "payment.settling",
+  "id": "3b8b71e4-8f4e-4e6c-bbb2-1b7b4c6d9e21",
+  "data": {
+    "payment_id": "9f4e1a2b-3c8d-4f92-9c27-1e5b8c4f7a63",
+    "status": "settling",
+    "amount": 599
+  },
+  "eventGeneratedTime": 1756723891.902114
+}
+````
+
+---
+
+## Data Fields
+
+<ResponseField name="payment_id" type="string">
+  Unique identifier for the payment transaction.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Current payment status. Always <code>settling</code> for this event.
+</ResponseField>
+
+<ResponseField name="amount" type="float">
+  Payment amount represented as a decimal in the transaction currency.
+</ResponseField>
+
+
+## Handling the Event
+
+Use this event to:
+
+* Track payments that are undergoing settlement
+* Reflect a settling or pending balance state in your system
+* Prevent duplicate settlement actions
+* Monitor settlement progress before final completion
+
+---
+
+## Related Events
+
+* [payment.opened](/webhooks/events/payment/opened)
+* [payment.initiated](/webhooks/events/payment/initiated)
+* [payment.processing](/webhooks/events/payment/processing)
+* [payment.success](/webhooks/events/payment/success)
+* [payment.rejected](/webhooks/events/payment/rejected)
+* [payment.fee-refunded](/webhooks/events/payment/fee-refunded)
+* [payment.refunded](/webhooks/events/payment/refunded)
+* [payment.failed](/webhooks/events/payment/failed)
