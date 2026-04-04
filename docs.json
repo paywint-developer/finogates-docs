@@ -316,7 +316,7 @@
   ],
   "api": {
     "openapi": {
-      "source": "https://api.sandbox.paywint.com/openapi.json",
+      "source": "http://midhun.local:8008/openapi-v1-platform.json",
       "directory": "api-reference"
     }
   },
