@@ -1,0 +1,93 @@
+---
+title: "Event Types"
+description: "Complete list of webhook event types sent by Paywint."
+icon: "calendars"
+---
+
+Below is the list of all webhook event types Paywint can send to your webhook endpoint.  
+Each corresponds to a significant system action or user state update.
+
+---
+
+### Event Reference Links
+
+Each event name below links to a **dedicated event reference page**.
+
+When you click an event, you’ll find:
+- The **full webhook payload schema**
+- A **realistic example payload** sent by Paywint
+- A breakdown of **important fields and status transitions**
+- Clear guidance on **when the event is triggered** and how to handle it
+
+This allows you to implement, test, and debug webhook integrations with confidence.
+
+---
+
+## KYC Events
+| Event                                                     | Description                         |
+|-----------------------------------------------------------|-------------------------------------|
+| [kyc.applied](/webhooks/events/kyc/applied)               | User submitted KYC details.         |
+| [kyc.approved](/webhooks/events/kyc/approved)             | KYC verification approved.          |
+| [kyc.rejected](/webhooks/events/kyc/rejected)             | KYC verification rejected.          |
+| [kyc.failed](/webhooks/events/kyc/failed)                 | KYC verification failed.            |
+| [kyc.completed](/webhooks/events/kyc/completed)           | KYC process completed.              |
+| [kyc.deleted](/webhooks/events/kyc/deleted)               | KYC record deleted.                 |
+
+
+## KYB Events
+| Event                                                     | Description                         |
+|-----------------------------------------------------------|-------------------------------------|
+| [kyb.approved](/webhooks/events/kyb/approved)             | KYB verification approved.          |
+| [kyb.rejected](/webhooks/events/kyb/rejected)             | KYB verification rejected.          |
+| [kyb.deleted](/webhooks/events/kyb/deleted)               | KYB record deleted.                 |
+
+
+## Wallet Funding Events
+| Event                                                                        | Description                          |
+|------------------------------------------------------------------------------|--------------------------------------|
+| [wallet.funding.initiated](/webhooks/events/wallet-funding/initiated)        | Wallet funding request initiated.    |
+| [wallet.funding.processing](/webhooks/events/wallet-funding/processing)      | Wallet funding in progress.          |
+| [wallet.funding.success](/webhooks/events/wallet-funding/success)            | Wallet funding successful.           |
+| [wallet.funding.failed](/webhooks/events/wallet-funding/failed)              | Wallet funding failed.               |
+| [wallet.funding.rejected](/webhooks/events/wallet-funding/rejected)          | Wallet funding rejected.             |
+
+
+## Wallet Withdrawal Events
+| Event                                                                              | Description                           |
+|------------------------------------------------------------------------------------|---------------------------------------|
+| [wallet.withdrawal.initiated](/webhooks/events/wallet-withdrawal/initiated)        | Withdrawal initiated.                 |
+| [wallet.withdrawal.processing](/webhooks/events/wallet-withdrawal/processing)      | Withdrawal in progress.               |
+| [wallet.withdrawal.settling](/webhooks/events/wallet-withdrawal/settling)          | Withdrawal settling.                  |
+| [wallet.withdrawal.success](/webhooks/events/wallet-withdrawal/success)            | Withdrawal successful.                |
+| [wallet.withdrawal.failed](/webhooks/events/wallet-withdrawal/failed)              | Withdrawal failed.                    |
+| [wallet.withdrawal.rejected](/webhooks/events/wallet-withdrawal/rejected)          | Withdrawal rejected.                  |
+
+
+## Card Events
+| Event                                                           | Description                      |
+|-----------------------------------------------------------------|----------------------------------|
+| [card.added](/webhooks/events/card/added)                       | A new card was added.            |
+| [card.images_uploaded](/webhooks/events/card/images_uploaded)   | Card images have been uploaded.  |
+
+
+## Payment Events
+| Event                                                            | Description                                |
+|------------------------------------------------------------------|--------------------------------------------|
+| [payment.opened](/webhooks/events/payment/opened)                | Payment link opened by user.               |
+| [payment.initiated](/webhooks/events/payment/initiated)          | Payment initiated.                         |
+| [payment.processing](/webhooks/events/payment/processing)        | Payment requires processing or review.     |
+| [payment.settling](/webhooks/events/payment/settling)            | Payment settling.                          |
+| [payment.success](/webhooks/events/payment/success)              | Payment successfully completed.            |
+| [payment.failed](/webhooks/events/payment/failed)                | Payment attempt failed.                    |
+| [payment.rejected](/webhooks/events/payment/rejected)            | Payment rejected.                          |
+| [payment.refunded](/webhooks/events/payment/refunded)            | Payment refunded.                          |
+| [payment.fee_refunded](/webhooks/events/payment/fee-refunded)    | Payment fee refunded.                      |
+| [payment.mailed](/webhooks/events/payment/mailed)                | Check payment mailed.                      |
+
+
+## Next Steps
+
+- Open any event above to review its **example payload and detailed field definitions**
+- Learn how to **verify webhook signatures** to ensure webhook authenticity  
+- Understand webhook delivery retries in [Retry Behavior](/webhooks/retry-behavior)  
+- Explore the full webhook response structure in the [Webhook Response Reference](/webhooks/webhook-response)

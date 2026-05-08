@@ -1,0 +1,135 @@
+---
+title: "Overview"
+description: "Add, verify, and manage bank accounts for users."
+icon: "book-open"
+---
+
+Users can link external bank accounts to send or receive funds through ACH or other bank-based payment methods.  
+The Bank Accounts API provides endpoints to **add**, **verify**, **list**, **update**, and **remove** bank accounts.
+
+Verification is completed using a **micro-deposit flow**, where two small deposits are sent to the user’s bank account, and the user confirms the amounts.
+
+---
+
+## How Bank Accounts Are Used
+
+Bank accounts let users connect their external financial accounts to support a wide range of money movement. You can add accounts, manage defaults, access account details, list all linked accounts, and remove accounts as needed.
+
+These accounts can then be used for ACH payments or for adding funds to a user’s Paywint wallet.
+
+---
+
+## Available APIs
+
+<CardGroup cols={3}>
+
+  <Card title="Add Bank Account" icon="plus" href="/api-reference/bank-accounts/add" arrow="true">
+    Create a new bank account and link it to a user.
+  </Card>
+
+  <Card title="Release Micro-Deposit" icon="vault" href="/api-reference/bank-accounts/release-micro-deposit" arrow="true">
+    Initiate micro-deposits for verifying bank ownership.
+  </Card>
+
+  <Card title="Verify Micro-Deposit" icon="check-circle" href="/api-reference/bank-accounts/verify-micro-deposit" arrow="true">
+    Confirm the two deposit amounts to complete verification.
+  </Card>
+
+</CardGroup>
+
+<CardGroup cols={3}>
+
+  <Card title="Get Bank Account" icon="bank" href="/api-reference/bank-accounts/get" arrow="true">
+    Retrieve details of a specific bank account.
+  </Card>
+
+  <Card title="List Bank Accounts" icon="list" href="/api-reference/bank-accounts/list" arrow="true">
+    Get all bank accounts linked to a user.
+  </Card>
+
+  <Card title="Delete Bank Account" icon="trash" href="/api-reference/bank-accounts/delete" arrow="true">
+    Remove a bank account that belongs to a user.
+  </Card>
+
+</CardGroup>
+
+---
+
+## How Bank Verification Works
+
+Bank verification ensures the account belongs to the user before it can be used for ACH payments or transfers.  
+The verification flow is completed in three steps:
+
+<Steps>
+
+  <Step title="1. Add the bank account">
+    Call <code>[Add Bank Account](/api-reference/bank-accounts/add)</code> 
+    with the account number, routing number, bank details, and account type.  
+    This adds the bank account to the user’s profile.
+  </Step>
+
+  <Step title="2. Release micro-deposits">
+    Call <code>[Release Micro-Deposit](/api-reference/bank-accounts/release-micro-deposit)</code> 
+    to initiate two small verification deposits to the bank account.  
+    These amounts will appear on the user’s bank statement within 1–2 business days.  
+    In Sandbox, the values are always <code>0.07</code> and <code>0.15</code>.
+  </Step>
+
+  <Step title="3. Verify the amounts">
+    After the user checks their bank statement, call 
+    <code>[Verify Micro-Deposit](/api-reference/bank-accounts/verify-micro-deposit)</code>
+    with the two deposit values.  
+    Once verified, the bank account can be used for ACH payments.
+  </Step>
+
+</Steps>
+
+---
+
+## Managing Bank Accounts
+
+<Steps>
+
+  <Step title="Retrieve account details">
+    Use <code>[Get Bank Account](/api-reference/bank-accounts/get)</code>
+    to access account type, last 4 digits, routing number, verification status, and metadata.
+  </Step>
+
+  <Step title="List all accounts">
+    Use <code>[List Bank Accounts](/api-reference/bank-accounts/list)</code>
+    to fetch all accounts linked to a user, ordered by most recently added.
+  </Step>
+
+  <Step title="Set a default bank account">
+    Use <code>[Set Default](/api-reference/bank-accounts/set-default)</code> to switch the default account.
+  </Step>
+
+  <Step title="Delete an account">
+    Use <code>[Delete Bank Account](/api-reference/bank-accounts/delete)</code> 
+    to remove an account.  
+    If the deleted account was default, the next most recent account becomes default automatically.
+  </Step>
+
+</Steps>
+
+---
+
+## Verification States
+
+Bank accounts move through the following statuses:
+
+| Status           | Description                                                          |
+|------------------|------------------------------------------------------------------|
+| **not_applied**  | No verification started yet                                      |
+| **pending**      | Micro-deposits have been released and are awaiting verification  |
+| **applied**      | User submitted verification amounts; processing                  |
+| **verified**     | Verified successfully; bank account can be used for transfers    |
+| **failed**       | Verification failed; new micro-deposit release is required       |
+
+
+## Best Practices
+
+- Always display the last 4 digits of the bank account number for user confirmation
+- Encourage users to wait 1–2 business days for real micro-deposits  
+- In Sandbox, verification requires **exactly** `0.07` and `0.15`  
+- Use the default account for ACH and payouts unless overridden per request  

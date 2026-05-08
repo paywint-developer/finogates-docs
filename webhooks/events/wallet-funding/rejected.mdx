@@ -1,0 +1,62 @@
+---
+title: "wallet.funding.rejected"
+description: "Sent when a wallet funding request is rejected."
+icon: "ban"
+---
+
+The `wallet.funding.rejected` event is sent when a wallet funding request is **rejected** before completion.
+
+This typically occurs due to compliance checks, risk evaluation, or policy restrictions.
+
+---
+
+## Example Payload
+
+```json
+{
+  "event": "wallet.funding.rejected",
+  "id": "c4e71799-fd67-4995-b06e-447c2588660a",
+  "data": {
+    "payment_id": "c4e71799-fd67-4995-b06e-447c2588660a",
+    "status": "rejected",
+    "amount": 200.0
+  },
+  "eventGeneratedTime": 1756729948.128641
+}
+````
+
+---
+
+## Data Fields
+
+<ResponseField name="payment_id" type="string">
+  Unique identifier of the wallet funding transaction.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Final funding status. Always <code>rejected</code> for this event.
+</ResponseField>
+
+<ResponseField name="amount" type="float">
+  Funding amount expressed in the major currency unit (for example, USD).
+</ResponseField>
+
+---
+
+## Handling the Event
+
+Use this event to:
+
+* Mark the funding transaction as rejected
+* Notify the user of the rejection outcome
+* Prevent automatic retries
+* Record rejection details for compliance and auditing
+
+---
+
+## Related Events
+
+* [wallet.funding.initiated](/webhooks/events/wallet/funding-initiated)
+* [wallet.funding.processing](/webhooks/events/wallet/funding-processing)
+* [wallet.funding.success](/webhooks/events/wallet/funding-success)
+* [wallet.funding.failed](/webhooks/events/wallet/funding-failed)

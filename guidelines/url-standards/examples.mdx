@@ -1,0 +1,47 @@
+---
+title: "Valid & Invalid URL Examples"
+description: "Examples of URLs that pass and fail Paywint's URL validation checks."
+icon: "list"
+---
+
+## Overview
+
+This page provides clear examples of URLs that **meet** Paywint’s requirements, and those that will be **rejected** during validation. Use these examples as a reference when generating or verifying document URLs.
+
+---
+
+## Valid URL Examples
+
+These URLs use HTTPS, point directly to downloadable files, and meet all security and accessibility requirements:
+
+[https://cdn.example.com/docs/business-license.pdf](https://cdn.example.com/docs/business-license.pdf)  
+[https://secure-storage.mycompany.com/uploads/id-proof.png](https://secure-storage.mycompany.com/uploads/id-proof.png)  
+[https://drive.google.com/uc?export=download&id=1ABC123xyz](https://drive.google.com/uc?export=download&id=1ABC123xyz)  
+[https://bucket-name.s3.us-west-1.amazonaws.com/registration-document.jpg](https://bucket-name.s3.us-west-1.amazonaws.com/registration-document.jpg)  
+[https://assets.examplecdn.com/files/proof-of-address.jpeg](https://assets.examplecdn.com/files/proof-of-address.jpeg)  
+
+
+---
+
+## Invalid URL Examples
+
+The following URLs fail validation due to security issues, unsupported formats, private networks, or non-direct links:
+
+
+[http://example.com/document.pdf](http://example.com/document.pdf)                     (not HTTPS)  
+[https://192.168.1.10/file.pdf](https://192.168.1.10/file.pdf)                       (private IP address)  
+[https://localhost:5000/file.pdf](https://localhost:5000/file.pdf)                      (localhost)  
+[ftp://files.example.com/document.pdf](tp://files.example.com/document.pdf)                (unsupported protocol)
+[https://drive.google.com/file/d/12345/view](https://drive.google.com/file/d/12345/view)           (preview link, not direct download)  
+[https://example.com/files/large-document-12mb.pdf](https://example.com/files/large-document-12mb.pdf)    (exceeds 7 MB size limit)  
+[https://myapp.internal.company/documents/id.pdf](https://myapp.internal.company/documents/id.pdf)      (internal network resource)  
+
+
+---
+
+## Quick Tips
+
+- Always test URLs in an **incognito browser** — if it requires login, it will fail validation.  
+- Avoid preview/share pages from cloud storage.  
+- Direct links **must** end with a file extension (e.g., `.pdf`, `.jpg`, `.png`).  
+- Ensure the file is publicly reachable via HTTPS.

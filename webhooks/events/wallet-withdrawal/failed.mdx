@@ -1,0 +1,68 @@
+---
+title: "wallet.withdrawal.failed"
+description: "Sent when a wallet withdrawal request fails."
+icon: "x-circle"
+---
+
+The `wallet.withdrawal.failed` event is sent when a wallet withdrawal request **fails** and reaches a **final, non-recoverable state**.
+
+After this event is emitted, the withdrawal attempt will not continue processing.
+
+---
+
+## Example Payload
+
+```json
+{
+  "event": "wallet.withdrawal.failed",
+  "id": "d0d77ff7-7952-4612-86f5-af5982432626",
+  "data": {
+    "payment_id": "d0d77ff7-7952-4612-86f5-af5982432626",
+    "status": "failed",
+    "amount": 690.0,
+    "failed_reason": "Transfer could not be completed"
+  },
+  "eventGeneratedTime": 1756729948.128641
+}
+````
+
+---
+
+## Data Fields
+
+<ResponseField name="payment_id" type="string">
+  Unique identifier of the wallet withdrawal transaction.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Final withdrawal status. Always <code>failed</code> for this event.
+</ResponseField>
+
+<ResponseField name="amount" type="float">
+  Withdrawal amount expressed in the major currency unit (for example, USD).
+</ResponseField>
+
+<ResponseField name="failed_reason" type="string">
+  Human-readable explanation describing why the wallet withdrawal failed.
+</ResponseField>
+
+---
+
+## Handling the Event
+
+Use this event to:
+
+* Mark the withdrawal transaction as failed
+* Display the failure reason to the user
+* Prevent retries without user intervention, if applicable
+* Log failure details for auditing and analysis
+
+---
+
+## Related Events
+
+* [wallet.withdrawal.initiated](/webhooks/events/wallet/withdrawal-initiated)
+* [wallet.withdrawal.processing](/webhooks/events/wallet/withdrawal-processing)
+* [wallet.withdrawal.settling](/webhooks/events/wallet/withdrawal-settling)
+* [wallet.withdrawal.success](/webhooks/events/wallet/withdrawal-success)
+* [wallet.withdrawal.rejected](/webhooks/events/wallet/withdrawal-rejected)

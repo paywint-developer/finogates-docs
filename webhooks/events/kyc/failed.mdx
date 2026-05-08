@@ -1,0 +1,57 @@
+---
+title: "kyc.failed"
+description: "Sent when the KYC process fails due to an unrecoverable error."
+icon: "alert-triangle"
+---
+
+The `kyc.failed` event is sent when a user's KYC verification **fails due to a system or verification error**.
+
+This is a **rare event** and indicates that the KYC process could not be completed successfully.
+
+---
+
+## Example Payload
+
+```json
+{
+  "event": "kyc.failed",
+  "id": "fb081022-a61a-4875-9536-988ac535b85a",
+  "data": {
+    "user_id": "fb081022-a61a-4875-9536-988ac535b85a",
+    "kyc_status": "failed"
+  },
+  "eventGeneratedTime": 1756721043.214908
+}
+````
+
+---
+
+## Data Fields
+
+<ResponseField name="user_id" type="string">
+  Unique identifier of the user whose KYC verification failed.
+</ResponseField>
+
+<ResponseField name="kyc_status" type="string">
+  KYC status. Always <code>failed</code> for this event.
+</ResponseField>
+
+---
+
+## Handling the Event
+
+Use this event to:
+
+* Flag the user for manual or automated review
+* Retry the KYC process if supported
+* Alert compliance or operations teams
+* Prevent further automated KYC processing
+
+---
+
+## Related Events
+
+* [kyc.applied](/webhooks/events/kyc/applied)
+* [kyc.rejected](/webhooks/events/kyc/rejected)
+* [kyc.completed](/webhooks/events/kyc/completed)
+* [kyc.deleted](/webhooks/events/kyc/deleted)

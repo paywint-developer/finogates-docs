@@ -1,0 +1,55 @@
+---
+title: "FAQ"
+description: "Frequently Asked Questions about the Paywint API."
+icon: "question-circle"
+---
+
+
+## General Questions
+
+### What is the Paywint API?
+The Paywint API allows you to integrate financial services such as payment processing, wallet management, user creation, and more into your application. With our easy-to-use endpoints, you can manage users, make payments, and integrate features like ACH transactions, wallet funding, and card management.
+
+### How do I get started with the Paywint API?
+To get started, you’ll need to sign up for an account on Paywint. Once you're signed up, you can generate your API key in the dashboard and start using the API. Visit our [Get Started](https://paywint.com/get-started) guide for more details.
+
+
+## Authentication
+
+### How do I authenticate my API requests?
+Paywint uses API key-based authentication. You can obtain an API key from the dashboard and include it in the `Authorization` header of your API requests. For example:
+
+```bash
+curl -X GET https://api.paywint.com/v1/users \
+  -H "Authorization: Bearer YOUR_API_KEY"
+````
+
+### How do I secure my API key?
+
+Never expose your API key in your frontend code or public repositories. Always store it in a secure backend environment, such as environment variables, and use it server-side to sign API requests.
+
+
+## Webhooks
+
+### What are webhooks and how do I set them up?
+
+Webhooks allow you to receive real-time updates about events happening in your Paywint account, such as payment success, wallet funding, and KYC verification. You need to configure a URL in your dashboard to receive webhook notifications. You can find detailed instructions on setting up webhooks in our [Webhooks Setup Guide](/webhooks/setup).
+
+
+## Billing & Payments
+
+### How do I manage payments in the Paywint API?
+
+The Paywint API provides several endpoints for managing payments, including creating payments, checking payment status, and listing payments. Visit our [Payments API Reference](/api-reference/payments/overview) for more details.
+
+
+## Support
+
+### How can I contact Paywint support?
+
+If you need assistance, you can reach out to our support team via email at [support@paywint.com](mailto:support@paywint.com). We also offer live chat on our website and support through our [community forums](https://community.paywint.com).
+
+
+## Still have questions?
+
+If you didn’t find an answer here, feel free to reach out to our support team at [support@paywint.com](mailto:support@paywint.com). We’re happy to assist you!

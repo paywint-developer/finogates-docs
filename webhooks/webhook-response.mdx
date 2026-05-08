@@ -1,0 +1,200 @@
+---
+title: "Webhook Responses"
+description: "Learn how to receive and handle Paywint webhook events."
+icon: "wifi"
+---
+
+## Webhook Structure
+
+Every webhook payload shares the same top-level structure:
+
+<ResponseField name="event" type="string">
+  The event name indicating what happened
+</ResponseField>
+
+<ResponseField name="id" type="string">
+  Unique event identifier (UUID v4 format)
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  Event-specific fields containing relevant information
+</ResponseField>
+
+<ResponseField name="eventGeneratedTime" type="float">
+  UNIX timestamp in seconds when the event was generated
+</ResponseField>
+
+# Payment Status Webhooks
+
+Paywint sends webhook events to notify your application about payment status changes. This allows you to keep your system synchronized with payment updates in real-time.
+
+## Payment Events
+
+
+
+### Payment Opened
+
+Sent when a payment link has been opened by as user to initiate payment.
+
+```json
+{
+  "event": "payment.opened",
+  "id": "60a71435-d079-4126-81a2-1977bb70a306",
+  "data": {
+    "payment_id": "a5299046-1f62-4f78-8239-6e724d99c38b",
+    "status": "opened",
+    "amount": 599
+  },
+  "eventGeneratedTime": 1756717250.451172
+}
+```
+
+
+### Payment Processing
+
+Sent when a payment requires additional processing time or manual review.
+
+```json
+{
+  "event": "payment.processing",
+  "id": "b0ec03ca-822d-44fd-9407-de48a92a09a6",
+  "data": {
+    "payment_id": "5cd7a3c1-4b45-4148-b383-299553699745",
+    "status": "processing",
+    "amount": 599
+  },
+  "eventGeneratedTime": 1756452761.422979
+}
+```
+
+
+### Payment Succeeded
+
+Sent when a payment is successfully processed and completed.
+
+```json
+{
+  "event": "payment.success",
+  "id": "99036bd3-a8b2-403c-867c-3d03dafbe4b7",
+  "data": {
+    "payment_id": "b91a0f36-b10b-4a31-ae12-e8b4c5ee71f4",
+    "status": "success",
+    "amount": 599
+  },
+  "eventGeneratedTime": 1756451608.069325
+}
+```
+
+
+### Payment Failed
+
+Sent when a payment attempt fails due to various reasons such as insufficient funds or gateway rejections.
+
+```json
+{
+  "event": "payment.failed",
+  "id": "77b568f8-cc38-4b5c-91aa-ac3c77020963",
+  "data": {
+    "payment_id": "ac4bedda-f370-4ac4-a61e-e1761a5a51b9",
+    "status": "failed",
+    "amount": 599,
+    "failed_reason": "Transaction could not be processed. Try again later."
+  },
+  "eventGeneratedTime": 1756452659.868249
+}
+```
+
+### Payment Retried
+
+Sent when a payment attempt fails and the user initiates a retry. Note that retrying creates a new payment transaction, which is why a `retry_payment_id` is provided for reference.
+
+```json
+{
+  "event": "payment.retried",
+  "id": "21b88258-9ff7-4a45-b2e3-85fe33709055",
+  "data": {
+    "payment_id": "998613a7-df7b-4f56-9297-b49a31e183d9",
+    "status": "retried",
+    "retry_payment_id": "ac4bedda-f370-4ac4-a61e-e1761a5a51b9",
+    "amount": 33
+  },
+  "eventGeneratedTime": 1756452627.595624
+}
+```
+
+### Payment Rejected
+
+Sent when a payment is rejected due to policy violations.
+
+```json
+{
+  "event": "payment.rejected",
+  "id": "12345678-9abc-def0-1234-56789abcdef0",
+  "data": {
+    "payment_id": "472a27f5-5e1a-42b6-b61c-8a8c6d35a877",
+    "status": "rejected",
+    "amount": 599,
+  },
+  "eventGeneratedTime": 1756375999.456789
+}
+```
+
+
+### Payment Expired
+
+Sent when a payment link can no longer be used because it has passed its expiry. No further payment attempts can be initiated against this link; users must request a new link (which will create a new payment).
+
+```json
+{
+  "event": "payment.expired",
+  "id": "60a71435-d079-4126-81a2-1977bb70a306",
+  "data": {
+    "payment_id": "a5299046-1f62-4f78-8239-6e724d99c38b",
+    "status": "expired",
+    "amount": 599
+  },
+  "eventGeneratedTime": 1756717250.451172
+}
+```
+---
+
+## Data Fields Reference
+
+### Common Fields
+
+<ResponseField name="payment_id" type="string">
+  Unique identifier for the payment transaction
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Current status of the payment
+</ResponseField>
+
+<ResponseField name="amount" type="integer">
+  Payment amount in the smallest currency unit (cents for USD)
+</ResponseField>
+
+### Event-Specific Fields
+
+<ResponseField name="failed_reason" type="string">
+  Detailed explanation when a payment fails (payment.failed events only)
+</ResponseField>
+
+<ResponseField name="retry_payment_id" type="string">
+  Unique identifier for retry transactions (payment.retried events only)
+</ResponseField>
+
+
+## Handling Webhooks
+
+### Best Practices
+
+1. **Acknowledge quickly**: Return a 200 HTTP status code as soon as possible
+2. **Process asynchronously**: Handle the actual business logic in background jobs
+3. **Implement idempotency**: Use the event `id` to prevent duplicate processing
+
+
+
+<Warning>
+Webhook endpoints must respond with a 2xx HTTP status code within 30 seconds. Failed deliveries will be retried with exponential backoff.
+</Warning>

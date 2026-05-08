@@ -1,0 +1,43 @@
+---
+title: "Quickstart"
+description: "Start building with the Paywint API — from user creation to payments."
+icon: "zap"
+---
+
+Integrate Paywint’s APIs to enable full payment capabilities — from user creation and verification to wallet funding, transfers, and payouts.  
+This guide provides an end-to-end example using the **Sandbox environment** to help you make your first successful API calls.
+
+<CardGroup cols={2}>
+  <Card title="Authentication" icon="key" href="/get-started/authentication">
+    Use your API key in the Authorization header to securely call Paywint endpoints.
+  </Card>
+  <Card title="Environments" icon="split" href="/get-started/environments">
+    Run these requests in the Sandbox environment before going live.
+  </Card>
+</CardGroup>
+
+---
+
+## Monitor Real-Time Events
+
+Paywint sends webhook notifications for important events such as:
+
+* `user.verified`
+* `wallet.funding.success`
+* `payment.processing`
+* `withdrawal.failed`
+
+To learn how to verify webhook signatures and handle retries, visit the [Webhooks Overview](/webhooks/overview).
+
+---
+
+## Test and Go Live
+
+<CardGroup cols={2}>
+  <Card title="Test in Sandbox" icon="flask-vial" href="/get-started/environments">
+    Validate your integration safely using sandbox credentials.
+  </Card>
+  <Card title="Go Live" icon="bullseye" href="/get-started/environments#production">
+    Switch to your live API key to process real transactions.
+  </Card>
+</CardGroup>

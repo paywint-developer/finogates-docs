@@ -1,0 +1,55 @@
+---
+title: "kyb.approved"
+description: "Sent when KYB verification is successfully approved."
+icon: "check-circle"
+---
+
+The `kyb.approved` event is sent when a business has **successfully passed KYB verification**.
+
+This indicates the associated business entity is verified and eligible to access KYB-restricted features.
+
+---
+
+## Example Payload
+
+```json
+{
+  "event": "kyb.approved",
+  "id": "e61a0dbd-22b3-4ff2-9da1-bd4097ed273c",
+  "data": {
+    "user_id": "e61a0dbd-22b3-4ff2-9da1-bd4097ed273c",
+    "kyb_status": "approved"
+  },
+  "eventGeneratedTime": 1756729948.128641
+}
+````
+
+---
+
+## Data Fields
+
+<ResponseField name="user_id" type="string">
+  Unique identifier of the business owner or associated user.
+</ResponseField>
+
+<ResponseField name="kyb_status" type="string">
+  Final KYB status. Always <code>approved</code> for this event.
+</ResponseField>
+
+---
+
+## Handling the Event
+
+Use this event to:
+
+* Enable business and merchant-level features
+* Allow payments, settlements, and withdrawals
+* Update business compliance state
+* Record KYB approval for auditing and reporting
+
+---
+
+## Related Events
+
+* [kyb.rejected](/webhooks/events/kyb/rejected)
+* [kyb.deleted](/webhooks/events/kyb/deleted)

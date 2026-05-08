@@ -1,0 +1,71 @@
+---
+title: "payment.failed"
+description: "Sent when a payment fails."
+icon: "x-circle"
+---
+
+The `payment.failed` event is sent when a payment attempt **fails** and the transaction reaches a **final, non-recoverable state**.
+
+After this event is emitted, the payment will not continue processing.
+
+---
+
+## Example Payload
+
+```json
+{
+  "event": "payment.failed",
+  "id": "77b568f8-cc38-4b5c-91aa-ac3c77020963",
+  "data": {
+    "payment_id": "ac4bedda-f370-4ac4-a61e-e1761a5a51b9",
+    "status": "failed",
+    "amount": 599,
+    "failed_reason": "Transaction could not be processed. Try again later."
+  },
+  "eventGeneratedTime": 1756452659.868249
+}
+````
+
+---
+
+## Data Fields
+
+<ResponseField name="payment_id" type="string">
+  Unique identifier for the payment transaction.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Final payment status. Always <code>failed</code> for this event.
+</ResponseField>
+
+<ResponseField name="amount" type="float">
+  Payment amount expressed in the major currency unit (for example, USD).
+</ResponseField>
+
+<ResponseField name="failed_reason" type="string">
+  Human-readable explanation describing why the payment failed.
+</ResponseField>
+
+
+## Handling the Event
+
+Use this event to:
+
+* Update the payment record to a failed state
+* Synchronize failure status across systems
+* Record failure details for auditing or analysis
+* Determine next steps based on your application logic
+
+---
+
+## Related Events
+
+
+* [payment.opened](/webhooks/events/payment/opened)
+* [payment.initiated](/webhooks/events/payment/initiated)
+* [payment.processing](/webhooks/events/payment/processing)
+* [payment.settling](/webhooks/events/payment/settling)
+* [payment.success](/webhooks/events/payment/success)
+* [payment.rejected](/webhooks/events/payment/rejected)
+* [payment.fee-refunded](/webhooks/events/payment/fee-refunded)
+* [payment.refunded](/webhooks/events/payment/refunded)

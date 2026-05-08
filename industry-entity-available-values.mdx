@@ -1,0 +1,685 @@
+---
+title: "Available Values for \"entityType\" and \"industryType\" in API Payload"
+icon: "book-open"
+---
+To ensure proper classification of businesses when submitting **KYB (Know Your Business)** information, our API accepts specific values for both `entityType` and `industryType`. These values must be passed in the payload using the respective `id` and `mcc` codes listed below.
+
+
+---
+
+## Entity Types
+
+Use the following `id` values to specify the type of entity during onboarding or when submitting business information:
+
+<Tabs>
+<Tab title="Table">
+
+| ID        | Title                          |
+|-----------|--------------------------------|
+| `ent1`    | Corporation                    |
+| `ent2`    | Sole Proprietor                |
+| `ent3`    | Single Member LLC              |
+| `ent4`    | Limited Liability Company      |
+| `ent5`    | General Partnership            |
+| `ent6`    | Unlisted Corporation           |
+| `ent7`    | Publicly Traded Corporation    |
+| `ent8`    | Association                    |
+| `ent9`    | Non Profit                     |
+| `ent10`   | Government Organization        |
+| `ent11`   | Revocable Trust                |
+| `ent12`   | Irrevocable Trust              |
+| `ent13`   | Estate                         |
+
+</Tab>
+<Tab title="JSON">
+
+```json Entity Types
+[
+  { "id": "ent1", "title": "Corporation" },
+  { "id": "ent2", "title": "Sole Proprietor" },
+  { "id": "ent3", "title": "Single Member LLC" },
+  { "id": "ent4", "title": "Limited Liability Company" },
+  { "id": "ent5", "title": "General Partnership" },
+  { "id": "ent6", "title": "Unlisted Corporation" },
+  { "id": "ent7", "title": "Publicly Traded Corporation" },
+  { "id": "ent8", "title": "Association" },
+  { "id": "ent9", "title": "Non Profit" },
+  { "id": "ent10", "title": "Government Organization" },
+  { "id": "ent11", "title": "Revocable Trust" },
+  { "id": "ent12", "title": "Irrevocable Trust" },
+  { "id": "ent13", "title": "Estate" }
+]
+```
+</Tab>
+</Tabs>
+
+
+> **Payload Example:**
+```json Payload
+{
+  "entity_type": "ent4"
+}
+```
+
+---
+
+## Industry Types
+
+Provide the `mcc` (Merchant Category Code) of the business's industry. Below is the list of supported industries and their associated MCCs:
+
+
+<Tabs>
+<Tab title="Table">
+| MCC  | Industry Title                                                                                                           |
+|------|--------------------------------------------------------------------------------------------------------------------------|
+| 7623 | A/C, Refrigeration Repair                                                                                                |
+| 8931 | Accounting/Bookkeeping Services                                                                                          |
+| 7311 | Advertising Services                                                                                                     |
+| 763  | Agricultural Cooperative                                                                                                 |
+| 4511 | Airlines, Air Carriers                                                                                                   |
+| 4582 | Airports, Flying Fields                                                                                                  |
+| 4119 | Ambulance Services                                                                                                       |
+| 7996 | Amusement Parks Carnivals                                                                                                |
+| 5937 | Antique Reproductions                                                                                                    |
+| 5932 | Antique Shops                                                                                                            |
+| 7998 | Aquariums                                                                                                                |
+| 8911 | Architectural Surveying Services                                                                                         |
+| 5971 | Art Dealers and Galleries                                                                                                |
+| 5970 | Artists Supply and Craft Shops                                                                                           |
+| 7531 | Auto Body Repair Shops                                                                                                   |
+| 7535 | Auto Paint Shops                                                                                                         |
+| 7538 | Auto Service Shops                                                                                                       |
+| 5531 | Auto and Home Supply Stores                                                                                              |
+| 6011 | Automated Cash Disburse                                                                                                  |
+| 5542 | Automated Fuel Dispensers                                                                                                |
+| 8675 | Automobile Associations                                                                                                  |
+| 5533 | Automotive Parts and Accessories Stores                                                                                  |
+| 5532 | Automotive Tire Stores                                                                                                   |
+| 9223 | Bail and Bond Payments                                                                                                   |
+| 5462 | Bakeries                                                                                                                 |
+| 7929 | Bands, Orchestras                                                                                                        |
+| 7230 | Barber and Beauty Shops                                                                                                  |
+| 7995 | Betting/Casino Gambling                                                                                                  |
+| 5940 | Bicycle Shops                                                                                                            |
+| 7932 | Billiard/Pool Establishments                                                                                             |
+| 5551 | Boat Dealers                                                                                                             |
+| 4457 | Boat Rentals and Leases                                                                                                  |
+| 5942 | Book Stores                                                                                                              |
+| 5192 | Books, Periodicals, and Newspapers                                                                                       |
+| 7933 | Bowling Alleys                                                                                                           |
+| 4131 | Bus Lines                                                                                                                |
+| 8244 | Business/Secretarial Schools                                                                                             |
+| 7278 | Buying/Shopping Services                                                                                                 |
+| 4899 | Cable, Satellite, and Other Pay Television and Radio                                                                     |
+| 5946 | Camera and Photographic Supply Stores                                                                                    |
+| 5441 | Candy, Nut, and Confectionery Stores                                                                                     |
+| 7512 | Car Rental Agencies                                                                                                      |
+| 7542 | Car Washes                                                                                                               |
+| 5511 | Car and Truck Dealers (New & Used) Sales, Service, Repairs Parts and Leasing                                             |
+| 5521 | Car and Truck Dealers (Used Only) Sales, Service, Repairs Parts and Leasing                                              |
+| 1750 | Carpentry Services                                                                                                       |
+| 7217 | Carpet/Upholstery Cleaning                                                                                               |
+| 5811 | Caterers                                                                                                                 |
+| 8398 | Charitable and Social Service Organizations - Fundraising                                                                |
+| 5169 | Chemicals and Allied Products (Not Elsewhere Classified)                                                                 |
+| 8351 | Child Care Services                                                                                                      |
+| 5641 | Childrens and Infants Wear Stores                                                                                        |
+| 8049 | Chiropodists, Podiatrists                                                                                                |
+| 8041 | Chiropractors                                                                                                            |
+| 5993 | Cigar Stores and Stands                                                                                                  |
+| 8641 | Civic, Social, Fraternal Associations                                                                                    |
+| 7349 | Cleaning and Maintenance                                                                                                 |
+| 7296 | Clothing Rental                                                                                                          |
+| 8220 | Colleges, Universities                                                                                                   |
+| 5046 | Commercial Equipment (Not Elsewhere Classified)                                                                          |
+| 5139 | Commercial Footwear                                                                                                      |
+| 7333 | Commercial Photography, Art and Graphics                                                                                 |
+| 4111 | Commuter Transport, Ferries                                                                                              |
+| 4816 | Computer Network Services                                                                                                |
+| 7372 | Computer Programming                                                                                                     |
+| 7379 | Computer Repair                                                                                                          |
+| 5734 | Computer Software Stores                                                                                                 |
+| 5045 | Computers, Peripherals, and Software                                                                                     |
+| 1771 | Concrete Work Services                                                                                                   |
+| 5039 | Construction Materials (Not Elsewhere Classified)                                                                        |
+| 7392 | Consulting, Public Relations                                                                                             |
+| 8241 | Correspondence Schools                                                                                                   |
+| 5977 | Cosmetic Stores                                                                                                          |
+| 7277 | Counseling Services                                                                                                      |
+| 7997 | Country Clubs                                                                                                            |
+| 4215 | Courier Services                                                                                                         |
+| 9211 | Court Costs, Including Alimony and Child Support - Courts of Law                                                         |
+| 7321 | Credit Reporting Agencies                                                                                                |
+| 4411 | Cruise Lines                                                                                                             |
+| 5451 | Dairy Products Stores                                                                                                    |
+| 7911 | Dance Hall, Studios, Schools                                                                                             |
+| 7273 | Dating/Escort Services                                                                                                   |
+| 8021 | Dentists, Orthodontists                                                                                                  |
+| 5311 | Department Stores                                                                                                        |
+| 7393 | Detective Agencies                                                                                                       |
+| 5815 | Digital Goods Media Books, Movies, Music                                                                                 |
+| 5817 | Digital Goods Applications (Excludes Games)                                                                              |
+| 5816 | Digital Goods Games                                                                                                      |
+| 5818 | Digital Goods Large Digital Goods Merchant                                                                               |
+| 5964 | Direct Marketing - Catalog Merchant                                                                                      |
+| 5965 | Direct Marketing - Combination Catalog and Retail Merchant                                                               |
+| 5967 | Direct Marketing - Inbound Telemarketing                                                                                 |
+| 5960 | Direct Marketing - Insurance Services                                                                                    |
+| 5969 | Direct Marketing - Other                                                                                                 |
+| 5966 | Direct Marketing - Outbound Telemarketing                                                                                |
+| 5968 | Direct Marketing - Subscription                                                                                          |
+| 5962 | Direct Marketing - Travel                                                                                                |
+| 5310 | Discount Stores                                                                                                          |
+| 8011 | Doctors                                                                                                                  |
+| 5963 | Door-To-Door Sales                                                                                                       |
+| 5714 | Drapery, Window Covering, and Upholstery Stores                                                                          |
+| 5813 | Drinking Places                                                                                                          |
+| 5912 | Drug Stores and Pharmacies                                                                                               |
+| 5122 | Drugs, Drug Proprietaries, and Druggist Sundries                                                                         |
+| 7216 | Dry Cleaners                                                                                                             |
+| 5099 | Durable Goods (Not Elsewhere Classified)                                                                                 |
+| 5309 | Duty Free Stores                                                                                                         |
+| 5812 | Eating Places, Restaurants                                                                                               |
+| 8299 | Educational Services                                                                                                     |
+| 5997 | Electric Razor Stores                                                                                                    |
+| 5552 | Electric Vehicle Charging                                                                                                |
+| 5065 | Electrical Parts and Equipment                                                                                           |
+| 1731 | Electrical Services                                                                                                      |
+| 7622 | Electronics Repair Shops                                                                                                 |
+| 5732 | Electronics Stores                                                                                                       |
+| 8211 | Elementary, Secondary Schools                                                                                            |
+| 9702 | Emergency Services (GCAS) (Visa use only)                                                                                |
+| 7361 | Employment/Temp Agencies                                                                                                 |
+| 7394 | Equipment Rental                                                                                                         |
+| 7342 | Exterminating Services                                                                                                   |
+| 5651 | Family Clothing Stores                                                                                                   |
+| 5814 | Fast Food Restaurants                                                                                                    |
+| 6012 | Financial Institutions                                                                                                   |
+| 9222 | Fines - Government Administrative Entities                                                                               |
+| 5718 | Fireplace, Fireplace Screens, and Accessories Stores                                                                     |
+| 5713 | Floor Covering Stores                                                                                                    |
+| 5992 | Florists                                                                                                                 |
+| 5193 | Florists Supplies, Nursery Stock, and Flowers                                                                            |
+| 5422 | Freezer and Locker Meat Provisioners                                                                                     |
+| 5983 | Fuel Dealers (Non Automotive)                                                                                            |
+| 7261 | Funeral Services, Crematories                                                                                            |
+| 7641 | Furniture Repair, Refinishing                                                                                            |
+| 5712 | Furniture, Home Furnishings, and Equipment Stores, Except Appliances                                                     |
+| 5681 | Furriers and Fur Shops                                                                                                   |
+| 1520 | General Services                                                                                                         |
+| 5947 | Gift, Card, Novelty, and Souvenir Shops                                                                                  |
+| 5231 | Glass, Paint, and Wallpaper Stores                                                                                       |
+| 5950 | Glassware, Crystal Stores                                                                                                |
+| 7992 | Golf Courses - Public                                                                                                    |
+| 7801 | Government Licensed On-line Casinos (On-Line Gambling)(US Region only)                                                   |
+| 9399 | Government Services (Not Elsewhere Classified)                                                                           |
+| 7802 | Government-Licensed Horse/Dog Racing (US Region only)                                                                    |
+| 9406 | Government-Owned Lotteries (Non-US region)                                                                               |
+| 7800 | Government-Owned Lotteries (US Region only)                                                                              |
+| 5411 | Grocery Stores, Supermarkets                                                                                             |
+| 5251 | Hardware Stores                                                                                                          |
+| 5072 | Hardware, Equipment, and Supplies                                                                                        |
+| 7298 | Health and Beauty Spas                                                                                                   |
+| 5975 | Hearing Aids Sales and Supplies                                                                                          |
+| 1711 | Heating, Plumbing, A/C                                                                                                   |
+| 5945 | Hobby, Toy, and Game Shops                                                                                               |
+| 5200 | Home Supply Warehouse Stores                                                                                             |
+| 8062 | Hospitals                                                                                                                |
+| 7011 | Hotels, Motels, and Resorts                                                                                              |
+| 5722 | Household Appliance Stores                                                                                               |
+| 5085 | Industrial Supplies (Not Elsewhere Classified)                                                                           |
+| 7375 | Information Retrieval Services                                                                                           |
+| 6399 | Insurance - Default                                                                                                      |
+| 6300 | Insurance Underwriting, Premiums                                                                                         |
+| 9950 | Intra-Company Purchases                                                                                                  |
+| 5944 | Jewelry Stores, Watches, Clocks, and Silverware Stores                                                                   |
+| 780  | Landscaping Services                                                                                                     |
+| 7211 | Laundries                                                                                                                |
+| 7210 | Laundry, Cleaning Services                                                                                               |
+| 8111 | Legal Services, Attorneys                                                                                                |
+| 5948 | Luggage and Leather Goods Stores                                                                                         |
+| 5211 | Lumber, Building Materials Stores                                                                                        |
+| 6010 | Manual Cash Disburse                                                                                                     |
+| 4468 | Marinas, Service and Supplies                                                                                            |
+| 5262 | Marketplaces                                                                                                             |
+| 1740 | Masonry, Stonework, and Plaster                                                                                          |
+| 7297 | Massage Parlors                                                                                                          |
+| 8099 | Medical Services                                                                                                         |
+| 8071 | Medical and Dental Labs                                                                                                  |
+| 5047 | Medical, Dental, Ophthalmic, and Hospital Equipment and Supplies                                                         |
+| 8699 | Membership Organizations                                                                                                 |
+| 5611 | Mens and Boys Clothing and Accessories Stores                                                                            |
+| 5691 | Mens, Women's Clothing Stores                                                                                            |
+| 5051 | Metal Service Centers                                                                                                    |
+| 5699 | Miscellaneous Apparel and Accessory Shops                                                                                |
+| 5599 | Miscellaneous Auto Dealers                                                                                               |
+| 7399 | Miscellaneous Business Services                                                                                          |
+| 5499 | Miscellaneous Food Stores - Convenience Stores and Specialty Markets                                                     |
+| 5399 | Miscellaneous General Merchandise                                                                                        |
+| 7299 | Miscellaneous General Services                                                                                           |
+| 5719 | Miscellaneous Home Furnishing Specialty Stores                                                                           |
+| 2741 | Miscellaneous Publishing and Printing                                                                                    |
+| 7999 | Miscellaneous Recreation Services                                                                                        |
+| 7699 | Miscellaneous Repair Shops                                                                                               |
+| 5999 | Miscellaneous Specialty Retail                                                                                           |
+| 5271 | Mobile Home Dealers                                                                                                      |
+| 7832 | Motion Picture Theaters                                                                                                  |
+| 4214 | Motor Freight Carriers and Trucking - Local and Long Distance, Moving and Storage Companies, and Local Delivery Services |
+| 5592 | Motor Homes Dealers                                                                                                      |
+| 5013 | Motor Vehicle Supplies and New Parts                                                                                     |
+| 5571 | Motorcycle Shops and Dealers                                                                                             |
+| 5561 | Motorcycle Shops, Dealers                                                                                                |
+| 5733 | Music Stores-Musical Instruments, Pianos, and Sheet Music                                                                |
+| 5994 | News Dealers and Newsstands                                                                                              |
+| 6051 | Non-FI, Money Orders                                                                                                     |
+| 6540 | Non-FI, Stored Value Card Purchase/Load                                                                                  |
+| 5199 | Nondurable Goods (Not Elsewhere Classified)                                                                              |
+| 5261 | Nurseries, Lawn and Garden Supply Stores                                                                                 |
+| 8050 | Nursing/Personal Care                                                                                                    |
+| 5021 | Office and Commercial Furniture                                                                                          |
+| 8043 | Opticians, Eyeglasses                                                                                                    |
+| 8042 | Optometrists, Ophthalmologist                                                                                            |
+| 5976 | Orthopedic Goods - Prosthetic Devices                                                                                    |
+| 8031 | Osteopaths                                                                                                               |
+| 5921 | Package Stores-Beer, Wine, and Liquor                                                                                    |
+| 5198 | Paints, Varnishes, and Supplies                                                                                          |
+| 7523 | Parking Lots, Garages                                                                                                    |
+| 4112 | Passenger Railways                                                                                                       |
+| 5933 | Pawn Shops                                                                                                               |
+| 5995 | Pet Shops, Pet Food, and Supplies                                                                                        |
+| 5172 | Petroleum and Petroleum Products                                                                                         |
+| 7395 | Photo Developing                                                                                                         |
+| 7221 | Photographic Studios                                                                                                     |
+| 5044 | Photographic, Photocopy, Microfilm Equipment, and Supplies                                                               |
+| 7829 | Picture/Video Production                                                                                                 |
+| 5131 | Piece Goods, Notions, and Other Dry Goods                                                                                |
+| 5074 | Plumbing, Heating Equipment, and Supplies                                                                                |
+| 8651 | Political Organizations                                                                                                  |
+| 9402 | Postal Services - Government Only                                                                                        |
+| 5094 | Precious Stones and Metals, Watches and Jewelry                                                                          |
+| 8999 | Professional Services                                                                                                    |
+| 4225 | Public Warehousing and Storage - Farm Products, Refrigerated Goods, Household Goods, and Storage                         |
+| 7338 | Quick Copy, Repro, and Blueprint                                                                                         |
+| 4011 | Railroads                                                                                                                |
+| 6513 | Real Estate Agents and Managers - Rentals                                                                                |
+| 5735 | Record Stores                                                                                                            |
+| 7519 | Recreational Vehicle Rentals                                                                                             |
+| 5973 | Religious Goods Stores                                                                                                   |
+| 8661 | Religious Organizations                                                                                                  |
+| 1761 | Roofing/Siding, Sheet Metal                                                                                              |
+| 7339 | Secretarial Support Services                                                                                             |
+| 6211 | Security Brokers/Dealers                                                                                                 |
+| 5541 | Service Stations                                                                                                         |
+| 5949 | Sewing, Needlework, Fabric, and Piece Goods Stores                                                                       |
+| 7251 | Shoe Repair/Hat Cleaning                                                                                                 |
+| 5661 | Shoe Stores                                                                                                              |
+| 7629 | Small Appliance Repair                                                                                                   |
+| 5598 | Snowmobile Dealers                                                                                                       |
+| 1799 | Special Trade Services                                                                                                   |
+| 2842 | Specialty Cleaning                                                                                                       |
+| 5941 | Sporting Goods Stores                                                                                                    |
+| 7032 | Sporting/Recreation Camps                                                                                                |
+| 7941 | Sports Clubs/Fields                                                                                                      |
+| 5655 | Sports and Riding Apparel Stores                                                                                         |
+| 5972 | Stamp and Coin Stores                                                                                                    |
+| 5111 | Stationary, Office Supplies, Printing and Writing Paper                                                                  |
+| 5943 | Stationery Stores, Office, and School Supply Stores                                                                      |
+| 5996 | Swimming Pools Sales                                                                                                     |
+| 4723 | TUI Travel - Germany                                                                                                     |
+| 5697 | Tailors, Alterations                                                                                                     |
+| 9311 | Tax Payments - Government Agencies                                                                                       |
+| 7276 | Tax Preparation Services                                                                                                 |
+| 4121 | Taxicabs/Limousines                                                                                                      |
+| 4812 | Telecommunication Equipment and Telephone Sales                                                                          |
+| 4814 | Telecommunication Services                                                                                               |
+| 4821 | Telegraph Services                                                                                                       |
+| 5998 | Tent and Awning Shops                                                                                                    |
+| 8734 | Testing Laboratories                                                                                                     |
+| 7922 | Theatrical Ticket Agencies                                                                                               |
+| 7012 | Timeshares                                                                                                               |
+| 7534 | Tire Retreading and Repair                                                                                               |
+| 4784 | Tolls/Bridge Fees                                                                                                        |
+| 7991 | Tourist Attractions and Exhibits                                                                                         |
+| 7549 | Towing Services                                                                                                          |
+| 7033 | Trailer Parks, Campgrounds                                                                                               |
+| 4789 | Transportation Services (Not Elsewhere Classified)                                                                       |
+| 4722 | Travel Agencies, Tour Operators                                                                                          |
+| 7513 | Truck/Utility Trailer Rentals                                                                                            |
+| 2791 | Typesetting, Plate Making, and Related Services                                                                          |
+| 5978 | Typewriter Stores                                                                                                        |
+| 9405 | U.S. Federal Government Agencies or Departments                                                                          |
+| 5137 | Uniforms, Commercial Clothing                                                                                            |
+| 5931 | Used Merchandise and Secondhand Stores                                                                                   |
+| 4900 | Utilities                                                                                                                |
+| 5331 | Variety Stores                                                                                                           |
+| 742  | Veterinary Services                                                                                                      |
+| 7993 | Video Amusement Game Supplies                                                                                            |
+| 7994 | Video Game Arcades                                                                                                       |
+| 7841 | Video Tape Rental Stores                                                                                                 |
+| 8249 | Vocational/Trade Schools                                                                                                 |
+| 7631 | Watch/Jewelry Repair                                                                                                     |
+| 7692 | Welding Repair                                                                                                           |
+| 5300 | Wholesale Clubs                                                                                                          |
+| 5698 | Wig and Toupee Stores                                                                                                    |
+| 4829 | Wires, Money Orders                                                                                                      |
+| 5631 | women's Accessory and Specialty Shops                                                                                    |
+| 5621 | women's Ready-To-Wear Stores                                                                                             |
+| 5935 | Wrecking and Salvage Yards                                                                                               |
+
+
+</Tab>
+<Tab title="JSON">
+
+```json Industry Types
+[
+    {"industry_type": "A/C, Refrigeration Repair", "mcc": 7623},
+    {"industry_type": "Accounting/Bookkeeping Services", "mcc": 8931},
+    {"industry_type": "Advertising Services", "mcc": 7311},
+    {"industry_type": "Agricultural Cooperative", "mcc": 763},
+    {"industry_type": "Airlines, Air Carriers", "mcc": 4511},
+    {"industry_type": "Airports, Flying Fields", "mcc": 4582},
+    {"industry_type": "Ambulance Services", "mcc": 4119},
+    {"industry_type": "Amusement Parks Carnivals", "mcc": 7996},
+    {"industry_type": "Antique Reproductions", "mcc": 5937},
+    {"industry_type": "Antique Shops", "mcc": 5932},
+    {"industry_type": "Aquariums", "mcc": 7998},
+    {"industry_type": "Architectural Surveying Services", "mcc": 8911},
+    {"industry_type": "Art Dealers and Galleries", "mcc": 5971},
+    {"industry_type": "Artists Supply and Craft Shops", "mcc": 5970},
+    {"industry_type": "Auto Body Repair Shops", "mcc": 7531},
+    {"industry_type": "Auto Paint Shops", "mcc": 7535},
+    {"industry_type": "Auto Service Shops", "mcc": 7538},
+    {"industry_type": "Auto and Home Supply Stores", "mcc": 5531},
+    {"industry_type": "Automated Cash Disburse", "mcc": 6011},
+    {"industry_type": "Automated Fuel Dispensers", "mcc": 5542},
+    {"industry_type": "Automobile Associations", "mcc": 8675},
+    {"industry_type": "Automotive Parts and Accessories Stores", "mcc": 5533},
+    {"industry_type": "Automotive Tire Stores", "mcc": 5532},
+    {"industry_type": "Bail and Bond Payments ", "mcc": 9223},
+    {"industry_type": "Bakeries", "mcc": 5462},
+    {"industry_type": "Bands, Orchestras", "mcc": 7929},
+    {"industry_type": "Barber and Beauty Shops", "mcc": 7230},
+    {"industry_type": "Betting/Casino Gambling", "mcc": 7995},
+    {"industry_type": "Bicycle Shops", "mcc": 5940},
+    {"industry_type": "Billiard/Pool Establishments", "mcc": 7932},
+    {"industry_type": "Boat Dealers", "mcc": 5551},
+    {"industry_type": "Boat Rentals and Leases", "mcc": 4457},
+    {"industry_type": "Book Stores", "mcc": 5942},
+    {"industry_type": "Books, Periodicals, and Newspapers", "mcc": 5192},
+    {"industry_type": "Bowling Alleys", "mcc": 7933},
+    {"industry_type": "Bus Lines", "mcc": 4131},
+    {"industry_type": "Business/Secretarial Schools", "mcc": 8244},
+    {"industry_type": "Buying/Shopping Services", "mcc": 7278},
+    {"industry_type": "Cable, Satellite, and Other Pay Television and Radio", "mcc": 4899},
+    {"industry_type": "Camera and Photographic Supply Stores", "mcc": 5946},
+    {"industry_type": "Candy, Nut, and Confectionery Stores", "mcc": 5441},
+    {"industry_type": "Car Rental Agencies", "mcc": 7512},
+    {"industry_type": "Car Washes", "mcc": 7542},
+    {"industry_type": "Car and Truck Dealers (New & Used) Sales, Service, Repairs Parts and Leasing", "mcc": 5511},
+    {"industry_type": "Car and Truck Dealers (Used Only) Sales, Service, Repairs Parts and Leasing", "mcc": 5521},
+    {"industry_type": "Carpentry Services", "mcc": 1750},
+    {"industry_type": "Carpet/Upholstery Cleaning", "mcc": 7217},
+    {"industry_type": "Caterers", "mcc": 5811},
+    {"industry_type": "Charitable and Social Service Organizations - Fundraising", "mcc": 8398},
+    {"industry_type": "Chemicals and Allied Products (Not Elsewhere Classified)", "mcc": 5169},
+    {"industry_type": "Child Care Services", "mcc": 8351},
+    {"industry_type": "Childrens and Infants Wear Stores", "mcc": 5641},
+    {"industry_type": "Chiropodists, Podiatrists", "mcc": 8049},
+    {"industry_type": "Chiropractors", "mcc": 8041},
+    {"industry_type": "Cigar Stores and Stands", "mcc": 5993},
+    {"industry_type": "Civic, Social, Fraternal Associations", "mcc": 8641},
+    {"industry_type": "Cleaning and Maintenance", "mcc": 7349},
+    {"industry_type": "Clothing Rental", "mcc": 7296},
+    {"industry_type": "Colleges, Universities", "mcc": 8220},
+    {"industry_type": "Commercial Equipment (Not Elsewhere Classified)", "mcc": 5046},
+    {"industry_type": "Commercial Footwear", "mcc": 5139},
+    {"industry_type": "Commercial Photography, Art and Graphics", "mcc": 7333},
+    {"industry_type": "Commuter Transport, Ferries", "mcc": 4111},
+    {"industry_type": "Computer Network Services", "mcc": 4816},
+    {"industry_type": "Computer Programming", "mcc": 7372},
+    {"industry_type": "Computer Repair", "mcc": 7379},
+    {"industry_type": "Computer Software Stores", "mcc": 5734},
+    {"industry_type": "Computers, Peripherals, and Software", "mcc": 5045},
+    {"industry_type": "Concrete Work Services", "mcc": 1771},
+    {"industry_type": "Construction Materials (Not Elsewhere Classified)", "mcc": 5039},
+    {"industry_type": "Consulting, Public Relations", "mcc": 7392},
+    {"industry_type": "Correspondence Schools", "mcc": 8241},
+    {"industry_type": "Cosmetic Stores", "mcc": 5977},
+    {"industry_type": "Counseling Services", "mcc": 7277},
+    {"industry_type": "Country Clubs", "mcc": 7997},
+    {"industry_type": "Courier Services", "mcc": 4215},
+    {"industry_type": "Court Costs, Including Alimony and Child Support - Courts of Law", "mcc": 9211},
+    {"industry_type": "Credit Reporting Agencies", "mcc": 7321},
+    {"industry_type": "Cruise Lines", "mcc": 4411},
+    {"industry_type": "Dairy Products Stores", "mcc": 5451},
+    {"industry_type": "Dance Hall, Studios, Schools", "mcc": 7911},
+    {"industry_type": "Dating/Escort Services", "mcc": 7273},
+    {"industry_type": "Dentists, Orthodontists", "mcc": 8021},
+    {"industry_type": "Department Stores", "mcc": 5311},
+    {"industry_type": "Detective Agencies", "mcc": 7393},
+    {"industry_type": "Digital Goods Media Books, Movies, Music", "mcc": 5815},
+    {"industry_type": "Digital Goods Applications (Excludes Games)", "mcc": 5817},
+    {"industry_type": "Digital Goods Games", "mcc": 5816},
+    {"industry_type": "Digital Goods Large Digital Goods Merchant", "mcc": 5818},
+    {"industry_type": "Direct Marketing - Catalog Merchant", "mcc": 5964},
+    {"industry_type": "Direct Marketing - Combination Catalog and Retail Merchant", "mcc": 5965},
+    {"industry_type": "Direct Marketing - Inbound Telemarketing", "mcc": 5967},
+    {"industry_type": "Direct Marketing - Insurance Services", "mcc": 5960},
+    {"industry_type": "Direct Marketing - Other", "mcc": 5969},
+    {"industry_type": "Direct Marketing - Outbound Telemarketing", "mcc": 5966},
+    {"industry_type": "Direct Marketing - Subscription", "mcc": 5968},
+    {"industry_type": "Direct Marketing - Travel", "mcc": 5962},
+    {"industry_type": "Discount Stores", "mcc": 5310},
+    {"industry_type": "Doctors", "mcc": 8011},
+    {"industry_type": "Door-To-Door Sales", "mcc": 5963},
+    {"industry_type": "Drapery, Window Covering, and Upholstery Stores", "mcc": 5714},
+    {"industry_type": "Drinking Places", "mcc": 5813},
+    {"industry_type": "Drug Stores and Pharmacies", "mcc": 5912},
+    {"industry_type": "Drugs, Drug Proprietaries, and Druggist Sundries", "mcc": 5122},
+    {"industry_type": "Dry Cleaners", "mcc": 7216},
+    {"industry_type": "Durable Goods (Not Elsewhere Classified)", "mcc": 5099},
+    {"industry_type": "Duty Free Stores", "mcc": 5309},
+    {"industry_type": "Eating Places, Restaurants", "mcc": 5812},
+    {"industry_type": "Educational Services", "mcc": 8299},
+    {"industry_type": "Electric Razor Stores", "mcc": 5997},
+    {"industry_type": "Electric Vehicle Charging", "mcc": 5552},
+    {"industry_type": "Electrical Parts and Equipment", "mcc": 5065},
+    {"industry_type": "Electrical Services", "mcc": 1731},
+    {"industry_type": "Electronics Repair Shops", "mcc": 7622},
+    {"industry_type": "Electronics Stores", "mcc": 5732},
+    {"industry_type": "Elementary, Secondary Schools", "mcc": 8211},
+    {"industry_type": "Emergency Services (GCAS) (Visa use only)", "mcc": 9702},
+    {"industry_type": "Employment/Temp Agencies", "mcc": 7361},
+    {"industry_type": "Equipment Rental", "mcc": 7394},
+    {"industry_type": "Exterminating Services", "mcc": 7342},
+    {"industry_type": "Family Clothing Stores", "mcc": 5651},
+    {"industry_type": "Fast Food Restaurants", "mcc": 5814},
+    {"industry_type": "Financial Institutions", "mcc": 6012},
+    {"industry_type": "Fines - Government Administrative Entities", "mcc": 9222},
+    {"industry_type": "Fireplace, Fireplace Screens, and Accessories Stores", "mcc": 5718},
+    {"industry_type": "Floor Covering Stores", "mcc": 5713},
+    {"industry_type": "Florists", "mcc": 5992},
+    {"industry_type": "Florists Supplies, Nursery Stock, and Flowers", "mcc": 5193},
+    {"industry_type": "Freezer and Locker Meat Provisioners", "mcc": 5422},
+    {"industry_type": "Fuel Dealers (Non Automotive)", "mcc": 5983},
+    {"industry_type": "Funeral Services, Crematories", "mcc": 7261},
+    {"industry_type": "Furniture Repair, Refinishing", "mcc": 7641},
+    {"industry_type": "Furniture, Home Furnishings, and Equipment Stores, Except Appliances", "mcc": 5712},
+    {"industry_type": "Furriers and Fur Shops", "mcc": 5681},
+    {"industry_type": "General Services", "mcc": 1520},
+    {"industry_type": "Gift, Card, Novelty, and Souvenir Shops", "mcc": 5947},
+    {"industry_type": "Glass, Paint, and Wallpaper Stores", "mcc": 5231},
+    {"industry_type": "Glassware, Crystal Stores", "mcc": 5950},
+    {"industry_type": "Golf Courses - Public", "mcc": 7992},
+    {"industry_type": "Government Licensed On-line Casinos (On-Line Gambling)(US Region only)", "mcc": 7801},
+    {"industry_type": "Government Services (Not Elsewhere Classified)", "mcc": 9399},
+    {"industry_type": "Government-Licensed Horse/Dog Racing (US Region only)", "mcc": 7802},
+    {"industry_type": "Government-Owned Lotteries (Non-US region)", "mcc": 9406},
+    {"industry_type": "Government-Owned Lotteries (US Region only)", "mcc": 7800},
+    {"industry_type": "Grocery Stores, Supermarkets", "mcc": 5411},
+    {"industry_type": "Hardware Stores", "mcc": 5251},
+    {"industry_type": "Hardware, Equipment, and Supplies", "mcc": 5072},
+    {"industry_type": "Health and Beauty Spas", "mcc": 7298},
+    {"industry_type": "Hearing Aids Sales and Supplies", "mcc": 5975},
+    {"industry_type": "Heating, Plumbing, A/C", "mcc": 1711},
+    {"industry_type": "Hobby, Toy, and Game Shops", "mcc": 5945},
+    {"industry_type": "Home Supply Warehouse Stores", "mcc": 5200},
+    {"industry_type": "Hospitals", "mcc": 8062},
+    {"industry_type": "Hotels, Motels, and Resorts", "mcc": 7011},
+    {"industry_type": "Household Appliance Stores", "mcc": 5722},
+    {"industry_type": "Industrial Supplies (Not Elsewhere Classified)", "mcc": 5085},
+    {"industry_type": "Information Retrieval Services", "mcc": 7375},
+    {"industry_type": "Insurance - Default", "mcc": 6399},
+    {"industry_type": "Insurance Underwriting, Premiums", "mcc": 6300},
+    {"industry_type": "Intra-Company Purchases", "mcc": 9950},
+    {"industry_type": "Jewelry Stores, Watches, Clocks, and Silverware Stores", "mcc": 5944},
+    {"industry_type": "Landscaping Services", "mcc": 780},
+    {"industry_type": "Laundries", "mcc": 7211},
+    {"industry_type": "Laundry, Cleaning Services", "mcc": 7210},
+    {"industry_type": "Legal Services, Attorneys", "mcc": 8111},
+    {"industry_type": "Luggage and Leather Goods Stores", "mcc": 5948},
+    {"industry_type": "Lumber, Building Materials Stores", "mcc": 5211},
+    {"industry_type": "Manual Cash Disburse", "mcc": 6010},
+    {"industry_type": "Marinas, Service and Supplies", "mcc": 4468},
+    {"industry_type": "Marketplaces", "mcc": 5262},
+    {"industry_type": "Masonry, Stonework, and Plaster", "mcc": 1740},
+    {"industry_type": "Massage Parlors", "mcc": 7297},
+    {"industry_type": "Medical Services", "mcc": 8099},
+    {"industry_type": "Medical and Dental Labs", "mcc": 8071},
+    {"industry_type": "Medical, Dental, Ophthalmic, and Hospital Equipment and Supplies", "mcc": 5047},
+    {"industry_type": "Membership Organizations", "mcc": 8699},
+    {"industry_type": "Mens and Boys Clothing and Accessories Stores", "mcc": 5611},
+    {"industry_type": "Mens, Women's Clothing Stores", "mcc": 5691},
+    {"industry_type": "Metal Service Centers", "mcc": 5051},
+    {"industry_type": "Miscellaneous Apparel and Accessory Shops", "mcc": 5699},
+    {"industry_type": "Miscellaneous Auto Dealers", "mcc": 5599},
+    {"industry_type": "Miscellaneous Business Services", "mcc": 7399},
+    {"industry_type": "Miscellaneous Food Stores - Convenience Stores and Specialty Markets", "mcc": 5499},
+    {"industry_type": "Miscellaneous General Merchandise", "mcc": 5399},
+    {"industry_type": "Miscellaneous General Services", "mcc": 7299},
+    {"industry_type": "Miscellaneous Home Furnishing Specialty Stores", "mcc": 5719},
+    {"industry_type": "Miscellaneous Publishing and Printing", "mcc": 2741},
+    {"industry_type": "Miscellaneous Recreation Services", "mcc": 7999},
+    {"industry_type": "Miscellaneous Repair Shops", "mcc": 7699},
+    {"industry_type": "Miscellaneous Specialty Retail", "mcc": 5999},
+    {"industry_type": "Mobile Home Dealers", "mcc": 5271},
+    {"industry_type": "Motion Picture Theaters", "mcc": 7832},
+    {
+        "industry_type": "Motor Freight Carriers and Trucking - Local and Long Distance, Moving and Storage Companies, and Local Delivery Services",
+        "mcc": 4214,
+    },
+    {"industry_type": "Motor Homes Dealers", "mcc": 5592},
+    {"industry_type": "Motor Vehicle Supplies and New Parts", "mcc": 5013},
+    {"industry_type": "Motorcycle Shops and Dealers", "mcc": 5571},
+    {"industry_type": "Motorcycle Shops, Dealers", "mcc": 5561},
+    {"industry_type": "Music Stores-Musical Instruments, Pianos, and Sheet Music", "mcc": 5733},
+    {"industry_type": "News Dealers and Newsstands", "mcc": 5994},
+    {"industry_type": "Non-FI, Money Orders", "mcc": 6051},
+    {"industry_type": "Non-FI, Stored Value Card Purchase/Load", "mcc": 6540},
+    {"industry_type": "Nondurable Goods (Not Elsewhere Classified)", "mcc": 5199},
+    {"industry_type": "Nurseries, Lawn and Garden Supply Stores", "mcc": 5261},
+    {"industry_type": "Nursing/Personal Care", "mcc": 8050},
+    {"industry_type": "Office and Commercial Furniture", "mcc": 5021},
+    {"industry_type": "Opticians, Eyeglasses", "mcc": 8043},
+    {"industry_type": "Optometrists, Ophthalmologist", "mcc": 8042},
+    {"industry_type": "Orthopedic Goods - Prosthetic Devices", "mcc": 5976},
+    {"industry_type": "Osteopaths", "mcc": 8031},
+    {"industry_type": "Package Stores-Beer, Wine, and Liquor", "mcc": 5921},
+    {"industry_type": "Paints, Varnishes, and Supplies", "mcc": 5198},
+    {"industry_type": "Parking Lots, Garages", "mcc": 7523},
+    {"industry_type": "Passenger Railways", "mcc": 4112},
+    {"industry_type": "Pawn Shops", "mcc": 5933},
+    {"industry_type": "Pet Shops, Pet Food, and Supplies", "mcc": 5995},
+    {"industry_type": "Petroleum and Petroleum Products", "mcc": 5172},
+    {"industry_type": "Photo Developing", "mcc": 7395},
+    {"industry_type": "Photographic Studios", "mcc": 7221},
+    {"industry_type": "Photographic, Photocopy, Microfilm Equipment, and Supplies", "mcc": 5044},
+    {"industry_type": "Picture/Video Production", "mcc": 7829},
+    {"industry_type": "Piece Goods, Notions, and Other Dry Goods", "mcc": 5131},
+    {"industry_type": "Plumbing, Heating Equipment, and Supplies", "mcc": 5074},
+    {"industry_type": "Political Organizations", "mcc": 8651},
+    {"industry_type": "Postal Services - Government Only", "mcc": 9402},
+    {"industry_type": "Precious Stones and Metals, Watches and Jewelry", "mcc": 5094},
+    {"industry_type": "Professional Services", "mcc": 8999},
+    {
+        "industry_type": "Public Warehousing and Storage - Farm Products, Refrigerated Goods, Household Goods, and Storage",
+        "mcc": 4225,
+    },
+    {"industry_type": "Quick Copy, Repro, and Blueprint", "mcc": 7338},
+    {"industry_type": "Railroads", "mcc": 4011},
+    {"industry_type": "Real Estate Agents and Managers - Rentals", "mcc": 6513},
+    {"industry_type": "Record Stores", "mcc": 5735},
+    {"industry_type": "Recreational Vehicle Rentals", "mcc": 7519},
+    {"industry_type": "Religious Goods Stores", "mcc": 5973},
+    {"industry_type": "Religious Organizations", "mcc": 8661},
+    {"industry_type": "Roofing/Siding, Sheet Metal", "mcc": 1761},
+    {"industry_type": "Secretarial Support Services", "mcc": 7339},
+    {"industry_type": "Security Brokers/Dealers", "mcc": 6211},
+    {"industry_type": "Service Stations", "mcc": 5541},
+    {"industry_type": "Sewing, Needlework, Fabric, and Piece Goods Stores", "mcc": 5949},
+    {"industry_type": "Shoe Repair/Hat Cleaning", "mcc": 7251},
+    {"industry_type": "Shoe Stores", "mcc": 5661},
+    {"industry_type": "Small Appliance Repair", "mcc": 7629},
+    {"industry_type": "Snowmobile Dealers", "mcc": 5598},
+    {"industry_type": "Special Trade Services", "mcc": 1799},
+    {"industry_type": "Specialty Cleaning", "mcc": 2842},
+    {"industry_type": "Sporting Goods Stores", "mcc": 5941},
+    {"industry_type": "Sporting/Recreation Camps", "mcc": 7032},
+    {"industry_type": "Sports Clubs/Fields", "mcc": 7941},
+    {"industry_type": "Sports and Riding Apparel Stores", "mcc": 5655},
+    {"industry_type": "Stamp and Coin Stores", "mcc": 5972},
+    {"industry_type": "Stationary, Office Supplies, Printing and Writing Paper", "mcc": 5111},
+    {"industry_type": "Stationery Stores, Office, and School Supply Stores", "mcc": 5943},
+    {"industry_type": "Swimming Pools Sales", "mcc": 5996},
+    {"industry_type": "TUI Travel - Germany", "mcc": 4723},
+    {"industry_type": "Tailors, Alterations", "mcc": 5697},
+    {"industry_type": "Tax Payments - Government Agencies", "mcc": 9311},
+    {"industry_type": "Tax Preparation Services", "mcc": 7276},
+    {"industry_type": "Taxicabs/Limousines", "mcc": 4121},
+    {"industry_type": "Telecommunication Equipment and Telephone Sales", "mcc": 4812},
+    {"industry_type": "Telecommunication Services", "mcc": 4814},
+    {"industry_type": "Telegraph Services", "mcc": 4821},
+    {"industry_type": "Tent and Awning Shops", "mcc": 5998},
+    {"industry_type": "Testing Laboratories", "mcc": 8734},
+    {"industry_type": "Theatrical Ticket Agencies", "mcc": 7922},
+    {"industry_type": "Timeshares", "mcc": 7012},
+    {"industry_type": "Tire Retreading and Repair", "mcc": 7534},
+    {"industry_type": "Tolls/Bridge Fees", "mcc": 4784},
+    {"industry_type": "Tourist Attractions and Exhibits", "mcc": 7991},
+    {"industry_type": "Towing Services", "mcc": 7549},
+    {"industry_type": "Trailer Parks, Campgrounds", "mcc": 7033},
+    {"industry_type": "Transportation Services (Not Elsewhere Classified)", "mcc": 4789},
+    {"industry_type": "Travel Agencies, Tour Operators", "mcc": 4722},
+    {"industry_type": "Truck/Utility Trailer Rentals", "mcc": 7513},
+    {"industry_type": "Typesetting, Plate Making, and Related Services", "mcc": 2791},
+    {"industry_type": "Typewriter Stores", "mcc": 5978},
+    {"industry_type": "U.S. Federal Government Agencies or Departments", "mcc": 9405},
+    {"industry_type": "Uniforms, Commercial Clothing", "mcc": 5137},
+    {"industry_type": "Used Merchandise and Secondhand Stores", "mcc": 5931},
+    {"industry_type": "Utilities", "mcc": 4900},
+    {"industry_type": "Variety Stores", "mcc": 5331},
+    {"industry_type": "Veterinary Services", "mcc": 742},
+    {"industry_type": "Video Amusement Game Supplies", "mcc": 7993},
+    {"industry_type": "Video Game Arcades", "mcc": 7994},
+    {"industry_type": "Video Tape Rental Stores", "mcc": 7841},
+    {"industry_type": "Vocational/Trade Schools", "mcc": 8249},
+    {"industry_type": "Watch/Jewelry Repair", "mcc": 7631},
+    {"industry_type": "Welding Repair", "mcc": 7692},
+    {"industry_type": "Wholesale Clubs", "mcc": 5300},
+    {"industry_type": "Wig and Toupee Stores", "mcc": 5698},
+    {"industry_type": "Wires, Money Orders", "mcc": 4829},
+    {"industry_type": "women's Accessory and Specialty Shops", "mcc": 5631},
+    {"industry_type": "women's Ready-To-Wear Stores", "mcc": 5621},
+    {"industry_type": "Wrecking and Salvage Yards", "mcc": 5935},
+]
+```
+</Tab>
+
+</Tabs>
+
+> **Payload Example:**
+```json Payload
+{
+  "mcc": "6012"
+}
+```

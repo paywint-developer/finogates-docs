@@ -1,0 +1,63 @@
+---
+title: "payment.processing"
+description: "Sent when a payment is being processed."
+icon: "loader"
+---
+
+The `payment.processing` event is sent when a payment is **actively being processed** and has **not yet completed**.
+
+This event indicates that the payment has moved beyond initiation and is awaiting completion or failure.
+
+---
+
+## Example Payload
+
+```json
+{
+  "event": "payment.processing",
+  "id": "99036bd3-a8b2-403c-867c-3d03dafbe4b7",
+  "data": {
+    "payment_id": "b91a0f36-b10b-4a31-ae12-e8b4c5ee71f4",
+    "status": "processing",
+    "amount": 599
+  },
+  "eventGeneratedTime": 1756451608.069325
+}
+````
+
+---
+
+## Data Fields
+
+<ResponseField name="payment_id" type="string">
+  Unique identifier for the payment transaction.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Current payment status. Always <code>processing</code> for this event.
+</ResponseField>
+
+<ResponseField name="amount" type="float">
+  Payment amount expressed in the major currency unit (for example, USD).
+</ResponseField>
+
+
+## Handling the Event
+
+Use this event to:
+
+* Update the payment record to a processing state
+* Prevent duplicate or conflicting payment actions
+* Reflect an in-progress state within your system
+
+
+## Related Events
+
+* [payment.opened](/webhooks/events/payment/opened)
+* [payment.initiated](/webhooks/events/payment/initiated)
+* [payment.settling](/webhooks/events/payment/settling)
+* [payment.success](/webhooks/events/payment/success)
+* [payment.rejected](/webhooks/events/payment/rejected)
+* [payment.fee-refunded](/webhooks/events/payment/fee-refunded)
+* [payment.refunded](/webhooks/events/payment/refunded)
+* [payment.failed](/webhooks/events/payment/failed)

@@ -1,0 +1,49 @@
+---
+title: "Overview"
+description: "Learn how Paywint uses webhooks to deliver real-time event notifications."
+icon: "book-open"
+---
+
+Paywint webhooks allow your application to receive **real-time notifications** whenever an event occurs — such as a payment success, wallet funding, or KYC approval.
+
+Webhooks are essential for keeping your system synchronized without the need for polling the API.  
+They let you automatically respond to user and transaction updates as they happen.
+
+---
+
+## How Webhooks Work
+
+1. You register a single HTTPS endpoint (e.g., `https://yourapp.com/webhook`).
+2. Paywint sends a `POST` request to that URL whenever an event occurs.
+3. Your endpoint verifies the request’s signature for authenticity.
+4. Your system processes the event and returns a `200 OK` response.
+
+<CardGroup cols={2}>
+  <Card title="Webhook Setup" icon="cog" href="/webhooks/setup">
+    Learn how to configure webhook URLs for Sandbox and Production.
+  </Card>
+  <Card title="Webhook Events" icon="shield" href="/webhooks/events">
+    Ensure webhook events are configured.
+  </Card>
+</CardGroup>
+
+---
+
+## Use Cases
+
+- Automatically update payment or wallet statuses in your app.  
+- Send notifications to users on successful transactions.  
+- Track verification events for users and businesses.  
+- Reconcile real-time balances and payouts.
+
+---
+
+## Next Steps
+
+* Configure endpoints in **Sandbox** and **Production** — see [Webhook Setup](/webhooks/setup).
+* Learn about delivery retries — see [Retry Behavior](/webhooks/retry-behavior).  
+* Explore webhook events and available event types — see [Events](/webhooks/events).
+
+<Card title="Explore Events" icon="radio" href="/webhooks/events">
+  Understand webhook events and how they drive Paywint's real-time updates.
+</Card>

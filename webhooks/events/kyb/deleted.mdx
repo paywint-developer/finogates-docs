@@ -1,0 +1,55 @@
+---
+title: "kyb.deleted"
+description: "Sent when a business KYB record is deleted or reset."
+icon: "trash-2"
+---
+
+The `kyb.deleted` event is sent when a business’s KYB record has been **deleted or reset**.
+
+This typically occurs during re-verification flows, compliance corrections, or administrative actions.
+
+---
+
+## Example Payload
+
+```json
+{
+  "event": "kyb.deleted",
+  "id": "cc46bc2f-8a50-4f78-8a29-0df5d77c491c",
+  "data": {
+    "user_id": "cc46bc2f-8a50-4f78-8a29-0df5d77c491c",
+    "kyb_status": "pending"
+  },
+  "eventGeneratedTime": 1756729948.128641
+}
+````
+
+---
+
+## Data Fields
+
+<ResponseField name="user_id" type="string">
+  Unique identifier of the business owner or associated user.
+</ResponseField>
+
+<ResponseField name="kyb_status" type="string">
+  Reset KYB status, typically <code>pending</code> after deletion.
+</ResponseField>
+
+---
+
+## Handling the Event
+
+Use this event to:
+
+* Reset internal KYB verification state
+* Require the business to re-submit verification details
+* Revoke KYB-dependent permissions
+* Record KYB resets for compliance and auditing
+
+---
+
+## Related Events
+
+* [kyb.approved](/webhooks/events/kyb/approved)
+* [kyb.rejected](/webhooks/events/kyb/rejected)

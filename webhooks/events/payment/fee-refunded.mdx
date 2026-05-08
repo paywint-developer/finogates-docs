@@ -1,0 +1,70 @@
+---
+title: "payment.fee_refunded"
+description: "Sent when a payment fee has been successfully refunded."
+icon: "refresh-ccw"
+---
+
+The `payment.fee_refunded` event is sent when a **fee associated with a payment** has been **successfully refunded**.
+
+This event applies only to the refunded fee amount and does not affect the original payment status.
+
+---
+
+## Example Payload
+
+```json
+{
+  "event": "payment.fee_refunded",
+  "id": "a550ba77-09ac-4bc7-9d5b-505a5135f3b6",
+  "data": {
+    "payment_id": "a550ba77-09ac-4bc7-9d5b-505a5135f3b6",
+    "status": "success",
+    "amount": 10.0,
+    "refund_transaction_id": "4f2f7785-d5d0-4202-a95f-af4968535775"
+  },
+  "eventGeneratedTime": 1756729948.128641
+}
+````
+
+---
+
+## Data Fields
+
+<ResponseField name="payment_id" type="string">
+  Unique identifier of the original payment.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Refund status. Always <code>success</code> for this event.
+</ResponseField>
+
+<ResponseField name="amount" type="float">
+  Refunded fee amount represented as a decimal in the transaction currency.
+</ResponseField>
+
+<ResponseField name="refund_transaction_id" type="string">
+  Unique identifier for the fee refund transaction.
+</ResponseField>
+
+
+## Handling the Event
+
+Use this event to:
+
+* Record refunded fees linked to a payment
+* Update accounting or reconciliation records
+* Synchronize refund activity across systems
+* Track fee-level adjustments independently of payment status
+
+---
+
+## Related Events
+
+* [payment.opened](/webhooks/events/payment/opened)
+* [payment.initiated](/webhooks/events/payment/initiated)
+* [payment.processing](/webhooks/events/payment/processing)
+* [payment.settling](/webhooks/events/payment/settling)
+* [payment.success](/webhooks/events/payment/success)
+* [payment.rejected](/webhooks/events/payment/rejected)
+* [payment.refunded](/webhooks/events/payment/refunded)
+* [payment.failed](/webhooks/events/payment/failed)

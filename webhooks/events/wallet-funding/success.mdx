@@ -1,0 +1,62 @@
+---
+title: "wallet.funding.success"
+description: "Sent when a wallet funding request completes successfully."
+icon: "check-circle"
+---
+
+The `wallet.funding.success` event is sent when a wallet funding request has **completed successfully** and the funds have been credited to the wallet.
+
+This event represents a final, successful state in the wallet funding lifecycle.
+
+---
+
+## Example Payload
+
+```json
+{
+  "event": "wallet.funding.success",
+  "id": "1a073f1c-6770-4851-b06a-9e707da01559",
+  "data": {
+    "payment_id": "1a073f1c-6770-4851-b06a-9e707da01559",
+    "status": "success",
+    "amount": 200.0
+  },
+  "eventGeneratedTime": 1756729948.128641
+}
+````
+
+---
+
+## Data Fields
+
+<ResponseField name="payment_id" type="string">
+  Unique identifier of the wallet funding transaction.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Final funding status. Always <code>success</code> for this event.
+</ResponseField>
+
+<ResponseField name="amount" type="float">
+  Funding amount expressed in the major currency unit (for example, USD).
+</ResponseField>
+
+---
+
+## Handling the Event
+
+Use this event to:
+
+* Credit the funded amount to the user's wallet balance
+* Mark the funding transaction as completed
+* Update transaction history and statements
+* Trigger post-funding workflows or notifications
+
+---
+
+## Related Events
+
+* [wallet.funding.initiated](/webhooks/events/wallet/funding-initiated)
+* [wallet.funding.processing](/webhooks/events/wallet/funding-processing)
+* [wallet.funding.failed](/webhooks/events/wallet/funding-failed)
+* [wallet.funding.rejected](/webhooks/events/wallet/funding-rejected)

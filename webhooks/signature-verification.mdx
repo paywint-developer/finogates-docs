@@ -1,0 +1,286 @@
+---
+title: "Webhook Signature Verification"
+description: "Verify that incoming webhooks are securely sent by Paywint using HMAC-SHA256 signatures."
+keywords: ["webhook", "signature", "hmac", "security"]
+icon: "shield"
+---
+
+All webhooks sent by Paywint are signed using **HMAC-SHA256**.  
+You must verify this signature to confirm that the request:
+
+- Originated from Paywint
+- Was not modified in transit
+- Is not a replayed request
+
+---
+
+## Required Headers
+
+Every Paywint webhook request includes the following headers:
+
+| Header | Description |
+|--------|-------------|
+| `Paywint-Signature` | Signature header in the format `t=timestamp,v1=signature` |
+| `Paywint-Signature-Version` | Signature version (currently `1`) |
+| `Content-Type` | `application/json` |
+
+### Example
+```http
+Paywint-Signature: t=1704978452,v1=5f0c2d7f0c0e9b...
+Paywint-Signature-Version: 1
+```
+
+---
+
+## Obtaining Your Webhook Secret
+
+Navigate to the [API Credentials tab](https://sandbox.merchant.paywint.com/app/settings/api-credentials) to obtain your secret key for verifying webhook signatures.
+
+---
+
+## Signature Construction
+
+Paywint signs the webhook payload using the following steps:
+
+### 1. Build the Signed Payload
+```txt
+{timestamp}.{raw_request_body}
+```
+
+* **timestamp** → Unix timestamp (seconds)
+* **raw_request_body** → Exact raw body bytes (no formatting changes)
+
+### 2. Generate HMAC
+```txt
+HMAC_SHA256(secret, signed_payload)
+```
+
+* **secret** → Your webhook signing secret
+* Output → Hex-encoded SHA-256 digest
+
+---
+
+## Verification Steps
+
+Your webhook handler must:
+
+1. Read the **raw request body**
+2. Parse `t` and `v1` from `Paywint-Signature`
+3. Reject requests older than your allowed time window (recommended: **5 minutes**)
+4. Recompute the HMAC signature
+5. Compare using a **constant-time comparison**
+6. Respond with `200 OK` **only if verification succeeds**
+
+---
+
+## Signature Verification Examples
+
+<CodeGroup>
+```javascript Node.js
+const crypto = require("crypto");
+
+function verifyPaywintWebhook(req, secret) {
+  const signatureHeader = req.headers["paywint-signature"];
+  if (!signatureHeader) throw new Error("Missing Paywint-Signature header");
+
+  const parts = Object.fromEntries(
+    signatureHeader.replace(/\s/g, "").split(",").map(p => p.split("="))
+  );
+
+  const timestamp = parseInt(parts.t, 10);
+  const receivedSignature = parts.v1;
+
+  const now = Math.floor(Date.now() / 1000);
+  if (Math.abs(now - timestamp) > 300) {
+    throw new Error("Webhook timestamp outside allowed window");
+  }
+
+  const rawBody = req.rawBody; // MUST be raw bytes
+  const signedPayload = `${timestamp}.` + rawBody;
+
+  const expectedSignature = crypto
+    .createHmac("sha256", secret)
+    .update(signedPayload)
+    .digest("hex");
+
+  if (
+    !crypto.timingSafeEqual(
+      Buffer.from(expectedSignature),
+      Buffer.from(receivedSignature)
+    )
+  ) {
+    throw new Error("Invalid webhook signature");
+  }
+
+  return true;
+}
+```
+```python Python
+import hmac
+import hashlib
+import time
+
+def verify_paywint_webhook(raw_body: bytes, signature_header: str, secret: str):
+    parts = dict(item.split("=", 1) for item in signature_header.replace(" ", "").split(","))
+    timestamp = int(parts["t"])
+    received_signature = parts["v1"]
+
+    now = int(time.time())
+    if abs(now - timestamp) > 300:
+        raise Exception("Webhook timestamp outside allowed window")
+
+    signed_payload = f"{timestamp}.".encode() + raw_body
+
+    expected_signature = hmac.new(
+        secret.encode(),
+        signed_payload,
+        hashlib.sha256
+    ).hexdigest()
+
+    if not hmac.compare_digest(expected_signature, received_signature):
+        raise Exception("Invalid webhook signature")
+
+    return True
+```
+```go Go
+package main
+
+import (
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/hex"
+	"errors"
+	"strconv"
+	"strings"
+	"time"
+)
+
+func verifyPaywintWebhook(rawBody []byte, signatureHeader string, secret string) error {
+	parts := map[string]string{}
+	for _, part := range strings.Split(strings.ReplaceAll(signatureHeader, " ", ""), ",") {
+		kv := strings.SplitN(part, "=", 2)
+		parts[kv[0]] = kv[1]
+	}
+
+	timestamp, _ := strconv.ParseInt(parts["t"], 10, 64)
+	if abs(time.Now().Unix()-timestamp) > 300 {
+		return errors.New("webhook timestamp outside allowed window")
+	}
+
+	signedPayload := append([]byte(strconv.FormatInt(timestamp, 10)+"."), rawBody...)
+	h := hmac.New(sha256.New, []byte(secret))
+	h.Write(signedPayload)
+	expected := hex.EncodeToString(h.Sum(nil))
+
+	if !hmac.Equal([]byte(expected), []byte(parts["v1"])) {
+		return errors.New("invalid webhook signature")
+	}
+
+	return nil
+}
+
+func abs(n int64) int64 {
+	if n < 0 {
+		return -n
+	}
+	return n
+}
+```
+```php PHP
+<?php
+function verifyPaywintWebhook($rawBody, $signatureHeader, $secret) {
+    $parts = [];
+    foreach (explode(',', str_replace(' ', '', $signatureHeader)) as $item) {
+        [$k, $v] = explode('=', $item, 2);
+        $parts[$k] = $v;
+    }
+
+    $timestamp = intval($parts['t']);
+    if (abs(time() - $timestamp) > 300) {
+        throw new Exception("Webhook timestamp outside allowed window");
+    }
+
+    $signedPayload = $timestamp . "." . $rawBody;
+    $expected = hash_hmac('sha256', $signedPayload, $secret);
+
+    if (!hash_equals($expected, $parts['v1'])) {
+        throw new Exception("Invalid webhook signature");
+    }
+
+    return true;
+}
+```
+```java Java
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.util.HashMap;
+
+public class WebhookVerifier {
+    public static void verify(byte[] rawBody, String signatureHeader, String secret) throws Exception {
+        HashMap<String, String> parts = new HashMap<>();
+        for (String item : signatureHeader.replace(" ", "").split(",")) {
+            String[] kv = item.split("=", 2);
+            parts.put(kv[0], kv[1]);
+        }
+
+        long timestamp = Long.parseLong(parts.get("t"));
+        if (Math.abs(System.currentTimeMillis() / 1000 - timestamp) > 300) {
+            throw new Exception("Webhook timestamp outside allowed window");
+        }
+
+        String signedPayload = timestamp + "." + new String(rawBody, StandardCharsets.UTF_8);
+
+        Mac mac = Mac.getInstance("HmacSHA256");
+        mac.init(new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
+        byte[] expected = mac.doFinal(signedPayload.getBytes(StandardCharsets.UTF_8));
+
+        String received = parts.get("v1");
+        String computed = bytesToHex(expected);
+
+        if (!MessageDigest.isEqual(computed.getBytes(), received.getBytes())) {
+            throw new Exception("Invalid webhook signature");
+        }
+    }
+
+    private static String bytesToHex(byte[] bytes) {
+        StringBuilder sb = new StringBuilder();
+        for (byte b : bytes) sb.append(String.format("%02x", b));
+        return sb.toString();
+    }
+}
+```
+```ruby Ruby
+require "openssl"
+require "time"
+
+def verify_paywint_webhook(raw_body, signature_header, secret)
+  parts = signature_header.gsub(" ", "").split(",").map { |p| p.split("=", 2) }.to_h
+  timestamp = parts["t"].to_i
+
+  raise "Webhook timestamp outside allowed window" if (Time.now.to_i - timestamp).abs > 300
+
+  signed_payload = "#{timestamp}.#{raw_body}"
+  expected = OpenSSL::HMAC.hexdigest("SHA256", secret, signed_payload)
+
+  raise "Invalid webhook signature" unless Rack::Utils.secure_compare(expected, parts["v1"])
+end
+```
+
+</CodeGroup>
+
+---
+
+## Security Recommendations
+
+* Always read the **raw request body** (do not re-serialize JSON)
+* Enforce a **timestamp tolerance window** (recommended: 5 minutes)
+* Store your **webhook secret securely**
+* Reject requests with missing or malformed headers
+* Respond with **`200 OK` only after successful verification**
+
+---
+
+Need help?
+Contact **[support@paywint.com](mailto:support@paywint.com)**

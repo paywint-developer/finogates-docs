@@ -1,0 +1,63 @@
+---
+title: "wallet.withdrawal.rejected"
+description: "Sent when a wallet withdrawal request is rejected."
+icon: "ban"
+---
+
+The `wallet.withdrawal.rejected` event is sent when a wallet withdrawal request is **rejected** before completion.
+
+This typically occurs due to compliance checks, risk controls, insufficient permissions, or policy restrictions.
+
+---
+
+## Example Payload
+
+```json
+{
+  "event": "wallet.withdrawal.rejected",
+  "id": "c4e71799-fd67-4995-b06e-447c2588660a",
+  "data": {
+    "payment_id": "c4e71799-fd67-4995-b06e-447c2588660a",
+    "status": "rejected",
+    "amount": 200.0
+  },
+  "eventGeneratedTime": 1756729948.128641
+}
+````
+
+---
+
+## Data Fields
+
+<ResponseField name="payment_id" type="string">
+  Unique identifier of the wallet withdrawal transaction.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Final withdrawal status. Always <code>rejected</code> for this event.
+</ResponseField>
+
+<ResponseField name="amount" type="float">
+  Withdrawal amount expressed in the major currency unit (for example, USD).
+</ResponseField>
+
+---
+
+## Handling the Event
+
+Use this event to:
+
+* Mark the withdrawal transaction as rejected
+* Notify the user of the rejection outcome
+* Prevent automatic retries
+* Record rejection details for compliance and auditing
+
+---
+
+## Related Events
+
+* [wallet.withdrawal.initiated](/webhooks/events/wallet/withdrawal-initiated)
+* [wallet.withdrawal.processing](/webhooks/events/wallet/withdrawal-processing)
+* [wallet.withdrawal.settling](/webhooks/events/wallet/withdrawal-settling)
+* [wallet.withdrawal.success](/webhooks/events/wallet/withdrawal-success)
+* [wallet.withdrawal.failed](/webhooks/events/wallet/withdrawal-failed)

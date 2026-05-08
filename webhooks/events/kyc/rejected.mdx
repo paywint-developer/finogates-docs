@@ -1,0 +1,62 @@
+---
+title: "kyc.rejected"
+description: "Sent when KYC verification is rejected."
+icon: "x-circle"
+---
+
+The `kyc.rejected` event is sent when a user's KYC verification has been **rejected** after review.
+
+This indicates that the user did not meet identity verification requirements and cannot proceed with KYC-restricted actions.
+
+---
+
+## Example Payload
+
+```json
+{
+  "event": "kyc.rejected",
+  "id": "7c27c558-9817-4609-84c1-3cd208105f5f",
+  "data": {
+    "user_id": "7c27c558-9817-4609-84c1-3cd208105f5f",
+    "kyc_status": "rejected",
+    "kyb_status": "pending"
+  },
+  "eventGeneratedTime": 1756729948.128641
+}
+````
+
+---
+
+## Data Fields
+
+<ResponseField name="user_id" type="string">
+  Unique identifier of the user whose KYC verification was rejected.
+</ResponseField>
+
+<ResponseField name="kyc_status" type="string">
+  KYC status. Always <code>rejected</code> for this event.
+</ResponseField>
+
+<ResponseField name="kyb_status" type="string">
+  Current KYB status for the associated business, if applicable.
+</ResponseField>
+
+---
+
+## Handling the Event
+
+Use this event to:
+
+* Block KYC-restricted features and actions
+* Notify the user of the rejection outcome
+* Allow re-submission if supported by your flow
+* Record rejection details for compliance and auditing
+
+---
+
+## Related Events
+
+* [kyc.applied](/webhooks/events/kyc/applied)
+* [kyc.failed](/webhooks/events/kyc/failed)
+* [kyc.completed](/webhooks/events/kyc/completed)
+* [kyc.deleted](/webhooks/events/kyc/deleted)

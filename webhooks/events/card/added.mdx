@@ -1,0 +1,59 @@
+---
+title: "card.added"
+description: "Sent when a new card is added by a user."
+icon: "credit-card"
+---
+
+The `card.added` event is sent when a user has **successfully added a new card** to their account.
+
+At this stage, the card may require additional steps, such as image uploads or verification, before it becomes fully usable.
+
+---
+
+## Example Payload
+
+```json
+{
+  "event": "card.added",
+  "id": "3ba04a02-cc0f-4e0e-b46b-ed62da75df73",
+  "data": {
+    "user_id": "3ba04a02-cc0f-4e0e-b46b-ed62da75df73",
+    "card_id": "a9ee8f8f-eefd-447e-8d70-ed7343025743",
+    "status": "pending_image_upload"
+  },
+  "eventGeneratedTime": 1756729948.128641
+}
+````
+
+---
+
+## Data Fields
+
+<ResponseField name="user_id" type="string">
+  Unique identifier of the user who added the card.
+</ResponseField>
+
+<ResponseField name="card_id" type="string">
+  Unique identifier of the newly added card.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Current card status. For example, <code>pending_image_upload</code>.
+</ResponseField>
+
+---
+
+## Handling the Event
+
+Use this event to:
+
+* Record the addition of a new card
+* Prompt the user to complete required card verification steps
+* Track card onboarding progress
+* Restrict card usage until verification is complete
+
+---
+
+## Related Events
+
+* [card.images_uploaded](/webhooks/events/card/images-uploaded)

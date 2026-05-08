@@ -1,0 +1,55 @@
+---
+title: "kyb.rejected"
+description: "Sent when KYB verification is rejected."
+icon: "x-circle"
+---
+
+The `kyb.rejected` event is sent when a business’s KYB verification has been **rejected** after review.
+
+This indicates that the business entity did not meet verification requirements and is not eligible for KYB-restricted features.
+
+---
+
+## Example Payload
+
+```json
+{
+  "event": "kyb.rejected",
+  "id": "6038d0d0-24b1-4e52-89d4-0b3b18e499c1",
+  "data": {
+    "user_id": "6038d0d0-24b1-4e52-89d4-0b3b18e499c1",
+    "kyb_status": "rejected"
+  },
+  "eventGeneratedTime": 1756729948.128641
+}
+````
+
+---
+
+## Data Fields
+
+<ResponseField name="user_id" type="string">
+  Unique identifier of the business owner or associated user.
+</ResponseField>
+
+<ResponseField name="kyb_status" type="string">
+  KYB status. Always <code>rejected</code> for this event.
+</ResponseField>
+
+---
+
+## Handling the Event
+
+Use this event to:
+
+* Block business and merchant-level features
+* Notify the business of the rejection outcome
+* Allow re-submission if supported
+* Record rejection details for compliance and auditing
+
+---
+
+## Related Events
+
+* [kyb.approved](/webhooks/events/kyb/approved)
+* [kyb.deleted](/webhooks/events/kyb/deleted)

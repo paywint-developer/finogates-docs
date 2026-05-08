@@ -1,0 +1,79 @@
+---
+title: "Events"
+description: "Understand how Paywint webhook events work and what they represent."
+icon: "calendar"
+---
+
+Events represent actions or state changes that occur within Paywint — such as a payment completing, a wallet being funded, or a user’s KYC being approved.
+
+When these actions happen, Paywint sends an **event notification** to your registered webhook endpoint.
+
+---
+
+## What Are Events?
+
+Every event is a JSON payload sent via HTTP `POST` to your webhook URL.  
+It contains metadata describing **what happened**, **which resource was affected**, and **when it occurred**.
+
+**Example Payload**
+```json
+{
+  "event": "payment.success",
+  "id": "evt_83a2bfc1",
+  "data": {
+    "payment_id": "pay_93fdc2",
+    "amount": "100.00",
+    "currency": "USD",
+    "status": "success"
+  },
+  "eventGeneratedTime": 1718006400
+}
+````
+
+| Field                | Description                                        |
+| -------------------- | -------------------------------------------------- |
+| `event`              | Event name (e.g., `payment.success`).              |
+| `id`                 | Unique identifier for this specific webhook event. |
+| `data`               | The event-specific data payload.                   |
+| `eventGeneratedTime` | UNIX timestamp when the event occurred.            |
+
+---
+
+## Event Delivery Flow
+
+1. An event occurs within Paywint (e.g., `payment.success`).
+2. Paywint sends a webhook `POST` request to your configured endpoint.
+3. Your server validates the signature and processes the event.
+4. Paywint expects a `2xx` response code to confirm successful receipt.
+
+If your endpoint does not respond with `2xx`, Paywint retries delivery according to its [Retry Behavior](/webhooks/retry-behavior) policy.
+
+---
+
+## Event Naming Convention
+
+All event names use **dot notation**, formatted as:
+
+```
+<object>.<action>
+```
+
+Examples:
+
+* `kyc.approved` — A user’s KYC verification succeeded.
+* `wallet.funding.success` — A wallet was successfully funded.
+* `payment.failed` — A payment attempt failed.
+
+---
+
+## Next Steps
+
+* View the complete list of event names — see [Event Types](/webhooks/event-types).
+* Learn to validate event authenticity — see [Signature Verification](/webhooks/signature-verification).
+* Review event retry logic — see [Retry Behavior](/webhooks/retry-behavior).
+
+<Card title="View Event Types" icon="list" href="/webhooks/event-types">
+  Browse all available webhook event types and their meanings.
+</Card>
+
+

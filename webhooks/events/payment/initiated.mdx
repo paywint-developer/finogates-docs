@@ -1,0 +1,65 @@
+---
+title: "payment.initiated"
+description: "Sent when a payment attempt is initiated."
+icon: "play-circle"
+---
+
+The `payment.initiated` event is sent when a payment has **transitioned from an open state into an active attempt**.
+
+This event indicates that the payment has begun its execution flow but has not yet entered processing or any other state.
+
+---
+
+## Example Payload
+
+```json
+{
+  "event": "payment.initiated",
+  "id": "1c5e92e7-4b2b-4a0a-8d7a-8d31f7b52e9a",
+  "data": {
+    "payment_id": "f4b3d09e-4b27-4c44-9d41-6f7e8a4a2c11",
+    "status": "initiated",
+    "amount": 599
+  },
+  "eventGeneratedTime": 1756721043.214908
+}
+````
+
+---
+
+## Data Fields
+
+<ResponseField name="payment_id" type="string">
+  Unique identifier for the payment transaction.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Current payment status. Always <code>initiated</code> for this event.
+</ResponseField>
+
+<ResponseField name="amount" type="float">
+  Payment amount expressed in the major currency unit (for example, USD).
+</ResponseField>
+
+
+## Handling the Event
+
+Use this event to:
+
+* Record the start of a payment attempt
+* Transition the payment into an active state
+* Prevent duplicate initiation of the same payment
+* Monitor payment flow progression
+
+---
+
+## Related Events
+
+* [payment.opened](/webhooks/events/payment/opened)
+* [payment.processing](/webhooks/events/payment/processing)
+* [payment.settling](/webhooks/events/payment/settling)
+* [payment.success](/webhooks/events/payment/success)
+* [payment.rejected](/webhooks/events/payment/rejected)
+* [payment.fee-refunded](/webhooks/events/payment/fee-refunded)
+* [payment.refunded](/webhooks/events/payment/refunded)
+* [payment.failed](/webhooks/events/payment/failed)

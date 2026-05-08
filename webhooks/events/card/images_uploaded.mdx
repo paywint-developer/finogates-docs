@@ -1,0 +1,58 @@
+---
+title: "card.images_uploaded"
+description: "Sent when required card images have been successfully uploaded."
+icon: "image"
+---
+
+The `card.images_uploaded` event is sent when a user has **successfully uploaded all required images** for a card.
+
+This event indicates that the card has completed the image submission step and can proceed to further verification or activation.
+
+---
+
+## Example Payload
+
+```json
+{
+  "event": "card.images_uploaded",
+  "id": "3ba04a02-cc0f-4e0e-b46b-ed62da75df73",
+  "data": {
+    "user_id": "3ba04a02-cc0f-4e0e-b46b-ed62da75df73",
+    "card_id": "a9ee8f8f-eefd-447e-8d70-ed7343025743",
+    "status": "complete"
+  },
+  "eventGeneratedTime": 1756729948.128641
+}
+````
+
+---
+
+## Data Fields
+
+<ResponseField name="user_id" type="string">
+  Unique identifier of the user who uploaded the card images.
+</ResponseField>
+
+<ResponseField name="card_id" type="string">
+  Unique identifier of the card whose images were uploaded.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Card image upload status. Always <code>complete</code> for this event.
+</ResponseField>
+
+---
+
+## Handling the Event
+
+Use this event to:
+
+* Mark card image verification as complete
+* Advance the card to the next verification or activation step
+* Track completion of card onboarding
+
+---
+
+## Related Events
+
+* [card.added](/webhooks/events/card/added)

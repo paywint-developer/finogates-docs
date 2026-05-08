@@ -1,0 +1,173 @@
+---
+title: "Cloud Storage Guidelines"
+description: "How to correctly generate direct-access URLs from popular cloud storage services."
+icon: "cloud"
+---
+
+## Overview
+
+When submitting documents from cloud storage services such as Google Drive, Dropbox, AWS S3, or others, you **must provide a direct download link**.  
+Preview links, share pages, and redirect-based URLs will fail validation.
+
+This guide explains how to generate valid, secure, and properly formatted direct URLs for each supported provider.
+
+---
+
+## General Rules for Cloud Storage
+
+Regardless of provider, all URLs must:
+
+- Use **HTTPS**
+- Be **publicly accessible**
+- Be a **direct file URL**
+- Resolve to a supported file type (PDF, JPEG, PNG, DOCX, etc.)
+
+---
+
+## Google Drive
+
+Google Drive shares files using a *viewer URL*, which is **not** accepted.  
+You must convert it into a **direct download URL**.
+
+### Step-by-Step
+
+1. Right-click file → **Get link**
+2. Change permissions to **“Anyone with the link”**
+3. Extract the file ID from the sharing link  
+   Example viewer URL:
+
+
+[https://drive.google.com/file/d/1ABC123def456/view](https://drive.google.com/file/d/1ABC123def456/view)
+
+
+4. Convert to a **direct download URL**:
+
+
+[https://drive.google.com/uc?export=download&id=1ABC123def456](https://drive.google.com/uc?export=download&id=1ABC123def456)
+
+
+### Valid Google Drive URL
+
+[https://drive.google.com/uc?export=download&id=1ABC123def456](https://drive.google.com/uc?export=download&id=1ABC123def456)
+
+
+---
+
+## Dropbox
+
+Dropbox share links are preview links and must be transformed.
+
+### Step-by-Step
+
+1. Create a shared link  
+2. Replace `dl=0` with `dl=1`
+
+### Example
+
+Original link (invalid):
+
+[https://www.dropbox.com/s/abc12345xyz/document.pdf?dl=0](https://www.dropbox.com/s/abc12345xyz/document.pdf?dl=0)
+
+
+Direct download link (valid):
+
+[https://www.dropbox.com/s/abc12345xyz/document.pdf?dl=1](https://www.dropbox.com/s/abc12345xyz/document.pdf?dl=1)
+
+
+---
+
+## AWS S3
+
+AWS S3 supports direct file URLs when the object is public.
+
+### Step-by-Step
+
+1. Upload file to your S3 bucket  
+2. Make sure the object is set to **public read**  
+3. Use the S3 file link:
+
+
+[https://bucket-name.s3.region.amazonaws.com/path/to/file.pdf](https://bucket-name.s3.region.amazonaws.com/path/to/file.pdf)
+
+
+### Example
+
+[https://my-docs.s3.us-east-1.amazonaws.com/licensing/certificate.pdf](https://my-docs.s3.us-east-1.amazonaws.com/licensing/certificate.pdf)
+
+
+**Note:**  
+If using **pre-signed URLs**, ensure they remain valid until Paywint processes the file.  
+URLs that expire immediately may fail.
+
+---
+
+## Google Cloud Storage (GCS)
+
+### Step-by-Step
+
+1. Upload file to a bucket  
+2. Ensure public access for the object  
+3. Use the public URL format:
+
+
+[https://storage.googleapis.com/BUCKET_NAME/FILE_NAME](https://storage.googleapis.com/BUCKET_NAME/FILE_NAME)
+
+
+### Example
+
+[https://storage.googleapis.com/company-docs/proof-of-address.png](https://storage.googleapis.com/company-docs/proof-of-address.png)
+
+
+---
+
+## OneDrive / SharePoint
+
+These services often generate **redirected or preview links**, which fail validation.  
+To use them:
+
+- Must generate a **direct download link**
+- Ensure anonymous access is allowed
+
+### Example Conversion
+
+
+[https://onedrive.live.com/?cid=123&id=ABC12345ABC12345%21123](https://onedrive.live.com/?cid=123&id=ABC12345ABC12345%21123)
+
+
+Direct download format:
+[https://onedrive.live.com/download?cid=123&id=ABC12345ABC12345%21123](https://onedrive.live.com/download?cid=123&id=ABC12345ABC12345%21123)
+
+
+---
+
+## iCloud Drive (Not Recommended)
+
+iCloud links commonly:
+
+- Expire quickly  
+- Require additional authentication  
+- Use redirect-based links  
+
+Because of these limitations, avoid using iCloud for document submission.
+
+---
+
+## Summary
+
+| Provider | Supported | Direct Link Required | Notes |
+|---------|-----------|----------------------|-------|
+| Google Drive | ✔ | ✔ | Must use `uc?export=download` format |
+| Dropbox | ✔ | ✔ | Convert `dl=0` → `dl=1` |
+| AWS S3 | ✔ | ✔ | Public or stable pre-signed required |
+| Google Cloud Storage | ✔ | ✔ | Public file required |
+| OneDrive / SharePoint | ✔ | ✔ | Preview links rejected |
+| iCloud | ✖ | N/A | Not reliable for validation |
+
+---
+
+## Best Practices
+
+- Always test the URL in an incognito browser session  
+- Avoid URLs that expire in less than **10 minutes**
+- Prefer reliable cloud providers such as AWS S3 or Google Cloud Storage  
+- Keep file names clean and simple: `certificate.pdf`, `id-front.jpg`, etc.

@@ -1,0 +1,63 @@
+---
+title: "wallet.withdrawal.success"
+description: "Sent when a wallet withdrawal completes successfully."
+icon: "check-circle"
+---
+
+The `wallet.withdrawal.success` event is sent when a wallet withdrawal request has **completed successfully** and the funds have been transferred out of the wallet.
+
+This event represents a final, successful state in the wallet withdrawal lifecycle.
+
+---
+
+## Example Payload
+
+```json
+{
+  "event": "wallet.withdrawal.success",
+  "id": "8c73d48e-9767-4ffc-83b4-2856dac1dc86",
+  "data": {
+    "payment_id": "8c73d48e-9767-4ffc-83b4-2856dac1dc86",
+    "status": "completed",
+    "amount": 300.55
+  },
+  "eventGeneratedTime": 1756729948.128641
+}
+````
+
+---
+
+## Data Fields
+
+<ResponseField name="payment_id" type="string">
+  Unique identifier of the wallet withdrawal transaction.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Final withdrawal status. Always <code>completed</code> for this event.
+</ResponseField>
+
+<ResponseField name="amount" type="float">
+  Withdrawal amount expressed in the major currency unit (for example, USD).
+</ResponseField>
+
+---
+
+## Handling the Event
+
+Use this event to:
+
+* Debit the withdrawn amount from the wallet balance
+* Mark the withdrawal transaction as completed
+* Update transaction history and statements
+* Trigger post-withdrawal notifications or workflows
+
+---
+
+## Related Events
+
+* [wallet.withdrawal.initiated](/webhooks/events/wallet/withdrawal-initiated)
+* [wallet.withdrawal.processing](/webhooks/events/wallet/withdrawal-processing)
+* [wallet.withdrawal.settling](/webhooks/events/wallet/withdrawal-settling)
+* [wallet.withdrawal.failed](/webhooks/events/wallet/withdrawal-failed)
+* [wallet.withdrawal.rejected](/webhooks/events/wallet/withdrawal-rejected)

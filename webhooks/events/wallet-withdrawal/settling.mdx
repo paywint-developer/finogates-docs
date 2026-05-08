@@ -1,0 +1,63 @@
+---
+title: "wallet.withdrawal.settling"
+description: "Sent when a wallet withdrawal enters the settling phase."
+icon: "hourglass"
+---
+
+The `wallet.withdrawal.settling` event is sent when a wallet withdrawal request has **entered the settling stage**.
+
+This indicates that the withdrawal has been processed and is awaiting final settlement with the destination bank or card.
+
+---
+
+## Example Payload
+
+```json
+{
+  "event": "wallet.withdrawal.settling",
+  "id": "6d6a74ab-89ae-4b2e-bcd1-a04307d7df99",
+  "data": {
+    "payment_id": "6d6a74ab-89ae-4b2e-bcd1-a04307d7df99",
+    "status": "settling",
+    "amount": 300.55
+  },
+  "eventGeneratedTime": 1756729948.128641
+}
+````
+
+---
+
+## Data Fields
+
+<ResponseField name="payment_id" type="string">
+  Unique identifier of the wallet withdrawal transaction.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Current withdrawal status. Always <code>settling</code> for this event.
+</ResponseField>
+
+<ResponseField name="amount" type="float">
+  Withdrawal amount expressed in the major currency unit (for example, USD).
+</ResponseField>
+
+---
+
+## Handling the Event
+
+Use this event to:
+
+* Update the withdrawal state to settling
+* Inform the user that funds are in final settlement
+* Prevent cancellation or modification of the withdrawal
+* Monitor settlement completion timing
+
+---
+
+## Related Events
+
+* [wallet.withdrawal.initiated](/webhooks/events/wallet/withdrawal-initiated)
+* [wallet.withdrawal.processing](/webhooks/events/wallet/withdrawal-processing)
+* [wallet.withdrawal.success](/webhooks/events/wallet/withdrawal-success)
+* [wallet.withdrawal.failed](/webhooks/events/wallet/withdrawal-failed)
+* [wallet.withdrawal.rejected](/webhooks/events/wallet/withdrawal-rejected)

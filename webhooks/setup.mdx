@@ -1,0 +1,68 @@
+---
+title: "Webhook Setup"
+description: "Configure webhook URLs in Sandbox and Production environments."
+icon: "cog"
+---
+
+Before receiving webhook notifications, you must register your endpoint URL within your Paywint dashboard.
+
+---
+
+## Sandbox Environment
+
+Use the **Sandbox environment** to test webhook delivery before going live.
+
+1. **Create a Sandbox Account**  
+   Sign up at **sandbox.merchant.paywint.com**.
+
+2. **Generate an API Key**  
+   Go to **Settings → API Credentials** to generate your Sandbox API key.  
+   [Open Sandbox Settings → API Key](https://sandbox.merchant.paywint.com/app/settings/api-credentials)
+
+3. **Configure Webhook URL**  
+   Navigate to **Settings → Redirect/Webhook** and add your webhook endpoint.  
+   Example:
+   ```text
+   https://example.com/webhook
+   ```
+
+4. **Test Webhook Delivery**
+   Use test events to confirm your endpoint correctly receives payloads.
+
+---
+
+## Production Environment
+
+Once you’ve tested successfully in Sandbox, repeat these steps in the **Production environment**.
+
+1. **Create a Production Account**
+   Visit **merchant.paywint.com**.
+
+2. **Enable Production Access**
+   Contact **[support@paywint.com](mailto:support@paywint.com)** to activate production credentials.
+
+3. **Generate Production API Key**
+   From **Settings → API Credentials**, copy your live key.
+   [Open Production Settings → API Key](https://merchant.paywint.com/app/settings/api-credentials)
+
+4. **Add Webhook URL**
+   Configure your production webhook endpoint in **Settings → Redirect/Webhook**.
+   Example:
+
+   ```text
+   https://yourapp.com/webhook
+   ```
+
+5. **Support Contacts**
+
+   * **Email:** [support@paywint.com](mailto:support@paywint.com)
+   * **Phone:** +1 (408) 461-5543
+
+---
+
+## Best Practices
+
+* Use **HTTPS** for all webhook endpoints.
+* Return **`200 OK` quickly**; process heavy work asynchronously.
+* Log event **IDs** and timestamps for idempotency and auditing.
+* Secure storage of your **webhook signing secret** is mandatory.

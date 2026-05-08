@@ -1,0 +1,29 @@
+---
+title: "Retry Behavior"
+description: "Understand Paywint webhook delivery and retry logic."
+icon: "rotate"
+---
+
+Paywint guarantees **at-least-once** delivery for all webhook events.  
+If your endpoint does not return a `2xx` HTTP response, the system automatically retries.
+
+---
+
+## Retry Policy
+
+| Attempt            | Delay after previous try | Condition                 |
+|--------------------|--------------------------|---------------------------|
+| 1st (initial)      | —                        | Original delivery         |
+| 2nd                | ~1 minute                | No `2xx` response         |
+| 3rd                | ~5 minutes               | Second attempt failed     |
+
+After the final failed attempt, an email is sent to the registered **admin address** with details of the undelivered event.
+
+---
+
+## Best Practices
+
+- Return `200 OK` **within 5 seconds**; offload heavy work to background jobs.  
+- Store and de-duplicate by `event id` to ensure idempotency.  
+- Implement exponential backoff if you **replay** events from your side.  
+- Monitor endpoint health (latency and error rates).

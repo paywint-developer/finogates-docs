@@ -1,0 +1,65 @@
+---
+title: "payment.rejected"
+description: "Sent when a payment is rejected before processing begins."
+icon: "ban"
+---
+
+The `payment.rejected` event is sent when a payment attempt is **explicitly rejected** and does not proceed to processing.
+
+This event indicates that the payment was blocked due to validation rules, risk checks, compliance requirements, or other pre-processing conditions.
+
+---
+
+## Example Payload
+
+```json
+{
+  "event": "payment.rejected",
+  "id": "3b8b71e4-8f4e-4e6c-bbb2-1b7b4c6d9e21",
+  "data": {
+    "payment_id": "9f4e1a2b-3c8d-4f92-9c27-1e5b8c4f7a63",
+    "status": "rejected",
+    "amount": 599
+  },
+  "eventGeneratedTime": 1756723891.902114
+}
+````
+
+---
+
+## Data Fields
+
+<ResponseField name="payment_id" type="string">
+  Unique identifier for the payment transaction.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Final payment status. Always <code>rejected</code> for this event.
+</ResponseField>
+
+<ResponseField name="amount" type="float">
+  Payment amount expressed in the major currency unit (for example, USD).
+</ResponseField>
+
+
+## Handling the Event
+
+Use this event to:
+
+* Update the payment record to a rejected state
+* Prevent the payment from progressing further
+* Record rejection details for auditing or review
+* Apply application-specific logic based on rejection outcomes
+
+---
+
+## Related Events
+
+* [payment.opened](/webhooks/events/payment/opened)
+* [payment.initiated](/webhooks/events/payment/initiated)
+* [payment.processing](/webhooks/events/payment/processing)
+* [payment.settling](/webhooks/events/payment/settling)
+* [payment.success](/webhooks/events/payment/success)
+* [payment.fee-refunded](/webhooks/events/payment/fee-refunded)
+* [payment.refunded](/webhooks/events/payment/refunded)
+* [payment.failed](/webhooks/events/payment/failed)
