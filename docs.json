@@ -153,6 +153,17 @@
               "api-reference/international-payouts-payins/create-sender",
               "api-reference/international-payouts-payins/retry-payout"
             ]
+          },
+          {
+            "group": "Webhooks",
+            "expanded": false,
+            "pages": [
+              "api-reference/webhooks/list-webhooks",
+              "api-reference/webhooks/create-webhook",
+              "api-reference/webhooks/replay-failed-webhook-deliveries",
+              "api-reference/webhooks/list-webhook-event-types",
+              "api-reference/webhooks/delete-webhook"
+            ]
           }
         ]
       },
