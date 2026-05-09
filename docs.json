@@ -216,18 +216,14 @@
   "navbar": {
     "links": [
       {
-        "label": "Dashboard",
-        "href": "https://app.finogates.com"
-      },
-      {
         "label": "Support",
         "href": "mailto:support@finogates.com"
       }
     ],
     "primary": {
       "type": "button",
-      "label": "Developer Docs",
-      "href": "https://docs.finogates.com"
+      "label": "Dashboard",
+      "href": "https://app.finogates.com"
     }
   },
   "footer": {
