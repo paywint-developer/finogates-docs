@@ -60,6 +60,18 @@
               "api-reference/wallets/get-wallet",
               "api-reference/wallets/get-wallet-activity"
             ]
+          },
+          {
+            "group": "Payment Methods",
+            "expanded": false,
+            "pages": [
+              "api-reference/payments-methods/add-bank-account",
+              "api-reference/payments-methods/add-card",
+              "api-reference/payments-methods/remove-payment-method",
+              "api-reference/payments-methods/list-payment-methods",
+              "api-reference/payments-methods/list-bank-payment-methods",
+              "api-reference/payments-methods/list-card-payment-methods"
+            ]
           }
         ]
       },
