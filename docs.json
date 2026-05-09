@@ -25,146 +25,20 @@
         "icon": "square-terminal",
         "groups": [
           {
+            "group": "Authentication",
+            "expanded": false,
+            "pages": [
+              "api-reference/authentication/auth-token"
+            ]
+          },
+          {
             "group": "Users",
             "expanded": false,
             "pages": [
-              "api-reference/users/overview",
-              "api-reference/users/create",
-              "api-reference/users/list",
-              "api-reference/users/get"
-            ]
-          },
-          {
-            "group": "KYC & KYB",
-            "expanded": false,
-            "pages": [
-              "api-reference/compliance/overview",
-              "api-reference/compliance/kyc/create-enquiry-link",
-              "api-reference/compliance/kyc/get",
-              "api-reference/compliance/kyb/submit",
-              "api-reference/compliance/kyb/get"
-            ]
-          },
-          {
-            "group": "Wallet",
-            "expanded": false,
-            "pages": [
-              "api-reference/wallet/overview",
-              "api-reference/wallet/get",
-              "api-reference/wallet/fund",
-              "api-reference/wallet/withdraw"
-            ]
-          },
-          {
-            "group": "Payments",
-            "expanded": false,
-            "pages": [
-              "api-reference/payments/overview",
-              "api-reference/payments/create",
-              "api-reference/payments/mail-check",
-              "api-reference/payments/get",
-              "api-reference/payments/list",
-              "api-reference/payments/list-sent",
-              "api-reference/payments/list-received"
-            ]
-          },
-          {
-            "group": "Accept Payments",
-            "expanded": false,
-            "pages": [
-              "api-reference/payments/checkout/overview",
-              "api-reference/payments/checkout/create-payment-link"
-            ]
-          },
-          {
-            "group": "Bank Accounts",
-            "expanded": false,
-            "pages": [
-              "api-reference/bank-accounts/overview",
-              "api-reference/bank-accounts/add",
-              "api-reference/bank-accounts/get",
-              "api-reference/bank-accounts/set-default",
-              "api-reference/bank-accounts/list",
-              "api-reference/bank-accounts/release-micro-deposit",
-              "api-reference/bank-accounts/verify-micro-deposit",
-              "api-reference/bank-accounts/delete"
-            ]
-          },
-          {
-            "group": "Paywint Bank Accounts",
-            "expanded": false,
-            "pages": [
-              "api-reference/paywint-bank-accounts/overview",
-              "api-reference/paywint-bank-accounts/open",
-              "api-reference/paywint-bank-accounts/list-transactions"
-            ]
-          },
-          {
-            "group": "Cards",
-            "expanded": false,
-            "pages": [
-              "api-reference/cards/overview",
-              "api-reference/cards/add",
-              "api-reference/cards/update",
-              "api-reference/cards/get",
-              "api-reference/cards/list",
-              "api-reference/cards/delete"
-            ]
-          },
-          {
-            "group": "Check",
-            "expanded": false,
-            "pages": [
-              "api-reference/checks/overview",
-              "api-reference/checks/add-address",
-              "api-reference/checks/config-settings",
-              "api-reference/checks/retrieve-address-settings",
-              "api-reference/checks/update-address"
-            ]
-          },
-          {
-            "group": "Payee Management",
-            "expanded": false,
-            "pages": [
-              "api-reference/payees/overview",
-              "api-reference/payees/create",
-              "api-reference/payees/update",
-              "api-reference/payees/get",
-              "api-reference/payees/list",
-              "api-reference/payees/delete"
-            ]
-          },
-          {
-            "group": "Payee Bank Accounts",
-            "expanded": false,
-            "pages": [
-              "api-reference/payees/bank-accounts/overview",
-              "api-reference/payees/bank-accounts/add",
-              "api-reference/payees/bank-accounts/get",
-              "api-reference/payees/bank-accounts/list",
-              "api-reference/payees/bank-accounts/delete"
-            ]
-          },
-          {
-            "group": "Payee Cards",
-            "expanded": false,
-            "pages": [
-              "api-reference/payees/cards/overview",
-              "api-reference/payees/cards/add",
-              "api-reference/payees/cards/get",
-              "api-reference/payees/cards/list",
-              "api-reference/payees/cards/delete"
-            ]
-          },
-          {
-            "group": "Payee Addresses",
-            "expanded": false,
-            "pages": [
-              "api-reference/payees/addresses/overview",
-              "api-reference/payees/addresses/add",
-              "api-reference/payees/addresses/list",
-              "api-reference/payees/addresses/update",
-              "api-reference/payees/addresses/delete"
+              "api-reference/users/create-user",
+              "api-reference/users/list-users",
+              "api-reference/users/get-user",
+              "api-reference/users/delete-user"
             ]
           }
         ]
@@ -195,72 +69,6 @@
               "guidelines/url-standards/cloud-storage",
               "guidelines/url-standards/troubleshooting",
               "guidelines/url-standards/examples"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Resources",
-        "icon": "book-open",
-        "pages": [
-          "resources/changelog"
-        ]
-      },
-      {
-        "tab": "Developer API Reference",
-        "icon": "square-terminal",
-        "groups": [
-          {
-            "group": "Payment",
-            "pages": [
-              "api-reference/developer/payment/overview",
-              "api-reference/developer/payment/create-payment",
-              "api-reference/developer/payment/get-payment",
-              "api-reference/developer/payment/list-sent-payments",
-              "api-reference/developer/payment/list-received-payments"
-            ]
-          },
-          {
-            "group": "Wallet",
-            "pages": [
-              "api-reference/developer/wallet/overview",
-              "api-reference/developer/wallet/get-wallet"
-            ]
-          },
-          {
-            "group": "Paywint Cards",
-            "expanded": false,
-            "pages": [
-              "api-reference/developer/paywint-cards/overview",
-              "api-reference/developer/paywint-cards/issue-card",
-              "api-reference/developer/paywint-cards/reload-card",
-              "api-reference/developer/paywint-cards/list-cards",
-              "api-reference/developer/paywint-cards/get-card"
-            ]
-          },
-          {
-            "group": "Payee Management",
-            "expanded": false,
-            "pages": [
-              "api-reference/developer/payees/overview",
-              "api-reference/developer/payees/create",
-              "api-reference/developer/payees/list",
-              "api-reference/developer/payees/get",
-              "api-reference/developer/payees/update",
-              "api-reference/developer/payees/delete"
-            ]
-          },
-          {
-            "group": "Payee Addresses",
-            "expanded": false,
-            "pages": [
-              "api-reference/developer/payees/address/overview",
-              "api-reference/developer/payees/address/create-address",
-              "api-reference/developer/payees/address/list-address",
-              "api-reference/developer/payees/address/get-address",
-              "api-reference/developer/payees/address/update-address",
-              "api-reference/developer/payees/address/set-default-address",
-              "api-reference/developer/payees/address/delete-address"
             ]
           }
         ]
@@ -316,7 +124,7 @@
   ],
   "api": {
     "openapi": {
-      "source": "http://midhun.local:8008/openapi-v1-platform.json",
+      "source": "https://api-sandbox.fg.wintpay.com/openapi-platform.json",
       "directory": "api-reference"
     }
   },
