@@ -1,9 +1,9 @@
 ---
 title: "Authentication"
-description: "Secure every Paywint API request using API keys and HMAC-SHA256 signature verification."
+description: "Secure every Finogates API request using API keys and HMAC-SHA256 signature verification."
 icon: "key"
 ---
-**All API requests to Paywint must be made over HTTPS and authenticated using an API key.**
+**All API requests to Finogates must be made over HTTPS and authenticated using an API key.**
 Include the API key in the request header as `X-Platform-ID`, and the HMAC-SHA256 signature in `X-Signature`. [Learn how to generate signatures →](/get-started/signature-auth)
 
 The signature should be generated using your platform's secret key and the [canonical string format](/get-started/signature-auth#canonical-string-format): `METHOD + PATH + QUERY + BODY_HASH`
@@ -32,4 +32,4 @@ Keep your API key secure and never expose it on the client side.
   Learn how to generate secure request signatures using your platform’s secret key in our Signature Authentication Guide.
 </Card>
 ---
-Need help? Reach out to support@paywint.com
+Need help? Reach out to support@finogates.com

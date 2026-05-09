@@ -1,11 +1,11 @@
 ---
 title: Signature Authentication
-description: How to generate HMAC-SHA256 signatures for secure API access in Paywint.
+description: How to generate HMAC-SHA256 signatures for secure API access in Finogates.
 keywords: ['signature', 'signature authentication']
 icon: "shield"
 ---
 
-All requests to Paywint APIs must be authenticated using an HMAC-SHA256 signature. This ensures both the integrity and authenticity of your requests.
+All requests to Finogates APIs must be authenticated using an HMAC-SHA256 signature. This ensures both the integrity and authenticity of your requests.
 
 You must include:
 
@@ -392,7 +392,7 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.MessageDigest;
 
-public class PaywintAPI {
+public class FinogatesAPI {
     public static void main(String[] args) throws Exception {
         String apiKey = "YOUR_API_KEY";
         String secretKey = "your_platform_secret_key";
@@ -483,5 +483,5 @@ puts "Response: #{response.body}"
 - Regenerate the signature for every request; it's not reusable
 
 ---
-Need help? Reach out to support@paywint.com
+Need help? Reach out to support@finogates.com
 

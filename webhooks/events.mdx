@@ -1,12 +1,12 @@
 ---
 title: "Events"
-description: "Understand how Paywint webhook events work and what they represent."
+description: "Understand how Finogates webhook events work and what they represent."
 icon: "calendar"
 ---
 
-Events represent actions or state changes that occur within Paywint — such as a payment completing, a wallet being funded, or a user’s KYC being approved.
+Events represent actions or state changes that occur within Finogates — such as a payment completing, a wallet being funded, or a user’s KYC being approved.
 
-When these actions happen, Paywint sends an **event notification** to your registered webhook endpoint.
+When these actions happen, Finogates sends an **event notification** to your registered webhook endpoint.
 
 ---
 
@@ -41,12 +41,12 @@ It contains metadata describing **what happened**, **which resource was affected
 
 ## Event Delivery Flow
 
-1. An event occurs within Paywint (e.g., `payment.success`).
-2. Paywint sends a webhook `POST` request to your configured endpoint.
+1. An event occurs within Finogates (e.g., `payment.success`).
+2. Finogates sends a webhook `POST` request to your configured endpoint.
 3. Your server validates the signature and processes the event.
-4. Paywint expects a `2xx` response code to confirm successful receipt.
+4. Finogates expects a `2xx` response code to confirm successful receipt.
 
-If your endpoint does not respond with `2xx`, Paywint retries delivery according to its [Retry Behavior](/webhooks/retry-behavior) policy.
+If your endpoint does not respond with `2xx`, Finogates retries delivery according to its [Retry Behavior](/webhooks/retry-behavior) policy.
 
 ---
 

@@ -1,7 +1,7 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Paywint API Documentation",
+  "name": "Finogates API Documentation",
   "colors": {
     "primary": "#16A34A",
     "light": "#07C983",
@@ -217,27 +217,27 @@
     "links": [
       {
         "label": "Dashboard",
-        "href": "https://app.paywint.com"
+        "href": "https://app.finogates.com"
       },
       {
         "label": "Support",
-        "href": "mailto:support@paywint.com"
+        "href": "mailto:support@finogates.com"
       }
     ],
     "primary": {
       "type": "button",
       "label": "Developer Docs",
-      "href": "https://docs.paywint.com"
+      "href": "https://docs.finogates.com"
     }
   },
   "footer": {
     "socials": {
-      "youtube": "https://www.youtube.com/@paywint",
-      "facebook": "https://www.facebook.com/paywintonline",
-      "instagram": "https://www.instagram.com/paywint",
-      "x": "https://x.com/paywint",
-      "linkedin": "https://www.linkedin.com/company/paywint",
-      "threads": "https://www.threads.net/@paywint"
+      "youtube": "https://www.youtube.com/@finogates",
+      "facebook": "https://www.facebook.com/finogatesonline",
+      "instagram": "https://www.instagram.com/finogates",
+      "x": "https://x.com/finogates",
+      "linkedin": "https://www.linkedin.com/company/finogates",
+      "threads": "https://www.threads.net/@finogates"
     }
   },
   "redirects": [
@@ -248,7 +248,7 @@
   ],
   "api": {
     "openapi": {
-      "source": "https://api-sandbox.fg.wintpay.com/openapi-platform.json",
+      "source": "https://sandbox-api.finogates.com/openapi-platform.json",
       "directory": "api-reference"
     }
   },
