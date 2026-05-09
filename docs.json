@@ -106,6 +106,22 @@
               "api-reference/payments/create-payment",
               "api-reference/payments/get-payment"
             ]
+          },
+          {
+            "group": "Cards",
+            "expanded": false,
+            "pages": [
+              "api-reference/cards/create-card-request",
+              "api-reference/cards/get-card-request",
+              "api-reference/cards/get-card-balance",
+              "api-reference/cards/get-card-detail",
+              "api-reference/cards/reload-card",
+              "api-reference/cards/freeze-or-unfreeze-card",
+              "api-reference/cards/sync-card-transactions",
+              "api-reference/cards/list-card-transactions",
+              "api-reference/cards/transfer-card-to-wallet",
+              "api-reference/cards/list-cards-for-user"
+            ]
           }
         ]
       },
