@@ -3,9 +3,9 @@
   "theme": "mint",
   "name": "Finogates API Documentation",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#0161EF",
+    "light": "#005FC8",
+    "dark": "#0161EF"
   },
   "favicon": "/favicon.ico",
   "navigation": {
