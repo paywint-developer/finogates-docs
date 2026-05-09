@@ -234,7 +234,7 @@
   ],
   "api": {
     "openapi": {
-      "source": "https://sandbox-api.finogates.com/openapi-platform.json",
+      "source": "https://api-sandbox.fg.wintpay.com/openapi-platform.json",
       "directory": "api-reference"
     }
   },
