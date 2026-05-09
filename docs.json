@@ -1,7 +1,7 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Paywint API Documentation",
+  "name": "Finogates API Documentation",
   "colors": {
     "primary": "#16A34A",
     "light": "#07C983",
@@ -25,146 +25,144 @@
         "icon": "square-terminal",
         "groups": [
           {
+            "group": "Authentication",
+            "expanded": false,
+            "pages": [
+              "api-reference/authentication/auth-token"
+            ]
+          },
+          {
             "group": "Users",
             "expanded": false,
             "pages": [
-              "api-reference/users/overview",
-              "api-reference/users/create",
-              "api-reference/users/list",
-              "api-reference/users/get"
+              "api-reference/users/create-user",
+              "api-reference/users/list-users",
+              "api-reference/users/get-user",
+              "api-reference/users/delete-user"
             ]
           },
           {
-            "group": "KYC & KYB",
+            "group": "Verification",
             "expanded": false,
             "pages": [
-              "api-reference/compliance/overview",
-              "api-reference/compliance/kyc/create-enquiry-link",
-              "api-reference/compliance/kyc/get",
-              "api-reference/compliance/kyb/submit",
-              "api-reference/compliance/kyb/get"
+              "api-reference/verification/submit-kyc",
+              "api-reference/verification/create-or-resume-kyc-inq",
+              "api-reference/verification/sync-kyc-with-persona",
+              "api-reference/verification/get-kyc-status",
+              "api-reference/verification/submit-kyb",
+              "api-reference/verification/get-kyb-status"
             ]
           },
           {
-            "group": "Wallet",
+            "group": "Wallets",
             "expanded": false,
             "pages": [
-              "api-reference/wallet/overview",
-              "api-reference/wallet/get",
-              "api-reference/wallet/fund",
-              "api-reference/wallet/withdraw"
+              "api-reference/wallets/get-wallet",
+              "api-reference/wallets/get-wallet-activity"
+            ]
+          },
+          {
+            "group": "Payment Methods",
+            "expanded": false,
+            "pages": [
+              "api-reference/payments-methods/add-bank-account",
+              "api-reference/payments-methods/add-card",
+              "api-reference/payments-methods/remove-payment-method",
+              "api-reference/payments-methods/list-payment-methods",
+              "api-reference/payments-methods/list-bank-payment-methods",
+              "api-reference/payments-methods/list-card-payment-methods"
+            ]
+          },
+          {
+            "group": "Plaid Bank Linking",
+            "expanded": false,
+            "pages": [
+              "api-reference/plaid-bank-linking/get-plaid-account-balances",
+              "api-reference/plaid-bank-linking/exchange-plaid-public-token",
+              "api-reference/plaid-bank-linking/get-plaid-account-identity",
+              "api-reference/plaid-bank-linking/generate-plaid-link-token",
+              "api-reference/plaid-bank-linking/evaluate-ach-risk-via-plaid-signal"
+            ]
+          },
+          {
+            "group": "Payees",
+            "expanded": false,
+            "pages": [
+              "api-reference/payees/list-payees",
+              "api-reference/payees/create-payee",
+              "api-reference/payees/get-payee",
+              "api-reference/payees/update-payee",
+              "api-reference/payees/archive-payee",
+              "api-reference/payees/list-destinations",
+              "api-reference/payees/create-destination",
+              "api-reference/payees/revoke-destination"
             ]
           },
           {
             "group": "Payments",
             "expanded": false,
             "pages": [
-              "api-reference/payments/overview",
-              "api-reference/payments/create",
-              "api-reference/payments/mail-check",
-              "api-reference/payments/get",
-              "api-reference/payments/list",
-              "api-reference/payments/list-sent",
-              "api-reference/payments/list-received"
-            ]
-          },
-          {
-            "group": "Accept Payments",
-            "expanded": false,
-            "pages": [
-              "api-reference/payments/checkout/overview",
-              "api-reference/payments/checkout/create-payment-link"
-            ]
-          },
-          {
-            "group": "Bank Accounts",
-            "expanded": false,
-            "pages": [
-              "api-reference/bank-accounts/overview",
-              "api-reference/bank-accounts/add",
-              "api-reference/bank-accounts/get",
-              "api-reference/bank-accounts/set-default",
-              "api-reference/bank-accounts/list",
-              "api-reference/bank-accounts/release-micro-deposit",
-              "api-reference/bank-accounts/verify-micro-deposit",
-              "api-reference/bank-accounts/delete"
-            ]
-          },
-          {
-            "group": "Paywint Bank Accounts",
-            "expanded": false,
-            "pages": [
-              "api-reference/paywint-bank-accounts/overview",
-              "api-reference/paywint-bank-accounts/open",
-              "api-reference/paywint-bank-accounts/list-transactions"
+              "api-reference/payments/list-payments",
+              "api-reference/payments/create-payment",
+              "api-reference/payments/get-payment"
             ]
           },
           {
             "group": "Cards",
             "expanded": false,
             "pages": [
-              "api-reference/cards/overview",
-              "api-reference/cards/add",
-              "api-reference/cards/update",
-              "api-reference/cards/get",
-              "api-reference/cards/list",
-              "api-reference/cards/delete"
+              "api-reference/cards/create-card-request",
+              "api-reference/cards/get-card-request",
+              "api-reference/cards/get-card-balance",
+              "api-reference/cards/get-card-detail",
+              "api-reference/cards/reload-card",
+              "api-reference/cards/freeze-or-unfreeze-card",
+              "api-reference/cards/sync-card-transactions",
+              "api-reference/cards/list-card-transactions",
+              "api-reference/cards/transfer-card-to-wallet",
+              "api-reference/cards/list-cards-for-user"
             ]
           },
           {
-            "group": "Check",
+            "group": "International Payouts & Payins",
             "expanded": false,
             "pages": [
-              "api-reference/checks/overview",
-              "api-reference/checks/add-address",
-              "api-reference/checks/config-settings",
-              "api-reference/checks/retrieve-address-settings",
-              "api-reference/checks/update-address"
+              "api-reference/international-payouts-payins/list-beneficiaries",
+              "api-reference/international-payouts-payins/create-beneficiary",
+              "api-reference/international-payouts-payins/branches",
+              "api-reference/international-payouts-payins/catalogue-account-types",
+              "api-reference/international-payouts-payins/catalogue-business-types",
+              "api-reference/international-payouts-payins/catalogue-cities",
+              "api-reference/international-payouts-payins/catalogue-countries",
+              "api-reference/international-payouts-payins/catalogue-currencies",
+              "api-reference/international-payouts-payins/catalogue-document-types",
+              "api-reference/international-payouts-payins/catalogue-states",
+              "api-reference/international-payouts-payins/payer-rules",
+              "api-reference/international-payouts-payins/payers",
+              "api-reference/international-payouts-payins/payin-catalogue-countries",
+              "api-reference/international-payouts-payins/payin-catalogue-merchant-countries",
+              "api-reference/international-payouts-payins/payin-choose-method",
+              "api-reference/international-payouts-payins/create-payin",
+              "api-reference/international-payouts-payins/payin-payment-methods",
+              "api-reference/international-payouts-payins/payin-refund",
+              "api-reference/international-payouts-payins/payin-status",
+              "api-reference/international-payouts-payins/process-payout",
+              "api-reference/international-payouts-payins/payout-status",
+              "api-reference/international-payouts-payins/rates",
+              "api-reference/international-payouts-payins/list-senders",
+              "api-reference/international-payouts-payins/create-sender",
+              "api-reference/international-payouts-payins/retry-payout"
             ]
           },
           {
-            "group": "Payee Management",
+            "group": "Webhooks",
             "expanded": false,
             "pages": [
-              "api-reference/payees/overview",
-              "api-reference/payees/create",
-              "api-reference/payees/update",
-              "api-reference/payees/get",
-              "api-reference/payees/list",
-              "api-reference/payees/delete"
-            ]
-          },
-          {
-            "group": "Payee Bank Accounts",
-            "expanded": false,
-            "pages": [
-              "api-reference/payees/bank-accounts/overview",
-              "api-reference/payees/bank-accounts/add",
-              "api-reference/payees/bank-accounts/get",
-              "api-reference/payees/bank-accounts/list",
-              "api-reference/payees/bank-accounts/delete"
-            ]
-          },
-          {
-            "group": "Payee Cards",
-            "expanded": false,
-            "pages": [
-              "api-reference/payees/cards/overview",
-              "api-reference/payees/cards/add",
-              "api-reference/payees/cards/get",
-              "api-reference/payees/cards/list",
-              "api-reference/payees/cards/delete"
-            ]
-          },
-          {
-            "group": "Payee Addresses",
-            "expanded": false,
-            "pages": [
-              "api-reference/payees/addresses/overview",
-              "api-reference/payees/addresses/add",
-              "api-reference/payees/addresses/list",
-              "api-reference/payees/addresses/update",
-              "api-reference/payees/addresses/delete"
+              "api-reference/webhooks/list-webhooks",
+              "api-reference/webhooks/create-webhook",
+              "api-reference/webhooks/replay-failed-webhook-deliveries",
+              "api-reference/webhooks/list-webhook-event-types",
+              "api-reference/webhooks/delete-webhook"
             ]
           }
         ]
@@ -198,72 +196,6 @@
             ]
           }
         ]
-      },
-      {
-        "tab": "Resources",
-        "icon": "book-open",
-        "pages": [
-          "resources/changelog"
-        ]
-      },
-      {
-        "tab": "Developer API Reference",
-        "icon": "square-terminal",
-        "groups": [
-          {
-            "group": "Payment",
-            "pages": [
-              "api-reference/developer/payment/overview",
-              "api-reference/developer/payment/create-payment",
-              "api-reference/developer/payment/get-payment",
-              "api-reference/developer/payment/list-sent-payments",
-              "api-reference/developer/payment/list-received-payments"
-            ]
-          },
-          {
-            "group": "Wallet",
-            "pages": [
-              "api-reference/developer/wallet/overview",
-              "api-reference/developer/wallet/get-wallet"
-            ]
-          },
-          {
-            "group": "Paywint Cards",
-            "expanded": false,
-            "pages": [
-              "api-reference/developer/paywint-cards/overview",
-              "api-reference/developer/paywint-cards/issue-card",
-              "api-reference/developer/paywint-cards/reload-card",
-              "api-reference/developer/paywint-cards/list-cards",
-              "api-reference/developer/paywint-cards/get-card"
-            ]
-          },
-          {
-            "group": "Payee Management",
-            "expanded": false,
-            "pages": [
-              "api-reference/developer/payees/overview",
-              "api-reference/developer/payees/create",
-              "api-reference/developer/payees/list",
-              "api-reference/developer/payees/get",
-              "api-reference/developer/payees/update",
-              "api-reference/developer/payees/delete"
-            ]
-          },
-          {
-            "group": "Payee Addresses",
-            "expanded": false,
-            "pages": [
-              "api-reference/developer/payees/address/overview",
-              "api-reference/developer/payees/address/create-address",
-              "api-reference/developer/payees/address/list-address",
-              "api-reference/developer/payees/address/get-address",
-              "api-reference/developer/payees/address/update-address",
-              "api-reference/developer/payees/address/set-default-address",
-              "api-reference/developer/payees/address/delete-address"
-            ]
-          }
-        ]
       }
     ]
   },
@@ -284,28 +216,14 @@
   "navbar": {
     "links": [
       {
-        "label": "Dashboard",
-        "href": "https://app.paywint.com"
-      },
-      {
         "label": "Support",
-        "href": "mailto:support@paywint.com"
+        "href": "mailto:support@finogates.com"
       }
     ],
     "primary": {
       "type": "button",
-      "label": "Developer Docs",
-      "href": "https://docs.paywint.com"
-    }
-  },
-  "footer": {
-    "socials": {
-      "youtube": "https://www.youtube.com/@paywint",
-      "facebook": "https://www.facebook.com/paywintonline",
-      "instagram": "https://www.instagram.com/paywint",
-      "x": "https://x.com/paywint",
-      "linkedin": "https://www.linkedin.com/company/paywint",
-      "threads": "https://www.threads.net/@paywint"
+      "label": "Dashboard",
+      "href": "https://app.finogates.com"
     }
   },
   "redirects": [
@@ -316,7 +234,7 @@
   ],
   "api": {
     "openapi": {
-      "source": "http://midhun.local:8008/openapi-v1-platform.json",
+      "source": "https://sandbox-api.finogates.com/openapi-platform.json",
       "directory": "api-reference"
     }
   },

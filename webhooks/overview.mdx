@@ -1,10 +1,10 @@
 ---
 title: "Overview"
-description: "Learn how Paywint uses webhooks to deliver real-time event notifications."
+description: "Learn how Finogates uses webhooks to deliver real-time event notifications."
 icon: "book-open"
 ---
 
-Paywint webhooks allow your application to receive **real-time notifications** whenever an event occurs — such as a payment success, wallet funding, or KYC approval.
+Finogates webhooks allow your application to receive **real-time notifications** whenever an event occurs — such as a payment success, wallet funding, or KYC approval.
 
 Webhooks are essential for keeping your system synchronized without the need for polling the API.  
 They let you automatically respond to user and transaction updates as they happen.
@@ -14,7 +14,7 @@ They let you automatically respond to user and transaction updates as they happe
 ## How Webhooks Work
 
 1. You register a single HTTPS endpoint (e.g., `https://yourapp.com/webhook`).
-2. Paywint sends a `POST` request to that URL whenever an event occurs.
+2. Finogates sends a `POST` request to that URL whenever an event occurs.
 3. Your endpoint verifies the request’s signature for authenticity.
 4. Your system processes the event and returns a `200 OK` response.
 
@@ -45,5 +45,5 @@ They let you automatically respond to user and transaction updates as they happe
 * Explore webhook events and available event types — see [Events](/webhooks/events).
 
 <Card title="Explore Events" icon="radio" href="/webhooks/events">
-  Understand webhook events and how they drive Paywint's real-time updates.
+  Understand webhook events and how they drive Finogates's real-time updates.
 </Card>

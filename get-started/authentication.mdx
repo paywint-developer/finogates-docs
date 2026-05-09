@@ -1,18 +1,19 @@
 ---
 title: "Authentication"
-description: "Secure every Paywint API request using API keys and HMAC-SHA256 signature verification."
+description: "Authenticate requests to the Finogates API using API keys."
 icon: "key"
 ---
-**All API requests to Paywint must be made over HTTPS and authenticated using an API key.**
-Include the API key in the request header as `X-Platform-ID`, and the HMAC-SHA256 signature in `X-Signature`. [Learn how to generate signatures →](/get-started/signature-auth)
 
-The signature should be generated using your platform's secret key and the [canonical string format](/get-started/signature-auth#canonical-string-format): `METHOD + PATH + QUERY + BODY_HASH`
+> We use API key based authentication to verify and authorize all requests to the Finogates API.
 
-```curl Example Api Call
-curl -X POST "https://<environment>/api/platform/users/create" \
+**All API requests to Finogates must be made over HTTPS and authenticated using an API key.**
+Include the API key in the request header as `X-Api-Key`, and `X-Api-Secret`.
+
+```curl Example Api Call theme={null}
+curl -X POST "https://<environment>/api/example" \
   -H "Content-Type: application/json" \
-  -H "X-Platform-ID: YOUR_API_KEY" \
-  -H "X-Signature: GENERATED_SIGNATURE" \
+  -H "X-Api-Key: YOUR_API_KEY" \
+  -H "X-Api-Secret: YOUR_API_SECRET" \
   -d '{
     "name": "John Doe",
     "email": "john@example.com",
@@ -22,14 +23,10 @@ curl -X POST "https://<environment>/api/platform/users/create" \
 
 ```
 
-Make sure to use the correct API key for the appropriate [environment](/environments). Using the wrong key or URL may result in authentication failures.
+Make sure to use the correct API key for the appropriate [environment](/get-started/environments). Using the wrong key or URL may result in authentication failures.
 
 Keep your API key secure and never expose it on the client side.
-<Note>
-  Alternatively, you can use the static signature in the [sandbox environment](/environments#sandbox): `8b3cb99a4b8e24fc7e01d0db635e2e47b80818144fe51400c6c6ae3ecbc84f47`
-</Note>
-<Card title="How to generate signature" icon="shield" href="/get-started/signature-auth" arrow="true" cta="Learn More">
-  Learn how to generate secure request signatures using your platform’s secret key in our Signature Authentication Guide.
-</Card>
----
-Need help? Reach out to support@paywint.com
+
+***
+
+Need help? Reach out to [support@finogates.com](mailto:support@finogates.com)
