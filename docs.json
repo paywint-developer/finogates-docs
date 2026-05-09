@@ -52,6 +52,14 @@
               "api-reference/verification/submit-kyb",
               "api-reference/verification/get-kyb-status"
             ]
+          },
+          {
+            "group": "Wallets",
+            "expanded": false,
+            "pages": [
+              "api-reference/wallets/get-wallet",
+              "api-reference/wallets/get-wallet-activity"
+            ]
           }
         ]
       },
