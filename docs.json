@@ -83,6 +83,20 @@
               "api-reference/plaid-bank-linking/generate-plaid-link-token",
               "api-reference/plaid-bank-linking/evaluate-ach-risk-via-plaid-signal"
             ]
+          },
+          {
+            "group": "Payees",
+            "expanded": false,
+            "pages": [
+              "api-reference/payees/list-payees",
+              "api-reference/payees/create-payee",
+              "api-reference/payees/get-payee",
+              "api-reference/payees/update-payee",
+              "api-reference/payees/archive-payee",
+              "api-reference/payees/list-destinations",
+              "api-reference/payees/create-destination",
+              "api-reference/payees/revoke-destination"
+            ]
           }
         ]
       },
