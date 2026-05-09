@@ -226,16 +226,6 @@
       "href": "https://app.finogates.com"
     }
   },
-  "footer": {
-    "socials": {
-      "youtube": "https://www.youtube.com/@finogates",
-      "facebook": "https://www.facebook.com/finogatesonline",
-      "instagram": "https://www.instagram.com/finogates",
-      "x": "https://x.com/finogates",
-      "linkedin": "https://www.linkedin.com/company/finogates",
-      "threads": "https://www.threads.net/@finogates"
-    }
-  },
   "redirects": [
     {
       "source": "/",
