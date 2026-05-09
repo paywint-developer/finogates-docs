@@ -72,6 +72,17 @@
               "api-reference/payments-methods/list-bank-payment-methods",
               "api-reference/payments-methods/list-card-payment-methods"
             ]
+          },
+          {
+            "group": "Plaid Bank Linking",
+            "expanded": false,
+            "pages": [
+              "api-reference/plaid-bank-linking/get-plaid-account-balances",
+              "api-reference/plaid-bank-linking/exchange-plaid-public-token",
+              "api-reference/plaid-bank-linking/get-plaid-account-identity",
+              "api-reference/plaid-bank-linking/generate-plaid-link-token",
+              "api-reference/plaid-bank-linking/evaluate-ach-risk-via-plaid-signal"
+            ]
           }
         ]
       },
