@@ -40,6 +40,18 @@
               "api-reference/users/get-user",
               "api-reference/users/delete-user"
             ]
+          },
+          {
+            "group": "Verification",
+            "expanded": false,
+            "pages": [
+              "api-reference/verification/submit-kyc",
+              "api-reference/verification/create-or-resume-kyc-inq",
+              "api-reference/verification/sync-kyc-with-persona",
+              "api-reference/verification/get-kyc-status",
+              "api-reference/verification/submit-kyb",
+              "api-reference/verification/get-kyb-status"
+            ]
           }
         ]
       },
