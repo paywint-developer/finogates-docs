@@ -122,6 +122,37 @@
               "api-reference/cards/transfer-card-to-wallet",
               "api-reference/cards/list-cards-for-user"
             ]
+          },
+          {
+            "group": "International Payouts & Payins",
+            "expanded": false,
+            "pages": [
+              "api-reference/international-payouts-payins/list-beneficiaries",
+              "api-reference/international-payouts-payins/create-beneficiary",
+              "api-reference/international-payouts-payins/branches",
+              "api-reference/international-payouts-payins/catalogue-account-types",
+              "api-reference/international-payouts-payins/catalogue-business-types",
+              "api-reference/international-payouts-payins/catalogue-cities",
+              "api-reference/international-payouts-payins/catalogue-countries",
+              "api-reference/international-payouts-payins/catalogue-currencies",
+              "api-reference/international-payouts-payins/catalogue-document-types",
+              "api-reference/international-payouts-payins/catalogue-states",
+              "api-reference/international-payouts-payins/payer-rules",
+              "api-reference/international-payouts-payins/payers",
+              "api-reference/international-payouts-payins/payin-catalogue-countries",
+              "api-reference/international-payouts-payins/payin-catalogue-merchant-countries",
+              "api-reference/international-payouts-payins/payin-choose-method",
+              "api-reference/international-payouts-payins/create-payin",
+              "api-reference/international-payouts-payins/payin-payment-methods",
+              "api-reference/international-payouts-payins/payin-refund",
+              "api-reference/international-payouts-payins/payin-status",
+              "api-reference/international-payouts-payins/process-payout",
+              "api-reference/international-payouts-payins/payout-status",
+              "api-reference/international-payouts-payins/rates",
+              "api-reference/international-payouts-payins/list-senders",
+              "api-reference/international-payouts-payins/create-sender",
+              "api-reference/international-payouts-payins/retry-payout"
+            ]
           }
         ]
       },
