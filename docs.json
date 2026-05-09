@@ -97,6 +97,15 @@
               "api-reference/payees/create-destination",
               "api-reference/payees/revoke-destination"
             ]
+          },
+          {
+            "group": "Payments",
+            "expanded": false,
+            "pages": [
+              "api-reference/payments/list-payments",
+              "api-reference/payments/create-payment",
+              "api-reference/payments/get-payment"
+            ]
           }
         ]
       },
