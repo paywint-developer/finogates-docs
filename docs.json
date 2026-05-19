@@ -223,7 +223,7 @@
   ],
   "api": {
     "openapi": {
-      "source": "https://api-sandbox.fg.wintpay.com/openapi-platform.json",
+      "source": "https://api-sandbox.fg.wintpay.com/openapi-v1-platform.json",
       "directory": "api-reference"
     }
   },
