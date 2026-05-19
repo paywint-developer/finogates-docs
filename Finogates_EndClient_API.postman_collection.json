@@ -1,0 +1,1119 @@
+{
+  "info": {
+    "name": "Finogates End-Client API",
+    "_postman_id": "fg-endclient-2026-05-19",
+    "description": "Public platform API for businesses integrating Finogates. OAuth2 client_credentials.\n\nSetup:\n1. Import the Sandbox or Production environment.\n2. Set client_id and client_secret.\n3. Run `Auth > Get Access Token`. Token is stored automatically (24 min TTL).\n4. Mode (sandbox/production) is resolved from the hostname — no header required.\n5. Money is in major units. Money-moving POSTs auto-generate Idempotency-Key.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "if (!pm.collectionVariables.get('idempotency_key')) {",
+          "  pm.collectionVariables.set('idempotency_key', 'idem-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10));",
+          "}"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    { "key": "idempotency_key", "value": "" },
+    { "key": "access_token", "value": "" },
+    { "key": "user_id", "value": "" },
+    { "key": "wallet_id", "value": "" },
+    { "key": "destination_wallet_id", "value": "" },
+    { "key": "product_id", "value": "" },
+    { "key": "payment_method_id", "value": "" },
+    { "key": "payee_id", "value": "" },
+    { "key": "payee_destination_id", "value": "" },
+    { "key": "payment_id", "value": "" },
+    { "key": "card_id", "value": "" },
+    { "key": "vba_id", "value": "" },
+    { "key": "kyb_id", "value": "" },
+    { "key": "kyb_check_id", "value": "" },
+    { "key": "card_acquiring_id", "value": "" },
+    { "key": "webhook_id", "value": "" },
+    { "key": "webhook_secret", "value": "" },
+    { "key": "crypto_wallet_id", "value": "" },
+    { "key": "crypto_transfer_id", "value": "" },
+    { "key": "crypto_withdrawal_id", "value": "" },
+    { "key": "crypto_vault_request_id", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Liveness",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/health", "host": ["{{base_url}}"], "path": ["health"] }
+          }
+        },
+        {
+          "name": "Readiness",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/ready", "host": ["{{base_url}}"], "path": ["ready"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Get Access Token",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/v1/platform/auth/token", "host": ["{{base_url}}"], "path": ["v1", "platform", "auth", "token"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"client_id\": \"{{client_id}}\",\n  \"client_secret\": \"{{client_secret}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const data = pm.response.json().data || pm.response.json();",
+                  "  pm.collectionVariables.set('access_token', data.access_token);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Catalog",
+      "item": [
+        {
+          "name": "List Products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/catalog/products?limit=50&offset=0", "host": ["{{base_url}}"], "path": ["v1", "platform", "catalog", "products"], "query": [{ "key": "limit", "value": "50" }, { "key": "offset", "value": "0" }] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const j = pm.response.json();",
+                  "  const list = (j.data && j.data.items) || j.data || j.items || [];",
+                  "  if (list.length && list[0].id) pm.collectionVariables.set('product_id', list[0].id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Product",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/catalog/products/{{product_id}}", "host": ["{{base_url}}"], "path": ["v1", "platform", "catalog", "products", "{{product_id}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/v1/platform/users", "host": ["{{base_url}}"], "path": ["v1", "platform", "users"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe+{{$timestamp}}@example.com\",\n  \"wallet_name\": \"Primary\",\n  \"currency\": \"USD\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code < 400) {",
+                  "  const data = pm.response.json().data || pm.response.json();",
+                  "  const user = data.user || data;",
+                  "  const wallet = data.wallet;",
+                  "  if (user && user.id) pm.collectionVariables.set('user_id', user.id);",
+                  "  if (wallet && wallet.id) pm.collectionVariables.set('wallet_id', wallet.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/users?limit=50&offset=0", "host": ["{{base_url}}"], "path": ["v1", "platform", "users"], "query": [{ "key": "limit", "value": "50" }, { "key": "offset", "value": "0" }] }
+          }
+        },
+        {
+          "name": "Get User",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/users/{{user_id}}", "host": ["{{base_url}}"], "path": ["v1", "platform", "users", "{{user_id}}"] }
+          }
+        },
+        {
+          "name": "Deactivate User",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/users/{{user_id}}", "host": ["{{base_url}}"], "path": ["v1", "platform", "users", "{{user_id}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wallets",
+      "item": [
+        {
+          "name": "Get Wallet",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/wallets/{{user_id}}", "host": ["{{base_url}}"], "path": ["v1", "platform", "wallets", "{{user_id}}"] }
+          }
+        },
+        {
+          "name": "Get Wallet Activity",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/wallets/{{user_id}}/activity", "host": ["{{base_url}}"], "path": ["v1", "platform", "wallets", "{{user_id}}", "activity"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Payment Methods",
+      "item": [
+        {
+          "name": "Add Bank Account",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/v1/platform/payment-methods/bank", "host": ["{{base_url}}"], "path": ["v1", "platform", "payment-methods", "bank"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": \"{{user_id}}\",\n  \"account_holder_name\": \"John Doe\",\n  \"bank_account_number\": \"000123456789\",\n  \"routing_number\": \"021000021\",\n  \"account_type\": \"checking\",\n  \"bank_name\": \"Chase Bank\",\n  \"nickname\": \"Checking\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code < 400) {",
+                  "  const data = pm.response.json().data || pm.response.json();",
+                  "  if (data && data.id) pm.collectionVariables.set('payment_method_id', data.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Hosted Add-Card URL",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/payment-methods/add-card/{{user_id}}", "host": ["{{base_url}}"], "path": ["v1", "platform", "payment-methods", "add-card", "{{user_id}}"] }
+          }
+        },
+        {
+          "name": "Get Hosted Add-Bank URL",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/payment-methods/add-bank/{{user_id}}?parent_origin=https://app.example.com", "host": ["{{base_url}}"], "path": ["v1", "platform", "payment-methods", "add-bank", "{{user_id}}"], "query": [{ "key": "parent_origin", "value": "https://app.example.com" }] }
+          }
+        },
+        {
+          "name": "List Payment Methods",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/payment-methods/{{user_id}}?limit=50&offset=0", "host": ["{{base_url}}"], "path": ["v1", "platform", "payment-methods", "{{user_id}}"], "query": [{ "key": "limit", "value": "50" }, { "key": "offset", "value": "0" }] }
+          }
+        },
+        {
+          "name": "List Cards",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/payment-methods/cards/{{user_id}}", "host": ["{{base_url}}"], "path": ["v1", "platform", "payment-methods", "cards", "{{user_id}}"] }
+          }
+        },
+        {
+          "name": "List Banks",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/payment-methods/banks/{{user_id}}", "host": ["{{base_url}}"], "path": ["v1", "platform", "payment-methods", "banks", "{{user_id}}"] }
+          }
+        },
+        {
+          "name": "Remove Payment Method",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/payment-methods/{{payment_method_id}}", "host": ["{{base_url}}"], "path": ["v1", "platform", "payment-methods", "{{payment_method_id}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Payees",
+      "item": [
+        {
+          "name": "Create Payee",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/v1/platform/payees?user_id={{user_id}}", "host": ["{{base_url}}"], "path": ["v1", "platform", "payees"], "query": [{ "key": "user_id", "value": "{{user_id}}" }] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"display_name\": \"Acme Vendor LLC\",\n  \"email\": \"ap@acmevendor.com\",\n  \"phone\": \"+15551234567\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code < 400) {",
+                  "  const data = pm.response.json().data || pm.response.json();",
+                  "  if (data && data.id) pm.collectionVariables.set('payee_id', data.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List Payees",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/payees?user_id={{user_id}}&limit=50&offset=0", "host": ["{{base_url}}"], "path": ["v1", "platform", "payees"], "query": [{ "key": "user_id", "value": "{{user_id}}" }, { "key": "limit", "value": "50" }, { "key": "offset", "value": "0" }] }
+          }
+        },
+        {
+          "name": "Get Payee",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/payees/{{payee_id}}?user_id={{user_id}}&includeDestinations=true", "host": ["{{base_url}}"], "path": ["v1", "platform", "payees", "{{payee_id}}"], "query": [{ "key": "user_id", "value": "{{user_id}}" }, { "key": "includeDestinations", "value": "true" }] }
+          }
+        },
+        {
+          "name": "Update Payee",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/v1/platform/payees/{{payee_id}}?user_id={{user_id}}", "host": ["{{base_url}}"], "path": ["v1", "platform", "payees", "{{payee_id}}"], "query": [{ "key": "user_id", "value": "{{user_id}}" }] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"display_name\": \"Acme Vendor (renamed)\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Archive Payee",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/payees/{{payee_id}}?user_id={{user_id}}", "host": ["{{base_url}}"], "path": ["v1", "platform", "payees", "{{payee_id}}"], "query": [{ "key": "user_id", "value": "{{user_id}}" }] }
+          }
+        },
+        {
+          "name": "Add Bank Destination",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/v1/platform/payees/{{payee_id}}/destinations?user_id={{user_id}}", "host": ["{{base_url}}"], "path": ["v1", "platform", "payees", "{{payee_id}}", "destinations"], "query": [{ "key": "user_id", "value": "{{user_id}}" }] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"destination_type\": \"bank\",\n  \"nickname\": \"Operating account\",\n  \"account_holder_name\": \"Acme Vendor LLC\",\n  \"bank_account_number\": \"000987654321\",\n  \"routing_number\": \"021000021\",\n  \"account_type\": \"checking\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code < 400) {",
+                  "  const data = pm.response.json().data || pm.response.json();",
+                  "  if (data && data.id) pm.collectionVariables.set('payee_destination_id', data.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Add Email Destination",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/v1/platform/payees/{{payee_id}}/destinations?user_id={{user_id}}", "host": ["{{base_url}}"], "path": ["v1", "platform", "payees", "{{payee_id}}", "destinations"], "query": [{ "key": "user_id", "value": "{{user_id}}" }] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"destination_type\": \"email\",\n  \"nickname\": \"Vendor email\",\n  \"email\": \"ap@acmevendor.com\"\n}"
+            }
+          }
+        },
+        {
+          "name": "List Destinations",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/payees/{{payee_id}}/destinations?user_id={{user_id}}", "host": ["{{base_url}}"], "path": ["v1", "platform", "payees", "{{payee_id}}", "destinations"], "query": [{ "key": "user_id", "value": "{{user_id}}" }] }
+          }
+        },
+        {
+          "name": "Revoke Destination",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/payees/{{payee_id}}/destinations/{{payee_destination_id}}?user_id={{user_id}}", "host": ["{{base_url}}"], "path": ["v1", "platform", "payees", "{{payee_id}}", "destinations", "{{payee_destination_id}}"], "query": [{ "key": "user_id", "value": "{{user_id}}" }] }
+          }
+        },
+        {
+          "name": "Get Checkbook State",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/payees/{{payee_id}}/destinations/{{payee_destination_id}}/checkbook", "host": ["{{base_url}}"], "path": ["v1", "platform", "payees", "{{payee_id}}", "destinations", "{{payee_destination_id}}", "checkbook"] }
+          }
+        },
+        {
+          "name": "Disable Checkbook Attachment",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/payees/{{payee_id}}/destinations/{{payee_destination_id}}/checkbook", "host": ["{{base_url}}"], "path": ["v1", "platform", "payees", "{{payee_id}}", "destinations", "{{payee_destination_id}}", "checkbook"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Payments",
+      "item": [
+        {
+          "name": "Submit Funding",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Idempotency-Key", "value": "{{idempotency_key}}" }
+            ],
+            "url": { "raw": "{{base_url}}/v1/platform/payments", "host": ["{{base_url}}"], "path": ["v1", "platform", "payments"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": \"{{user_id}}\",\n  \"wallet_id\": \"{{wallet_id}}\",\n  \"product_id\": \"{{product_id}}\",\n  \"payment_method_id\": \"{{payment_method_id}}\",\n  \"amount\": 100.00,\n  \"currency\": \"USD\",\n  \"intent_type\": \"funding\",\n  \"idempotency_key\": \"{{idempotency_key}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code < 400) {",
+                  "  const data = pm.response.json().data || pm.response.json();",
+                  "  if (data && (data.payment_id || data.id)) pm.collectionVariables.set('payment_id', data.payment_id || data.id);",
+                  "}",
+                  "pm.collectionVariables.unset('idempotency_key');"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Submit Payout",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Idempotency-Key", "value": "{{idempotency_key}}" }
+            ],
+            "url": { "raw": "{{base_url}}/v1/platform/payments", "host": ["{{base_url}}"], "path": ["v1", "platform", "payments"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": \"{{user_id}}\",\n  \"wallet_id\": \"{{wallet_id}}\",\n  \"product_id\": \"{{product_id}}\",\n  \"payee_destination_id\": \"{{payee_destination_id}}\",\n  \"amount\": 50.00,\n  \"currency\": \"USD\",\n  \"intent_type\": \"payout\",\n  \"idempotency_key\": \"{{idempotency_key}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code < 400) {",
+                  "  const data = pm.response.json().data || pm.response.json();",
+                  "  if (data && (data.payment_id || data.id)) pm.collectionVariables.set('payment_id', data.payment_id || data.id);",
+                  "}",
+                  "pm.collectionVariables.unset('idempotency_key');"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Submit Transfer",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Idempotency-Key", "value": "{{idempotency_key}}" }
+            ],
+            "url": { "raw": "{{base_url}}/v1/platform/payments", "host": ["{{base_url}}"], "path": ["v1", "platform", "payments"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": \"{{user_id}}\",\n  \"wallet_id\": \"{{wallet_id}}\",\n  \"destination_wallet_id\": \"{{destination_wallet_id}}\",\n  \"amount\": 25.00,\n  \"currency\": \"USD\",\n  \"intent_type\": \"transfer\",\n  \"hold\": false,\n  \"idempotency_key\": \"{{idempotency_key}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.collectionVariables.unset('idempotency_key');"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Submit Relay",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Idempotency-Key", "value": "{{idempotency_key}}" }
+            ],
+            "url": { "raw": "{{base_url}}/v1/platform/payments", "host": ["{{base_url}}"], "path": ["v1", "platform", "payments"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": \"{{user_id}}\",\n  \"wallet_id\": \"{{wallet_id}}\",\n  \"payment_method_id\": \"{{payment_method_id}}\",\n  \"payee_destination_id\": \"{{payee_destination_id}}\",\n  \"amount\": 75.00,\n  \"currency\": \"USD\",\n  \"intent_type\": \"relay\",\n  \"idempotency_key\": \"{{idempotency_key}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.collectionVariables.unset('idempotency_key');"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List Payments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/payments?limit=50&offset=0", "host": ["{{base_url}}"], "path": ["v1", "platform", "payments"], "query": [{ "key": "limit", "value": "50" }, { "key": "offset", "value": "0" }] }
+          }
+        },
+        {
+          "name": "Get Payment",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/payments/{{payment_id}}", "host": ["{{base_url}}"], "path": ["v1", "platform", "payments", "{{payment_id}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cards",
+      "item": [
+        {
+          "name": "List Cards",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/cards/{{user_id}}?limit=50&offset=0", "host": ["{{base_url}}"], "path": ["v1", "platform", "cards", "{{user_id}}"], "query": [{ "key": "limit", "value": "50" }, { "key": "offset", "value": "0" }] }
+          }
+        },
+        {
+          "name": "Get Card",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/cards/{{card_id}}/detail", "host": ["{{base_url}}"], "path": ["v1", "platform", "cards", "{{card_id}}", "detail"] }
+          }
+        },
+        {
+          "name": "Get Card Balance",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/cards/{{card_id}}/balance", "host": ["{{base_url}}"], "path": ["v1", "platform", "cards", "{{card_id}}", "balance"] }
+          }
+        },
+        {
+          "name": "List Transactions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/cards/{{card_id}}/transactions?limit=50&offset=0", "host": ["{{base_url}}"], "path": ["v1", "platform", "cards", "{{card_id}}", "transactions"], "query": [{ "key": "limit", "value": "50" }, { "key": "offset", "value": "0" }] }
+          }
+        },
+        {
+          "name": "Reload Card",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/v1/platform/cards/{{card_id}}/reload", "host": ["{{base_url}}"], "path": ["v1", "platform", "cards", "{{card_id}}", "reload"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 25.00,\n  \"currency\": \"USD\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Transfer to Wallet",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/v1/platform/cards/{{card_id}}/transfer", "host": ["{{base_url}}"], "path": ["v1", "platform", "cards", "{{card_id}}", "transfer"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 10.00,\n  \"currency\": \"USD\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Freeze Card",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/cards/{{card_id}}/status?state=freeze", "host": ["{{base_url}}"], "path": ["v1", "platform", "cards", "{{card_id}}", "status"], "query": [{ "key": "state", "value": "freeze" }] }
+          }
+        },
+        {
+          "name": "Unfreeze Card",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/cards/{{card_id}}/status?state=unfreeze", "host": ["{{base_url}}"], "path": ["v1", "platform", "cards", "{{card_id}}", "status"], "query": [{ "key": "state", "value": "unfreeze" }] }
+          }
+        },
+        {
+          "name": "Sync Card",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/cards/{{card_id}}/sync", "host": ["{{base_url}}"], "path": ["v1", "platform", "cards", "{{card_id}}", "sync"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Virtual Bank Accounts",
+      "item": [
+        {
+          "name": "Create Virtual Bank Account",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/v1/platform/virtual-bank-accounts", "host": ["{{base_url}}"], "path": ["v1", "platform", "virtual-bank-accounts"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": \"{{user_id}}\",\n  \"nickname\": \"Primary Business Account\",\n  \"account_type\": \"paywint_business\",\n  \"currency\": \"USD\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code < 400) {",
+                  "  const data = pm.response.json().data || pm.response.json();",
+                  "  if (data && data.id) pm.collectionVariables.set('vba_id', data.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List Virtual Bank Accounts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/virtual-bank-accounts?limit=50&offset=0", "host": ["{{base_url}}"], "path": ["v1", "platform", "virtual-bank-accounts"], "query": [{ "key": "limit", "value": "50" }, { "key": "offset", "value": "0" }] }
+          }
+        },
+        {
+          "name": "Get Virtual Bank Account",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/virtual-bank-accounts/{{vba_id}}", "host": ["{{base_url}}"], "path": ["v1", "platform", "virtual-bank-accounts", "{{vba_id}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Compliance",
+      "item": [
+        {
+          "name": "Get My Compliance",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/me/compliance", "host": ["{{base_url}}"], "path": ["v1", "platform", "me", "compliance"] }
+          }
+        },
+        {
+          "name": "Get Tenant Compliance",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/compliance", "host": ["{{base_url}}"], "path": ["v1", "platform", "compliance"] }
+          }
+        },
+        {
+          "name": "Get User Compliance Summary",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/users/{{user_id}}/compliance-summary", "host": ["{{base_url}}"], "path": ["v1", "platform", "users", "{{user_id}}", "compliance-summary"] }
+          }
+        },
+        {
+          "name": "Get User Compliance",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/users/{{user_id}}/compliance", "host": ["{{base_url}}"], "path": ["v1", "platform", "users", "{{user_id}}", "compliance"] }
+          }
+        },
+        {
+          "name": "Start User KYC",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/users/{{user_id}}/kyc/start", "host": ["{{base_url}}"], "path": ["v1", "platform", "users", "{{user_id}}", "kyc", "start"] }
+          }
+        },
+        {
+          "name": "Sync User KYC",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/users/{{user_id}}/kyc/sync", "host": ["{{base_url}}"], "path": ["v1", "platform", "users", "{{user_id}}", "kyc", "sync"] }
+          }
+        },
+        {
+          "name": "List User KYBs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/users/{{user_id}}/kybs", "host": ["{{base_url}}"], "path": ["v1", "platform", "users", "{{user_id}}", "kybs"] }
+          }
+        },
+        {
+          "name": "Get User KYB",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/users/{{user_id}}/kybs/{{kyb_id}}", "host": ["{{base_url}}"], "path": ["v1", "platform", "users", "{{user_id}}", "kybs", "{{kyb_id}}"] }
+          }
+        },
+        {
+          "name": "Create User KYB (multipart)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/users/{{user_id}}/kybs", "host": ["{{base_url}}"], "path": ["v1", "platform", "users", "{{user_id}}", "kybs"] },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "payload",
+                  "type": "text",
+                  "value": "{\"business_legal_name\":\"Acme Inc.\",\"business_ein\":\"12-3456789\",\"business_data\":{}}"
+                },
+                {
+                  "key": "files",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code < 400) {",
+                  "  const data = pm.response.json().data || pm.response.json();",
+                  "  if (data && data.id) pm.collectionVariables.set('kyb_id', data.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List Card Acquiring",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/users/{{user_id}}/card-acquiring", "host": ["{{base_url}}"], "path": ["v1", "platform", "users", "{{user_id}}", "card-acquiring"] }
+          }
+        },
+        {
+          "name": "Create Card Acquiring",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/v1/platform/users/{{user_id}}/card-acquiring", "host": ["{{base_url}}"], "path": ["v1", "platform", "users", "{{user_id}}", "card-acquiring"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"kyb_compliance_check_id\": \"{{kyb_check_id}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code < 400) {",
+                  "  const data = pm.response.json().data || pm.response.json();",
+                  "  if (data && data.id) pm.collectionVariables.set('card_acquiring_id', data.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Card Acquiring",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/users/{{user_id}}/card-acquiring/{{card_acquiring_id}}", "host": ["{{base_url}}"], "path": ["v1", "platform", "users", "{{user_id}}", "card-acquiring", "{{card_acquiring_id}}"] }
+          }
+        },
+        {
+          "name": "Update Card Acquiring",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/v1/platform/users/{{user_id}}/card-acquiring/{{card_acquiring_id}}", "host": ["{{base_url}}"], "path": ["v1", "platform", "users", "{{user_id}}", "card-acquiring", "{{card_acquiring_id}}"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"application\": {}\n}"
+            }
+          }
+        },
+        {
+          "name": "Submit Card Acquiring",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/users/{{user_id}}/card-acquiring/{{card_acquiring_id}}/submit", "host": ["{{base_url}}"], "path": ["v1", "platform", "users", "{{user_id}}", "card-acquiring", "{{card_acquiring_id}}", "submit"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Crypto",
+      "item": [
+        {
+          "name": "List Assets",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/crypto/assets?include_gas_only=false", "host": ["{{base_url}}"], "path": ["v1", "platform", "crypto", "assets"], "query": [{ "key": "include_gas_only", "value": "false" }] }
+          }
+        },
+        {
+          "name": "List Wallets",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/crypto/wallets?user_id={{user_id}}&limit=50&offset=0", "host": ["{{base_url}}"], "path": ["v1", "platform", "crypto", "wallets"], "query": [{ "key": "user_id", "value": "{{user_id}}" }, { "key": "asset_code", "value": "", "disabled": true }, { "key": "network_code", "value": "", "disabled": true }, { "key": "limit", "value": "50" }, { "key": "offset", "value": "0" }] }
+          }
+        },
+        {
+          "name": "Create Wallet",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/v1/platform/crypto/wallets", "host": ["{{base_url}}"], "path": ["v1", "platform", "crypto", "wallets"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": \"{{user_id}}\",\n  \"asset_code\": \"usdt\",\n  \"network_code\": \"tron\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code < 400) {",
+                  "  const data = pm.response.json().data || pm.response.json();",
+                  "  if (data && data.id) pm.collectionVariables.set('crypto_wallet_id', data.id);",
+                  "  if (data && data.request_id) pm.collectionVariables.set('crypto_vault_request_id', data.request_id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Wallet",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/crypto/wallets/{{crypto_wallet_id}}", "host": ["{{base_url}}"], "path": ["v1", "platform", "crypto", "wallets", "{{crypto_wallet_id}}"] }
+          }
+        },
+        {
+          "name": "Get Wallet Balance",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/crypto/wallets/{{crypto_wallet_id}}/balance", "host": ["{{base_url}}"], "path": ["v1", "platform", "crypto", "wallets", "{{crypto_wallet_id}}", "balance"] }
+          }
+        },
+        {
+          "name": "List Balances",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/crypto/balances?user_id={{user_id}}", "host": ["{{base_url}}"], "path": ["v1", "platform", "crypto", "balances"], "query": [{ "key": "user_id", "value": "{{user_id}}" }] }
+          }
+        },
+        {
+          "name": "List Transactions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/crypto/transactions?user_id={{user_id}}&limit=50&offset=0", "host": ["{{base_url}}"], "path": ["v1", "platform", "crypto", "transactions"], "query": [{ "key": "user_id", "value": "{{user_id}}" }, { "key": "direction", "value": "", "disabled": true }, { "key": "status", "value": "", "disabled": true }, { "key": "asset_code", "value": "", "disabled": true }, { "key": "network_code", "value": "", "disabled": true }, { "key": "limit", "value": "50" }, { "key": "offset", "value": "0" }] }
+          }
+        },
+        {
+          "name": "List Vault Requests",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/crypto/vault-requests?limit=50&offset=0", "host": ["{{base_url}}"], "path": ["v1", "platform", "crypto", "vault-requests"], "query": [{ "key": "status", "value": "", "disabled": true }, { "key": "limit", "value": "50" }, { "key": "offset", "value": "0" }] }
+          }
+        },
+        {
+          "name": "Get Vault Request",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/crypto/vault-requests/{{crypto_vault_request_id}}", "host": ["{{base_url}}"], "path": ["v1", "platform", "crypto", "vault-requests", "{{crypto_vault_request_id}}"] }
+          }
+        },
+        {
+          "name": "Create Transfer",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Idempotency-Key", "value": "{{idempotency_key}}" }
+            ],
+            "url": { "raw": "{{base_url}}/v1/platform/crypto/transfers", "host": ["{{base_url}}"], "path": ["v1", "platform", "crypto", "transfers"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"from_user_id\": \"{{user_id}}\",\n  \"to_user_id\": \"{{destination_wallet_id}}\",\n  \"asset_code\": \"usdt\",\n  \"network_code\": \"tron\",\n  \"amount\": 10.0,\n  \"note\": \"P2P transfer\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code < 400) {",
+                  "  const data = pm.response.json().data || pm.response.json();",
+                  "  if (data && data.id) pm.collectionVariables.set('crypto_transfer_id', data.id);",
+                  "}",
+                  "pm.collectionVariables.unset('idempotency_key');"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Transfer",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/crypto/transfers/{{crypto_transfer_id}}", "host": ["{{base_url}}"], "path": ["v1", "platform", "crypto", "transfers", "{{crypto_transfer_id}}"] }
+          }
+        },
+        {
+          "name": "Quote Withdrawal",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/v1/platform/crypto/withdrawals/quote", "host": ["{{base_url}}"], "path": ["v1", "platform", "crypto", "withdrawals", "quote"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": \"{{user_id}}\",\n  \"asset_code\": \"usdt\",\n  \"network_code\": \"tron\",\n  \"amount\": 50.0\n}"
+            }
+          }
+        },
+        {
+          "name": "Create Withdrawal",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Idempotency-Key", "value": "{{idempotency_key}}" }
+            ],
+            "url": { "raw": "{{base_url}}/v1/platform/crypto/withdrawals", "host": ["{{base_url}}"], "path": ["v1", "platform", "crypto", "withdrawals"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": \"{{user_id}}\",\n  \"asset_code\": \"usdt\",\n  \"network_code\": \"tron\",\n  \"amount\": 25.0,\n  \"destination_address\": \"TXYZabcdefghijklmnopqrstuvwxyz0123\",\n  \"destination_tag\": null,\n  \"note\": \"Withdrawal\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code < 400) {",
+                  "  const data = pm.response.json().data || pm.response.json();",
+                  "  if (data && data.id) pm.collectionVariables.set('crypto_withdrawal_id', data.id);",
+                  "}",
+                  "pm.collectionVariables.unset('idempotency_key');"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Withdrawal",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/crypto/withdrawals/{{crypto_withdrawal_id}}", "host": ["{{base_url}}"], "path": ["v1", "platform", "crypto", "withdrawals", "{{crypto_withdrawal_id}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Webhooks",
+      "item": [
+        {
+          "name": "List Event Types",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/webhooks/event-types", "host": ["{{base_url}}"], "path": ["v1", "platform", "webhooks", "event-types"] }
+          }
+        },
+        {
+          "name": "Create Webhook",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/v1/platform/webhooks", "host": ["{{base_url}}"], "path": ["v1", "platform", "webhooks"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"url\": \"https://webhook.site/REPLACE_WITH_YOUR_URL\",\n  \"events\": [],\n  \"event_groups\": [\"payment\", \"compliance\"],\n  \"description\": \"Test webhook\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code < 400) {",
+                  "  const j = pm.response.json();",
+                  "  const data = j.data || j;",
+                  "  const wh = data.webhook || data;",
+                  "  if (wh && wh.id) pm.collectionVariables.set('webhook_id', wh.id);",
+                  "  if (data.secret) pm.collectionVariables.set('webhook_secret', data.secret);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List Webhooks",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/webhooks?limit=50&offset=0", "host": ["{{base_url}}"], "path": ["v1", "platform", "webhooks"], "query": [{ "key": "limit", "value": "50" }, { "key": "offset", "value": "0" }] }
+          }
+        },
+        {
+          "name": "Delete Webhook",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{base_url}}/v1/platform/webhooks/{{webhook_id}}", "host": ["{{base_url}}"], "path": ["v1", "platform", "webhooks", "{{webhook_id}}"] }
+          }
+        },
+        {
+          "name": "Replay Failed Deliveries",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/v1/platform/webhooks/deliveries/replay-failed", "host": ["{{base_url}}"], "path": ["v1", "platform", "webhooks", "deliveries", "replay-failed"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"endpoint_id\": \"{{webhook_id}}\",\n  \"limit\": 100\n}"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
