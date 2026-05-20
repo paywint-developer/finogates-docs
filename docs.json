@@ -53,8 +53,8 @@
               "api-reference/payees/create-destination",
               "api-reference/payees/list-destinations",
               "api-reference/payees/revoke-destination",
-              "api-reference/payees/get-destination-s-ach-push-onboarding-state",
-              "api-reference/payees/disable-destination-s-ach-push-attachment"
+              "api-reference/payees/get-ach-push-status",
+              "api-reference/payees/disable-ach-push"
             ]
           },
           {
@@ -62,8 +62,8 @@
             "expanded": false,
             "pages": [
               "api-reference/verification/get-platform-verification",
-              "api-reference/verification/list-kycs-of-all-users",
-              "api-reference/verification/list-kybs-of-all-users",
+              "api-reference/verification/list-kyc-records",
+              "api-reference/verification/list-kyb-records",
               "api-reference/verification/get-platform-verification-status-only",
               "api-reference/verification/get-user-verification-summary",
               "api-reference/verification/get-user-verification",
@@ -78,8 +78,8 @@
             "expanded": false,
             "pages": [
               "api-reference/bank-accounts/add-bank-account",
-              "api-reference/bank-accounts/list-bank-payment-methods",
-              "api-reference/bank-accounts/get-hosted-add-bank-url",
+              "api-reference/bank-accounts/list-bank-accounts",
+              "api-reference/bank-accounts/add-account-instantly",
               "api-reference/bank-accounts/remove-bank-account",
               "api-reference/bank-accounts/apply-for-virtual-bank-account",
               "api-reference/bank-accounts/list-virtual-bank-accounts",
@@ -90,8 +90,8 @@
             "group": "Card Processing",
             "expanded": false,
             "pages": [
-              "api-reference/card-processing/list-card-payment-methods",
-              "api-reference/card-processing/get-hosted-add-card-url",
+              "api-reference/card-processing/list-cards",
+              "api-reference/card-processing/add-card",
               "api-reference/card-processing/remove-card",
               "api-reference/card-processing/create-card-processing-application",
               "api-reference/card-processing/get-card-processing-record-s"
@@ -138,8 +138,8 @@
             "group": "Pending Applications",
             "expanded": false,
             "pages": [
-              "api-reference/pending-applications/list-pending-applications-platform-read-only",
-              "api-reference/pending-applications/get-pending-application-platform-read-only"
+              "api-reference/pending-applications/list-pending-applications",
+              "api-reference/pending-applications/get-pending-application"
             ]
           },
           {
@@ -184,11 +184,11 @@
             "pages": [
               "api-reference/phone-numbers/issue-voice-access-token",
               "api-reference/phone-numbers/list-available-numbers",
-              "api-reference/phone-numbers/get-user-phone-numbers-endpoint",
+              "api-reference/phone-numbers/get-user-phone-numbers",
               "api-reference/phone-numbers/request-phone-number-for-user",
               "api-reference/phone-numbers/issue-voice-access-token-for-user",
               "api-reference/phone-numbers/get-call-status",
-              "api-reference/phone-numbers/update-phone-number-status-endpoint",
+              "api-reference/phone-numbers/update-phone-number-status",
               "api-reference/phone-numbers/delete-phone-number"
             ]
           },
