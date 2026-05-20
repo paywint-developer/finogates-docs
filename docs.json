@@ -25,10 +25,10 @@
         "icon": "square-terminal",
         "groups": [
           {
-            "group": "Authentication",
+            "group": "Auth",
             "expanded": false,
             "pages": [
-              "api-reference/authentication/auth-token"
+              "api-reference/auth/exchange-client-token"
             ]
           },
           {
@@ -38,19 +38,108 @@
               "api-reference/users/create-user",
               "api-reference/users/list-users",
               "api-reference/users/get-user",
-              "api-reference/users/delete-user"
+              "api-reference/users/deactivate-user"
+            ]
+          },
+          {
+            "group": "Payees",
+            "expanded": false,
+            "pages": [
+              "api-reference/payees/create-payee",
+              "api-reference/payees/list-payees",
+              "api-reference/payees/get-payee",
+              "api-reference/payees/update-payee",
+              "api-reference/payees/archive-payee",
+              "api-reference/payees/create-destination",
+              "api-reference/payees/list-destinations",
+              "api-reference/payees/revoke-destination",
+              "api-reference/payees/get-destination-s-ach-push-onboarding-state",
+              "api-reference/payees/disable-destination-s-ach-push-attachment"
             ]
           },
           {
             "group": "Verification",
             "expanded": false,
             "pages": [
-              "api-reference/verification/submit-kyc",
-              "api-reference/verification/create-or-resume-kyc-inq",
-              "api-reference/verification/sync-kyc-with-persona",
-              "api-reference/verification/get-kyc-status",
-              "api-reference/verification/submit-kyb",
-              "api-reference/verification/get-kyb-status"
+              "api-reference/verification/get-platform-verification",
+              "api-reference/verification/list-kycs-of-all-users",
+              "api-reference/verification/list-kybs-of-all-users",
+              "api-reference/verification/get-platform-verification-status-only",
+              "api-reference/verification/get-user-verification-summary",
+              "api-reference/verification/get-user-verification",
+              "api-reference/verification/list-user-kyb-records",
+              "api-reference/verification/start-user-kyc",
+              "api-reference/verification/sync-user-kyc",
+              "api-reference/verification/create-user-kyb-record"
+            ]
+          },
+          {
+            "group": "Bank Accounts",
+            "expanded": false,
+            "pages": [
+              "api-reference/bank-accounts/add-bank-account",
+              "api-reference/bank-accounts/list-bank-payment-methods",
+              "api-reference/bank-accounts/get-hosted-add-bank-url",
+              "api-reference/bank-accounts/remove-bank-account",
+              "api-reference/bank-accounts/apply-for-virtual-bank-account",
+              "api-reference/bank-accounts/list-virtual-bank-accounts",
+              "api-reference/bank-accounts/get-virtual-bank-account"
+            ]
+          },
+          {
+            "group": "Card Processing",
+            "expanded": false,
+            "pages": [
+              "api-reference/card-processing/list-card-payment-methods",
+              "api-reference/card-processing/get-hosted-add-card-url",
+              "api-reference/card-processing/remove-card",
+              "api-reference/card-processing/create-card-processing-application",
+              "api-reference/card-processing/get-card-processing-record-s"
+            ]
+          },
+          {
+            "group": "Digital Assets",
+            "expanded": false,
+            "pages": [
+              "api-reference/digital-assets/list-digital-asset-catalog",
+              "api-reference/digital-assets/list-digital-asset-wallets",
+              "api-reference/digital-assets/create-digital-asset-wallet",
+              "api-reference/digital-assets/list-digital-asset-balances",
+              "api-reference/digital-assets/get-digital-asset-wallet",
+              "api-reference/digital-assets/get-digital-asset-wallet-balance",
+              "api-reference/digital-assets/list-digital-asset-transactions",
+              "api-reference/digital-assets/list-digital-asset-vault-requests",
+              "api-reference/digital-assets/get-digital-asset-vault-request"
+            ]
+          },
+          {
+            "group": "International",
+            "expanded": false,
+            "pages": [
+              "api-reference/international/catalogue-countries",
+              "api-reference/international/catalogue-states",
+              "api-reference/international/catalogue-cities",
+              "api-reference/international/catalogue-currencies",
+              "api-reference/international/catalogue-document-types",
+              "api-reference/international/catalogue-account-types",
+              "api-reference/international/catalogue-business-types",
+              "api-reference/international/payers",
+              "api-reference/international/payer-rules",
+              "api-reference/international/branches",
+              "api-reference/international/rates",
+              "api-reference/international/rate-calculator",
+              "api-reference/international/balance",
+              "api-reference/international/create-an-international-payout",
+              "api-reference/international/platform-retry-payout",
+              "api-reference/international/platform-payout-status"
+            ]
+          },
+          {
+            "group": "Pending Applications",
+            "expanded": false,
+            "pages": [
+              "api-reference/pending-applications/list-pending-applications-platform-read-only",
+              "api-reference/pending-applications/get-pending-application-platform-read-only"
             ]
           },
           {
@@ -62,96 +151,74 @@
             ]
           },
           {
-            "group": "Payment Methods",
-            "expanded": false,
-            "pages": [
-              "api-reference/payments-methods/add-bank-account",
-              "api-reference/payments-methods/add-card",
-              "api-reference/payments-methods/remove-payment-method",
-              "api-reference/payments-methods/list-payment-methods",
-              "api-reference/payments-methods/list-bank-payment-methods",
-              "api-reference/payments-methods/list-card-payment-methods"
-            ]
-          },
-          {
-            "group": "Payees",
-            "expanded": false,
-            "pages": [
-              "api-reference/payees/list-payees",
-              "api-reference/payees/create-payee",
-              "api-reference/payees/get-payee",
-              "api-reference/payees/update-payee",
-              "api-reference/payees/archive-payee",
-              "api-reference/payees/list-destinations",
-              "api-reference/payees/create-destination",
-              "api-reference/payees/revoke-destination"
-            ]
-          },
-          {
             "group": "Payments",
             "expanded": false,
             "pages": [
+              "api-reference/payments/submit-payment",
               "api-reference/payments/list-payments",
-              "api-reference/payments/create-payment",
               "api-reference/payments/get-payment"
             ]
           },
           {
-            "group": "Cards",
+            "group": "Catalog",
             "expanded": false,
             "pages": [
-              "api-reference/cards/create-card-request",
-              "api-reference/cards/get-card-request",
-              "api-reference/cards/get-card-balance",
-              "api-reference/cards/get-card-detail",
-              "api-reference/cards/reload-card",
-              "api-reference/cards/freeze-or-unfreeze-card",
-              "api-reference/cards/sync-card-transactions",
-              "api-reference/cards/list-card-transactions",
-              "api-reference/cards/transfer-card-to-wallet",
-              "api-reference/cards/list-cards-for-user"
-            ]
-          },
-          {
-            "group": "International Payouts & Payins",
-            "expanded": false,
-            "pages": [
-              "api-reference/international-payouts-payins/list-beneficiaries",
-              "api-reference/international-payouts-payins/create-beneficiary",
-              "api-reference/international-payouts-payins/branches",
-              "api-reference/international-payouts-payins/catalogue-account-types",
-              "api-reference/international-payouts-payins/catalogue-business-types",
-              "api-reference/international-payouts-payins/catalogue-cities",
-              "api-reference/international-payouts-payins/catalogue-countries",
-              "api-reference/international-payouts-payins/catalogue-currencies",
-              "api-reference/international-payouts-payins/catalogue-document-types",
-              "api-reference/international-payouts-payins/catalogue-states",
-              "api-reference/international-payouts-payins/payer-rules",
-              "api-reference/international-payouts-payins/payers",
-              "api-reference/international-payouts-payins/payin-catalogue-countries",
-              "api-reference/international-payouts-payins/payin-catalogue-merchant-countries",
-              "api-reference/international-payouts-payins/payin-choose-method",
-              "api-reference/international-payouts-payins/create-payin",
-              "api-reference/international-payouts-payins/payin-payment-methods",
-              "api-reference/international-payouts-payins/payin-refund",
-              "api-reference/international-payouts-payins/payin-status",
-              "api-reference/international-payouts-payins/process-payout",
-              "api-reference/international-payouts-payins/payout-status",
-              "api-reference/international-payouts-payins/rates",
-              "api-reference/international-payouts-payins/list-senders",
-              "api-reference/international-payouts-payins/create-sender",
-              "api-reference/international-payouts-payins/retry-payout"
+              "api-reference/catalog/list-products",
+              "api-reference/catalog/get-product"
             ]
           },
           {
             "group": "Webhooks",
             "expanded": false,
             "pages": [
-              "api-reference/webhooks/list-webhooks",
-              "api-reference/webhooks/create-webhook",
-              "api-reference/webhooks/replay-failed-webhook-deliveries",
               "api-reference/webhooks/list-webhook-event-types",
-              "api-reference/webhooks/delete-webhook"
+              "api-reference/webhooks/create-webhook",
+              "api-reference/webhooks/list-webhooks",
+              "api-reference/webhooks/delete-webhook",
+              "api-reference/webhooks/replay-failed-webhook-deliveries"
+            ]
+          },
+          {
+            "group": "Phone Numbers",
+            "expanded": false,
+            "pages": [
+              "api-reference/phone-numbers/issue-voice-access-token",
+              "api-reference/phone-numbers/list-available-numbers",
+              "api-reference/phone-numbers/get-user-phone-numbers-endpoint",
+              "api-reference/phone-numbers/request-phone-number-for-user",
+              "api-reference/phone-numbers/issue-voice-access-token-for-user",
+              "api-reference/phone-numbers/get-call-status",
+              "api-reference/phone-numbers/update-phone-number-status-endpoint",
+              "api-reference/phone-numbers/delete-phone-number"
+            ]
+          },
+          {
+            "group": "Sms",
+            "expanded": false,
+            "pages": [
+              "api-reference/sms/send-sms-to-number",
+              "api-reference/sms/list-phone-sms-messages"
+            ]
+          },
+          {
+            "group": "Calls",
+            "expanded": false,
+            "pages": [
+              "api-reference/calls/list-phone-calls"
+            ]
+          },
+          {
+            "group": "Listings",
+            "expanded": false,
+            "pages": [
+              "api-reference/listings/list-model"
+            ]
+          },
+          {
+            "group": "Embed Tokens",
+            "expanded": false,
+            "pages": [
+              "api-reference/embed-tokens/mint-embed-token"
             ]
           }
         ]
@@ -223,7 +290,7 @@
   ],
   "api": {
     "openapi": {
-      "source": "https://api-sandbox.fg.wintpay.com/openapi-platform.json",
+      "source": "https://api-sandbox.fg.wintpay.com/openapi-v1-platform.json",
       "directory": "api-reference"
     }
   },
