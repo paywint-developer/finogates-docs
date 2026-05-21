@@ -10,8 +10,8 @@
         "tags": [
           "digital-assets"
         ],
-        "summary": "List Digital Asset Catalog",
-        "description": "Active assets the platform can offer end-users.\n\nThe asset list is per-mode: the request's ``X-Finogate-Mode``\nselects the sandbox or production allowlist (each tenant carries\none of each). Result is sorted by curated ``sort_priority`` so\nthe FE picker can render directly without re-sorting. ERC20-style\nassets carry a ``gas_dependency`` block naming the native gas asset\non the same network — useful for the FE to surface \"you also need\nTRX\" prompts.",
+        "summary": "List Available Digital Assets",
+        "description": "Get the list of digital assets (for example Bitcoin, Ethereum, or\nUSDT) your platform can offer to its users.\n\nThe list is already sorted in a sensible display order, so you can show\nit as it is. Some assets need a separate \"gas\" asset to cover network\nfees — those assets include a ``gas_dependency`` section telling you\nwhat else the user will need (for example, \"you also need TRX\").",
         "operationId": "list_crypto_assets_route_v1_platform_digital_assets_assets_get",
         "security": [
           {
@@ -25,11 +25,11 @@
             "required": false,
             "schema": {
               "type": "boolean",
-              "description": "Set true to also include gas-only catalog rows (e.g. TRX). Defaults false — gas wallets auto-provision alongside their parent token, so they're not picker options.",
+              "description": "Set to true to also include 'gas-only' assets (such as TRX) that exist only to pay network fees. These are normally left out because they are created automatically alongside the main asset.",
               "default": false,
               "title": "Include Gas Only"
             },
-            "description": "Set true to also include gas-only catalog rows (e.g. TRX). Defaults false — gas wallets auto-provision alongside their parent token, so they're not picker options."
+            "description": "Set to true to also include 'gas-only' assets (such as TRX) that exist only to pay network fees. These are normally left out because they are created automatically alongside the main asset."
           }
         ],
         "responses": {
@@ -62,7 +62,7 @@
           "digital-assets"
         ],
         "summary": "List Digital Asset Wallets",
-        "description": "List wallets the platform has provisioned for its end-users.",
+        "description": "Get the list of digital asset wallets your platform has created for\nits users.",
         "operationId": "list_wallets_route_v1_platform_digital_assets_wallets_get",
         "security": [
           {
@@ -84,8 +84,10 @@
                   "type": "null"
                 }
               ],
+              "description": "Optional. Show only wallets belonging to this one user.",
               "title": "User Id"
-            }
+            },
+            "description": "Optional. Show only wallets belonging to this one user."
           },
           {
             "name": "asset_code",
@@ -100,8 +102,10 @@
                   "type": "null"
                 }
               ],
+              "description": "Optional. Show only wallets for this asset (for example BTC, ETH, USDT).",
               "title": "Asset Code"
-            }
+            },
+            "description": "Optional. Show only wallets for this asset (for example BTC, ETH, USDT)."
           },
           {
             "name": "network_code",
@@ -116,8 +120,10 @@
                   "type": "null"
                 }
               ],
+              "description": "Optional. Show only wallets on this network (for example ethereum, tron).",
               "title": "Network Code"
-            }
+            },
+            "description": "Optional. Show only wallets on this network (for example ethereum, tron)."
           },
           {
             "name": "limit",
@@ -127,9 +133,11 @@
               "type": "integer",
               "maximum": 200,
               "minimum": 1,
+              "description": "How many wallets to return per page (1 to 200).",
               "default": 50,
               "title": "Limit"
-            }
+            },
+            "description": "How many wallets to return per page (1 to 200)."
           },
           {
             "name": "offset",
@@ -138,9 +146,11 @@
             "schema": {
               "type": "integer",
               "minimum": 0,
+              "description": "How many wallets to skip before this page starts.",
               "default": 0,
               "title": "Offset"
-            }
+            },
+            "description": "How many wallets to skip before this page starts."
           }
         ],
         "responses": {
@@ -170,8 +180,8 @@
         "tags": [
           "digital-assets"
         ],
-        "summary": "Create Digital Asset Wallet",
-        "description": "Provision (or fetch) a deposit address for an end-user.\n\nSUA-gated for every new ``(asset, network)`` request. The call\nlands a ``CryptoVaultProvisionRequest`` and returns ``202`` with the\nrequest id; SUA approval triggers the Fireblocks side-effect (vault\ncreate on first wallet for the user, asset-enable on subsequent\nwallets — the existing vault is reused). Subsequent calls for the\nsame ``(tenant, user, asset, network)`` that has already been\napproved-and-allocated return the existing deposit address inline.\nFor ERC20-style assets the response carries a ``gas_dependency``\nblock with the auto-provisioned gas wallet so the platform can\nprompt the user to top up.\n\n**Wrong-network deposits are typically irrecoverable.** The\nresponse includes ``network_code`` (e.g. ``ethereum``, ``tron``)\nalongside ``address``. End-users must send funds on the **exact\nnetwork the address belongs to**. Sending an asset from a different\nchain — for example USDT-TRC20 to an Ethereum address, or\nBitcoin to an EVM address — results in lost funds; we cannot\ndetect or recover such deposits because they never reach our\ncustody. Surface ``network_code`` prominently in any deposit UI\nyour platform builds on top of this endpoint.",
+        "summary": "Create a Digital Asset Wallet",
+        "description": "Create a digital asset wallet (a deposit address) for one of your\nusers — or get the existing one back if it was already created.\n\nEvery new asset-and-network combination must first be approved by\nFinogate's team. When you ask for a new one, this returns straight away\nwith a request ID and a \"waiting for approval\" status. Once the team\napproves it, the wallet is created for you automatically — you do not\nneed to call this again. If you ask for a wallet that already exists,\nits deposit address is returned right away.\n\nSome assets also need a small amount of a separate \"gas\" asset to cover\nnetwork fees. When that applies, the response includes a\n``gas_dependency`` section so you can prompt the user to top it up.\n\n**Warning: sending a digital asset on the wrong network is usually lost\nfor good.** The response gives you both the deposit ``address`` and its\n``network_code`` (such as ``ethereum`` or ``tron``). Users must send\nfunds on the exact network the address belongs to. Sending an asset\nfrom a different blockchain — for example USDT on Tron to an Ethereum\naddress, or Bitcoin to an Ethereum-style address — loses the money for\ngood, because it never reaches us and cannot be recovered. Always show\nthe network clearly on any deposit screen you build.",
         "operationId": "create_wallet_v1_platform_digital_assets_wallets_post",
         "security": [
           {
@@ -218,7 +228,7 @@
           "digital-assets"
         ],
         "summary": "List Digital Asset Balances",
-        "description": "Aggregated balances per ``(user, asset, network)``.\n\nReturns one row per (user, asset, network) summed across the\nuser's wallets, with ``available``, ``pending``, ``hold`` bucket\nsubtotals plus a derived ``total``. ``platform_fee_escrow`` is\ndeliberately excluded — that bucket holds platform revenue, not\nuser balance. Pass ``user_id`` to scope the response to a single\nend-user (useful for \"wallet\" pages on the platform UI).",
+        "description": "Get digital asset balances, with one total per user, asset, and\nnetwork.\n\nEach row adds up all of a user's wallets for one asset on one network,\nsplit into ``available`` (spendable now), ``pending`` (not cleared\nyet), and ``hold`` (reserved), plus an overall ``total``. Money set\naside as Finogate's own fees is not counted here. Pass ``user_id`` to\nsee just one user's balances.",
         "operationId": "list_balances_route_v1_platform_digital_assets_balances_get",
         "security": [
           {
@@ -240,10 +250,10 @@
                   "type": "null"
                 }
               ],
-              "description": "Optional end-user filter. Omit to see balances across every user under the platform.",
+              "description": "Optional. Show only one user's balances. Leave it out to see balances for every user on your platform.",
               "title": "User Id"
             },
-            "description": "Optional end-user filter. Omit to see balances across every user under the platform."
+            "description": "Optional. Show only one user's balances. Leave it out to see balances for every user on your platform."
           }
         ],
         "responses": {
@@ -275,8 +285,8 @@
         "tags": [
           "digital-assets"
         ],
-        "summary": "Get Digital Asset Wallet",
-        "description": "Fetch a single wallet by id (tenant-scoped).\n\nUseful to re-display a deposit address without persisting it on the\nplatform side, or to confirm a wallet's current status. Returns 404\nif the wallet doesn't belong to the calling platform — never leaks\ncross-tenant existence.",
+        "summary": "Get One Digital Asset Wallet",
+        "description": "Get the details of one digital asset wallet, looked up by its ID.\n\nHandy for showing a deposit address again without having to store it\nyourself, or for checking a wallet's current status. You can only see\nwallets that belong to your own platform.",
         "operationId": "get_wallet_route_v1_platform_digital_assets_wallets__wallet_id__get",
         "security": [
           {
@@ -291,8 +301,10 @@
             "schema": {
               "type": "string",
               "format": "uuid",
+              "description": "The unique ID of the digital asset wallet.",
               "title": "Wallet Id"
-            }
+            },
+            "description": "The unique ID of the digital asset wallet."
           }
         ],
         "responses": {
@@ -324,8 +336,8 @@
         "tags": [
           "digital-assets"
         ],
-        "summary": "Get Digital Asset Wallet Balance",
-        "description": "Per-bucket balance for a single wallet (tenant-scoped).\n\nBuckets: ``available`` (spendable now), ``pending`` (deposits not\nyet confirmation-final), ``hold`` (reserved for in-flight\nwithdrawals/transfers), ``platform_fee_escrow`` (platform revenue,\nsurfaced for completeness, excluded from ``total_balance``). Buckets\nthat have never been credited surface as zero — the response shape\nis stable across wallets.",
+        "summary": "Get a Digital Asset Wallet's Balance",
+        "description": "Get the balance of one digital asset wallet, broken down by type.\n\nThe parts are: ``available`` (money spendable now), ``pending``\n(deposits that have not fully cleared), ``hold`` (money reserved for a\nwithdrawal or transfer in progress), and ``platform_fee_escrow``\n(Finogate's own fees, shown for completeness and not counted in\n``total_balance``). Any part with no money in it simply shows zero.",
         "operationId": "get_wallet_balance_route_v1_platform_digital_assets_wallets__wallet_id__balance_get",
         "security": [
           {
@@ -340,8 +352,10 @@
             "schema": {
               "type": "string",
               "format": "uuid",
+              "description": "The unique ID of the digital asset wallet.",
               "title": "Wallet Id"
-            }
+            },
+            "description": "The unique ID of the digital asset wallet."
           }
         ],
         "responses": {
@@ -374,7 +388,7 @@
           "digital-assets"
         ],
         "summary": "List Digital Asset Transactions",
-        "description": "Unified transaction stream — deposits, withdrawals, transfers.",
+        "description": "Get a single combined history of digital asset activity — deposits,\nwithdrawals, and transfers, all in one list.",
         "operationId": "list_transactions_route_v1_platform_digital_assets_transactions_get",
         "security": [
           {
@@ -396,8 +410,10 @@
                   "type": "null"
                 }
               ],
+              "description": "Optional. Show only transactions for this one user.",
               "title": "User Id"
-            }
+            },
+            "description": "Optional. Show only transactions for this one user."
           },
           {
             "name": "direction",
@@ -412,10 +428,10 @@
                   "type": "null"
                 }
               ],
-              "description": "Filter on ``deposit`` / ``withdrawal`` / ``transfer_out`` / ``transfer_in``.",
+              "description": "Optional. Show only one kind of transaction: ``deposit``, ``withdrawal``, ``transfer_out``, or ``transfer_in``.",
               "title": "Direction"
             },
-            "description": "Filter on ``deposit`` / ``withdrawal`` / ``transfer_out`` / ``transfer_in``."
+            "description": "Optional. Show only one kind of transaction: ``deposit``, ``withdrawal``, ``transfer_out``, or ``transfer_in``."
           },
           {
             "name": "status",
@@ -430,10 +446,10 @@
                   "type": "null"
                 }
               ],
-              "description": "Internal status name (e.g. ``pending_review``, ``confirmed``).",
+              "description": "Optional. Show only transactions with this status (for example ``pending_review`` or ``confirmed``).",
               "title": "Status"
             },
-            "description": "Internal status name (e.g. ``pending_review``, ``confirmed``)."
+            "description": "Optional. Show only transactions with this status (for example ``pending_review`` or ``confirmed``)."
           },
           {
             "name": "asset_code",
@@ -448,8 +464,10 @@
                   "type": "null"
                 }
               ],
+              "description": "Optional. Show only transactions for this asset (for example BTC, ETH, USDT).",
               "title": "Asset Code"
-            }
+            },
+            "description": "Optional. Show only transactions for this asset (for example BTC, ETH, USDT)."
           },
           {
             "name": "network_code",
@@ -464,8 +482,10 @@
                   "type": "null"
                 }
               ],
+              "description": "Optional. Show only transactions on this network (for example ethereum, tron).",
               "title": "Network Code"
-            }
+            },
+            "description": "Optional. Show only transactions on this network (for example ethereum, tron)."
           },
           {
             "name": "limit",
@@ -475,9 +495,11 @@
               "type": "integer",
               "maximum": 200,
               "minimum": 1,
+              "description": "How many transactions to return per page (1 to 200).",
               "default": 50,
               "title": "Limit"
-            }
+            },
+            "description": "How many transactions to return per page (1 to 200)."
           },
           {
             "name": "offset",
@@ -486,9 +508,11 @@
             "schema": {
               "type": "integer",
               "minimum": 0,
+              "description": "How many transactions to skip before this page starts.",
               "default": 0,
               "title": "Offset"
-            }
+            },
+            "description": "How many transactions to skip before this page starts."
           }
         ],
         "responses": {
@@ -520,8 +544,8 @@
         "tags": [
           "digital-assets"
         ],
-        "summary": "List Digital Asset Vault Requests",
-        "description": "List the calling tenant's vault provisioning requests + status.\n\nSurfaces every end-user the platform requested a Fireblocks vault\nfor, with the current SUA decision (``pending_review`` / ``approved``\n/ ``rejected``). Filter by ``?status=pending_review`` to render a\n\"still awaiting approval\" tab, or omit for the full history.",
+        "summary": "List Wallet Approval Requests",
+        "description": "Get the list of digital-asset wallet requests your platform has made,\nalong with where each one stands.\n\nEvery wallet request needs approval from Finogate's team. Each entry\nshows the decision so far — ``pending_review`` (still being reviewed),\n``approved``, or ``rejected``. Filter by ``status=pending_review`` to\nshow only the ones still waiting, or leave it out for the full history.",
         "operationId": "list_vault_requests_route_v1_platform_digital_assets_vault_requests_get",
         "security": [
           {
@@ -537,9 +561,11 @@
               "type": "integer",
               "maximum": 200,
               "minimum": 1,
+              "description": "How many requests to return per page (1 to 200).",
               "default": 50,
               "title": "Limit"
-            }
+            },
+            "description": "How many requests to return per page (1 to 200)."
           },
           {
             "name": "offset",
@@ -548,9 +574,11 @@
             "schema": {
               "type": "integer",
               "minimum": 0,
+              "description": "How many requests to skip before this page starts.",
               "default": 0,
               "title": "Offset"
-            }
+            },
+            "description": "How many requests to skip before this page starts."
           },
           {
             "name": "status",
@@ -565,8 +593,10 @@
                   "type": "null"
                 }
               ],
+              "description": "Optional. Show only requests with this status — for example pending_review, approved, or rejected.",
               "title": "Status"
-            }
+            },
+            "description": "Optional. Show only requests with this status — for example pending_review, approved, or rejected."
           }
         ],
         "responses": {
@@ -598,8 +628,8 @@
         "tags": [
           "digital-assets"
         ],
-        "summary": "Get Digital Asset Vault Request",
-        "description": "Poll a vault provisioning request's current status.\n\nReturns the request row scoped to the calling tenant. Use this\nendpoint to check whether SUA has approved or rejected a pending\nvault request returned by ``POST /platform/crypto/wallets`` as a\n202 response. Once ``status`` is ``approved``, retry the wallet\ncreation endpoint to allocate the deposit address.",
+        "summary": "Get One Wallet Approval Request",
+        "description": "Check where a single digital-asset wallet request stands.\n\nUse this to see whether Finogate's team has approved or rejected a\nwallet request that the create-wallet endpoint returned as still\npending. Once the ``status`` shows ``approved``, the deposit address\nis ready.",
         "operationId": "get_vault_request_route_v1_platform_digital_assets_vault_requests__request_id__get",
         "security": [
           {
@@ -614,8 +644,10 @@
             "schema": {
               "type": "string",
               "format": "uuid",
+              "description": "The unique ID of the wallet request.",
               "title": "Request Id"
-            }
+            },
+            "description": "The unique ID of the wallet request."
           }
         ],
         "responses": {
@@ -647,8 +679,8 @@
         "tags": [
           "international"
         ],
-        "summary": "Catalogue Countries",
-        "description": "List countries UniTeller can pay into.",
+        "summary": "List Payout Countries",
+        "description": "Get the list of countries you can send international payouts to.",
         "operationId": "catalogue_countries_v1_platform_international_catalogues_countries_get",
         "responses": {
           "200": {
@@ -674,8 +706,8 @@
         "tags": [
           "international"
         ],
-        "summary": "Catalogue States",
-        "description": "List states / regions for a country.",
+        "summary": "List States or Regions",
+        "description": "Get the list of states or regions within a country.",
         "operationId": "catalogue_states_v1_platform_international_catalogues_states_get",
         "security": [
           {
@@ -689,8 +721,10 @@
             "required": true,
             "schema": {
               "type": "integer",
+              "description": "The ID of the country (from the payout countries list).",
               "title": "Country Id"
-            }
+            },
+            "description": "The ID of the country (from the payout countries list)."
           }
         ],
         "responses": {
@@ -722,8 +756,8 @@
         "tags": [
           "international"
         ],
-        "summary": "Catalogue Cities",
-        "description": "List cities within a state.",
+        "summary": "List Cities",
+        "description": "Get the list of cities within a state or region.",
         "operationId": "catalogue_cities_v1_platform_international_catalogues_cities_get",
         "security": [
           {
@@ -737,8 +771,10 @@
             "required": true,
             "schema": {
               "type": "integer",
+              "description": "The ID of the country.",
               "title": "Country Id"
-            }
+            },
+            "description": "The ID of the country."
           },
           {
             "name": "state_id",
@@ -746,8 +782,10 @@
             "required": true,
             "schema": {
               "type": "integer",
+              "description": "The ID of the state or region (from the states list).",
               "title": "State Id"
-            }
+            },
+            "description": "The ID of the state or region (from the states list)."
           }
         ],
         "responses": {
@@ -779,8 +817,8 @@
         "tags": [
           "international"
         ],
-        "summary": "Catalogue Currencies",
-        "description": "List currencies UniTeller can pay out in.",
+        "summary": "List Payout Currencies",
+        "description": "Get the list of currencies you can send international payouts in.",
         "operationId": "catalogue_currencies_v1_platform_international_catalogues_currencies_get",
         "responses": {
           "200": {
@@ -806,8 +844,8 @@
         "tags": [
           "international"
         ],
-        "summary": "Catalogue Document Types",
-        "description": "List recipient ID document types accepted per corridor.",
+        "summary": "List Accepted ID Document Types",
+        "description": "Get the list of ID document types the recipient is allowed to use.\nThe accepted types can be different for each destination country.",
         "operationId": "catalogue_document_types_v1_platform_international_catalogues_document_types_get",
         "responses": {
           "200": {
@@ -833,8 +871,8 @@
         "tags": [
           "international"
         ],
-        "summary": "Catalogue Account Types",
-        "description": "List bank account types per corridor (``checking``, ``savings``, ...).",
+        "summary": "List Bank Account Types",
+        "description": "Get the list of bank account types you can pay into, such as\nchecking or savings. The accepted types can be different for each\ndestination country.",
         "operationId": "catalogue_account_types_v1_platform_international_catalogues_account_types_get",
         "responses": {
           "200": {
@@ -860,8 +898,8 @@
         "tags": [
           "international"
         ],
-        "summary": "Catalogue Business Types",
-        "description": "List allowed business / sender natures (B2C, B2B, payroll, ...).",
+        "summary": "List Business Types",
+        "description": "Get the list of allowed sender and business types — for example\nbusiness-to-customer, business-to-business, or payroll.",
         "operationId": "catalogue_business_types_v1_platform_international_catalogues_business_types_get",
         "responses": {
           "200": {
@@ -887,8 +925,8 @@
         "tags": [
           "international"
         ],
-        "summary": "Payers",
-        "description": "List payers (recipient bank networks) for a corridor.",
+        "summary": "List Payers",
+        "description": "Get the list of payers — the banks and networks that can deliver\nmoney to the recipient — for a destination.",
         "operationId": "payers_v1_platform_international_payers_get",
         "security": [
           {
@@ -909,8 +947,10 @@
                   "type": "null"
                 }
               ],
+              "description": "Optional. Filter to one destination country.",
               "title": "Country"
-            }
+            },
+            "description": "Optional. Filter to one destination country."
           },
           {
             "name": "currency",
@@ -925,8 +965,10 @@
                   "type": "null"
                 }
               ],
+              "description": "Optional. Filter to one payout currency.",
               "title": "Currency"
-            }
+            },
+            "description": "Optional. Filter to one payout currency."
           },
           {
             "name": "delivery_type",
@@ -941,8 +983,10 @@
                   "type": "null"
                 }
               ],
+              "description": "Optional. Filter to one delivery type.",
               "title": "Delivery Type"
-            }
+            },
+            "description": "Optional. Filter to one delivery type."
           }
         ],
         "responses": {
@@ -974,8 +1018,8 @@
         "tags": [
           "international"
         ],
-        "summary": "Payer Rules",
-        "description": "Compliance / amount rules per payer.",
+        "summary": "List Payer Rules",
+        "description": "Get the rules for a payer, such as amount limits and the checks\nthat must be passed.",
         "operationId": "payer_rules_v1_platform_international_payer_rules_get",
         "security": [
           {
@@ -996,8 +1040,10 @@
                   "type": "null"
                 }
               ],
+              "description": "Optional. Filter to one destination country.",
               "title": "Country"
-            }
+            },
+            "description": "Optional. Filter to one destination country."
           },
           {
             "name": "payer_id",
@@ -1012,8 +1058,10 @@
                   "type": "null"
                 }
               ],
+              "description": "Optional. Filter to one payer.",
               "title": "Payer Id"
-            }
+            },
+            "description": "Optional. Filter to one payer."
           },
           {
             "name": "delivery_type",
@@ -1028,8 +1076,10 @@
                   "type": "null"
                 }
               ],
+              "description": "Optional. Filter to one delivery type.",
               "title": "Delivery Type"
-            }
+            },
+            "description": "Optional. Filter to one delivery type."
           }
         ],
         "responses": {
@@ -1061,8 +1111,8 @@
         "tags": [
           "international"
         ],
-        "summary": "Branches",
-        "description": "List specific payout branches. The ``id`` is what you pass as\n``payoutBranchID`` on a payout submission.",
+        "summary": "List Payout Branches",
+        "description": "Get the list of specific payout branches where money can be picked\nup. When you submit a payout, use a branch's ``id`` as the\n``payoutBranchID``.",
         "operationId": "branches_v1_platform_international_branches_get",
         "security": [
           {
@@ -1083,8 +1133,10 @@
                   "type": "null"
                 }
               ],
+              "description": "Optional. Filter to one destination country.",
               "title": "Country"
-            }
+            },
+            "description": "Optional. Filter to one destination country."
           },
           {
             "name": "currency",
@@ -1099,8 +1151,10 @@
                   "type": "null"
                 }
               ],
+              "description": "Optional. Filter to one payout currency.",
               "title": "Currency"
-            }
+            },
+            "description": "Optional. Filter to one payout currency."
           },
           {
             "name": "payer_id",
@@ -1115,8 +1169,10 @@
                   "type": "null"
                 }
               ],
+              "description": "Optional. Filter to one payer.",
               "title": "Payer Id"
-            }
+            },
+            "description": "Optional. Filter to one payer."
           },
           {
             "name": "delivery_type",
@@ -1131,8 +1187,10 @@
                   "type": "null"
                 }
               ],
+              "description": "Optional. Filter to one delivery type.",
               "title": "Delivery Type"
-            }
+            },
+            "description": "Optional. Filter to one delivery type."
           },
           {
             "name": "max_results",
@@ -1140,9 +1198,11 @@
             "required": false,
             "schema": {
               "type": "integer",
+              "description": "The most branches to return at once.",
               "default": 500,
               "title": "Max Results"
-            }
+            },
+            "description": "The most branches to return at once."
           },
           {
             "name": "next_id",
@@ -1157,8 +1217,10 @@
                   "type": "null"
                 }
               ],
+              "description": "Used to fetch the next page of branches; pass the value given by the previous response.",
               "title": "Next Id"
-            }
+            },
+            "description": "Used to fetch the next page of branches; pass the value given by the previous response."
           }
         ],
         "responses": {
@@ -1190,8 +1252,8 @@
         "tags": [
           "international"
         ],
-        "summary": "Rates",
-        "description": "Current FX rates for a corridor.",
+        "summary": "Get Exchange Rates",
+        "description": "Get the current currency exchange rates for an international payout.",
         "operationId": "rates_v1_platform_international_rates_get",
         "security": [
           {
@@ -1212,8 +1274,10 @@
                   "type": "null"
                 }
               ],
+              "description": "Optional. The currency you are paying from (3-letter code).",
               "title": "Base Currency"
-            }
+            },
+            "description": "Optional. The currency you are paying from (3-letter code)."
           },
           {
             "name": "payer_id",
@@ -1228,8 +1292,10 @@
                   "type": "null"
                 }
               ],
+              "description": "Optional. Filter to one payer.",
               "title": "Payer Id"
-            }
+            },
+            "description": "Optional. Filter to one payer."
           },
           {
             "name": "payout_currency",
@@ -1244,8 +1310,10 @@
                   "type": "null"
                 }
               ],
+              "description": "Optional. The currency the recipient is paid in (3-letter code).",
               "title": "Payout Currency"
-            }
+            },
+            "description": "Optional. The currency the recipient is paid in (3-letter code)."
           }
         ],
         "responses": {
@@ -1277,8 +1345,8 @@
         "tags": [
           "international"
         ],
-        "summary": "Rate Calculator",
-        "description": "Quote a specific amount + corridor before submitting a payout.",
+        "summary": "Calculate a Payout Quote",
+        "description": "Work out the exact cost and amounts for a specific payout — a chosen\namount to a chosen destination — before you actually submit it.",
         "operationId": "rate_calculator_v1_platform_international_rates_calculate_post",
         "requestBody": {
           "content": {
@@ -1324,8 +1392,8 @@
         "tags": [
           "international"
         ],
-        "summary": "Balance",
-        "description": "Your remaining UniTeller-side prefunded balance per corridor.",
+        "summary": "Check Your Payout Balance",
+        "description": "Check how much prefunded balance you have left for sending\ninternational payouts.",
         "operationId": "balance_v1_platform_international_balance_get",
         "security": [
           {
@@ -1346,10 +1414,10 @@
                   "type": "null"
                 }
               ],
-              "description": "Filter to a single currency (e.g. USD)",
+              "description": "Optional. Show the balance for just one currency (for example USD).",
               "title": "Currency"
             },
-            "description": "Filter to a single currency (e.g. USD)"
+            "description": "Optional. Show the balance for just one currency (for example USD)."
           },
           {
             "name": "account_type",
@@ -1357,11 +1425,11 @@
             "required": false,
             "schema": {
               "type": "integer",
-              "description": "UniTeller account type code",
+              "description": "An account type code.",
               "default": 0,
               "title": "Account Type"
             },
-            "description": "UniTeller account type code"
+            "description": "An account type code."
           },
           {
             "name": "position",
@@ -1369,11 +1437,11 @@
             "required": false,
             "schema": {
               "type": "string",
-              "description": "UniTeller balance position code",
+              "description": "A balance position code.",
               "default": "ACR",
               "title": "Position"
             },
-            "description": "UniTeller balance position code"
+            "description": "A balance position code."
           }
         ],
         "responses": {
@@ -1405,8 +1473,8 @@
         "tags": [
           "international"
         ],
-        "summary": "Create an international payout",
-        "description": "Public, provider-agnostic international payout endpoint.\n\nClient / end-user integrations ship only Finogates-domain\nidentifiers (``beneficiaryId`` + ``bankAccountId``) and the\ntransaction details (``amount``, ``sourceCurrency``,\n``destinationCurrency``). Sender / business identity, full\nbeneficiary fields, full bank-info fields, destination branch ID,\nproduct routing, and provider selection are all resolved\nserver-side from records the client pre-creates via:\n\n* ``POST /v1/platform/payees`` *or*\n  ``POST /v1/platform/payment-methods/bank`` — saved bank account\n  (with ``meta.payout_branch_id`` captured at creation time).\n* The platform's SUA-configured Uniteller sender defaults.\n\nProvider-specific fields never leak into this contract. The\nresponse is the standardised :class:`InternationalPayoutRead`\nshape (same schema as the equivalent tenant endpoint).\n\nThis is the canonical replacement for the deprecated\n``POST /v1/platform/international/payouts/process`` route — new\nintegrations should target ``POST /v1/platform/international/process-payouts``\nexclusively.",
+        "summary": "Send an International Payout",
+        "description": "Send money abroad to a recipient — this is the recommended way.\n\nYou only need to send Finogate's own simple IDs (``beneficiaryId`` and\n``bankAccountId``) plus the transaction details (``amount``,\n``sourceCurrency``, and ``destinationCurrency``). Everything else — the\nsender's details, the recipient's full details, the bank details, the\ncollection branch, and which partner delivers the money — is worked out\nfor you behind the scenes.\n\nBefore calling this, save the recipient and their bank account using:\n\n* ``POST /v1/platform/payees``, or\n* ``POST /v1/platform/bank/add-bank-manually``\n\nYour sender details are set up for your platform by Finogate's team.\n\nUse this endpoint for all new work. It replaces the older\n``POST /v1/platform/international/payouts/process`` endpoint.",
         "operationId": "platform_create_payout_v1_platform_international_process_payouts_post",
         "requestBody": {
           "content": {
@@ -1452,8 +1520,8 @@
         "tags": [
           "international"
         ],
-        "summary": "(Legacy) Submit an international payout via the provider-shaped payload",
-        "description": "**Legacy / provider-shaped endpoint — retained for backward compatibility only.**\n\nThis endpoint exposes the underlying Uniteller (More) provider field\nnames directly (``orderPartnerID``, ``payoutBranchID``,\n``payoutCurrency``, …) and was the first public payout surface\nshipped on the Platform API. It is retained so existing integrations\ndo not break, but **new client / end-user integrations should not be\nbuilt against it**.\n\n### Why it is being phased out — provider plumbing leaking into your API\n\nThe provider-shaped contract forces the integrator to do routing work\nthat should never have left the server. The two worst offenders are:\n\n* ``product_id`` — the client is asked to pre-select which\n  Finogates *product* (rail + provider route) will process the\n  payout. That is a backend concern: given the destination corridor\n  and the tenant's enabled products, there is exactly one correct\n  international-payout product to route through, and the platform\n  knows it. Asking the client to discover and pass it is a leak.\n* ``payoutBranchID`` — a numeric Uniteller-internal branch id.\n  Conceptually it belongs on the saved bank, not on every payout\n  call. The new shape persists it on the bank account\n  (``meta.payout_branch_id``) and the server reads it from there.\n\nFinogates is moving to a **provider-agnostic, resource-oriented\ncontract** where the integrator ships only Finogates-domain\nidentifiers (``beneficiaryId`` + ``bankAccountId``) and the\nplatform resolves *every* provider concept internally — sender\nprofile, beneficiary, bank, destination branch, product routing,\nand provider selection.\n\nThe clean shape is already live on the Tenant API at:\n\n* ``POST /v1/tenant/international/payouts`` — uses\n  :class:`InternationalPayoutCreate`, returns\n  :class:`InternationalPayoutRead`.\n\nThe equivalent endpoint on this Platform API surface\n(``POST /v1/platform/international/process-payouts``) is the\ncanonical replacement for this route. It accepts the same\nFinogates-ID-only request body, emits the same standardised\nresponse shape, and removes the ``product_id`` / ``payoutBranchID``\nfields from the public contract entirely. Integrators consuming\nthe Platform API should migrate to that endpoint.\n\n### Client-side vs server-side responsibilities\n\n| Concern              | This (legacy) endpoint | New ``/payouts`` shape |\n|----------------------|------------------------|------------------------|\n| Pick the *product*   | **Client** must pass ``product_id`` | Server resolves from rail + corridor |\n| Pick the destination *branch* | **Client** must pass ``payoutBranchID`` | Server reads ``meta.payout_branch_id`` from the saved bank |\n| Pick the *provider*  | Server (routing matrix) | Server (routing matrix) |\n| Pick the *sender profile* | Server (tenant default), client may override via ``sender_id`` | Same — server-resolved |\n| Quote FX             | Server (or client passes ``payoutAmount`` for a pre-quoted amount) | Server (or client passes ``destinationAmount``) |\n| Reserve / settle ledger | Server | Server |\n| Idempotency anchor   | Client — ``orderPartnerID`` | Client — ``reference`` |\n\n### What this endpoint still accepts\n\nOnly the **canonical request variant** of ``MorePayoutRequest`` is\naccepted here:\n\n| Field | Required | Notes |\n|-------|----------|-------|\n| ``orderPartnerID``       | ✅ | Caller-supplied reference / idempotency anchor. |\n| ``orderCurrency``        | ✅ | ISO-4217 funding-side currency. |\n| ``orderAmount``          | ✅ | Amount to debit from the tenant wallet. |\n| ``payoutBranchID``       | ✅ | *Leak* — numeric Uniteller branch id from ``GET /v1/platform/international/branches``. Removed on the new shape. |\n| ``payoutCurrency``       | ✅ | ISO-4217 recipient-side currency. |\n| ``product_id``           | ✅ | *Leak* — UUID of the international payout product. Server-resolved on the new shape. |\n| ``payee_payment_method_id`` | ✅ | UUID of a saved payment method that resolves the recipient bank. |\n| ``payoutAmount``         | optional | Pre-quoted destination amount; server quotes when omitted. |\n| ``sender_id``            | optional | Override the platform's default Uniteller sender profile. |\n\nThe **legacy inline shape** (``beneficiary`` + ``bankInfo`` posted\ndirectly on the request) is **rejected** on this Platform endpoint\nwith HTTP 400 — saved payment methods are mandatory for client API\nintegrations.\n\n### Behaviour\n\nThe request runs through the same orchestration pipeline as the\ntenant ``/payouts`` endpoint:\n\n1. ``enforce_product_permission`` — entitlement / Casbin check.\n2. ``select_provider`` / ``ProductProvider`` resolution.\n3. Ledger reservation (``available`` → ``escrow``) via\n   :class:`LedgerPostingService`.\n4. Provider call to Uniteller with the resolved sender + saved bank.\n5. ``escrow`` → ``clearing`` on success, escrow release on failure.\n\nStatus, retry, and reconciliation behave identically to the\nsuccessor endpoint.",
+        "summary": "Send an International Payout (older method)",
+        "description": "Send money abroad — this is an older method, kept only so existing\nintegrations keep working.\n\n**Please do not use this for new work.** Use\n``POST /v1/platform/international/process-payouts`` instead — it does\nthe same job in a much simpler way.\n\nThis older endpoint makes you send low-level details that newer\nendpoints work out for you, such as ``product_id`` (which Finogate\nproduct handles the payout) and ``payoutBranchID`` (a numeric ID for\nthe collection branch). The newer endpoint takes care of all of that\nfor you.\n\n### What this endpoint still accepts\n\nYou must pay using a **saved payment method**. The old way of putting\nthe recipient's and bank's full details straight into the request is no\nlonger accepted here and will be turned down with an error.\n\n| Field | Required | What it is |\n|-------|----------|------------|\n| ``orderPartnerID``          | Yes | Your own reference for this payout. Also used to stop the same payout happening twice. |\n| ``orderCurrency``           | Yes | The currency you are paying from (3-letter code). |\n| ``orderAmount``             | Yes | The amount to take from your wallet. |\n| ``payoutBranchID``          | Yes | The numeric branch ID where the money is collected (from ``GET /v1/platform/international/branches``). |\n| ``payoutCurrency``          | Yes | The currency the recipient is paid in (3-letter code). |\n| ``product_id``              | Yes | The ID of the international payout product to use. |\n| ``payee_payment_method_id`` | Yes | The ID of a saved payment method for the recipient's bank. |\n| ``payoutAmount``            | No  | The exact amount the recipient should receive. If you leave it out, Finogate works it out. |\n| ``sender_id``               | No  | Use a specific sender profile instead of your platform's default. |\n\nEverything else — checking your balance, setting the money aside,\nsending it, and recording it — works exactly the same as the newer\nendpoint.",
         "operationId": "platform_process_payout_v1_platform_international_payouts_process_post",
         "requestBody": {
           "content": {
@@ -1500,8 +1568,8 @@
         "tags": [
           "international"
         ],
-        "summary": "Platform Retry Payout",
-        "description": "Re-submit a failed payout to UniTeller, preserving the intent.",
+        "summary": "Retry a Failed Payout",
+        "description": "Try a failed international payout again. Pass the ID of the failed\npayment in ``intent_id``. The original payment record is kept and\nreused.",
         "operationId": "platform_retry_payout_v1_platform_international_payouts_retry_post",
         "security": [
           {
@@ -1548,8 +1616,8 @@
         "tags": [
           "international"
         ],
-        "summary": "Platform Payout Status",
-        "description": "Look up a previously submitted payout by either id.",
+        "summary": "Check a Payout's Status",
+        "description": "Check the status of an international payout you submitted earlier.\nLook it up by either its order ID or your own reference.",
         "operationId": "platform_payout_status_v1_platform_international_payouts_status_get",
         "security": [
           {
@@ -1570,8 +1638,10 @@
                   "type": "null"
                 }
               ],
+              "description": "The payout's order ID.",
               "title": "Order Id"
-            }
+            },
+            "description": "The payout's order ID."
           },
           {
             "name": "order_partner_id",
@@ -1586,8 +1656,10 @@
                   "type": "null"
                 }
               ],
+              "description": "Your own reference for the payout (the ``orderPartnerID`` you sent when creating it).",
               "title": "Order Partner Id"
-            }
+            },
+            "description": "Your own reference for the payout (the ``orderPartnerID`` you sent when creating it)."
           }
         ],
         "responses": {
@@ -1619,7 +1691,8 @@
         "tags": [
           "verification"
         ],
-        "summary": "Get Platform Verification",
+        "summary": "Get Your Verification Details",
+        "description": "Get the full identity and business verification details for your own platform account.",
         "operationId": "get_my_verification_v1_platform_me_verification_get",
         "responses": {
           "200": {
@@ -1645,8 +1718,8 @@
         "tags": [
           "verification"
         ],
-        "summary": "List KYCs of All Users",
-        "description": "List KYC records across every user on this platform.",
+        "summary": "List Identity Checks for All Users",
+        "description": "Get the identity verification (KYC) records for every user on your\nplatform.",
         "operationId": "list_platform_kycs_v1_platform_kyc_records_get",
         "security": [
           {
@@ -1667,10 +1740,10 @@
                   "type": "null"
                 }
               ],
-              "description": "Filter rows by KYC status (e.g. pending, in_review, approved, rejected).",
+              "description": "Show only records with this status — for example pending, in_review, approved, or rejected.",
               "title": "Status Filter"
             },
-            "description": "Filter rows by KYC status (e.g. pending, in_review, approved, rejected)."
+            "description": "Show only records with this status — for example pending, in_review, approved, or rejected."
           },
           {
             "name": "limit",
@@ -1680,9 +1753,11 @@
               "type": "integer",
               "maximum": 200,
               "minimum": 1,
+              "description": "How many records to return per page (1 to 200).",
               "default": 50,
               "title": "Limit"
-            }
+            },
+            "description": "How many records to return per page (1 to 200)."
           },
           {
             "name": "offset",
@@ -1691,9 +1766,11 @@
             "schema": {
               "type": "integer",
               "minimum": 0,
+              "description": "How many records to skip before this page starts.",
               "default": 0,
               "title": "Offset"
-            }
+            },
+            "description": "How many records to skip before this page starts."
           }
         ],
         "responses": {
@@ -1725,8 +1802,8 @@
         "tags": [
           "verification"
         ],
-        "summary": "List KYBs of All Users",
-        "description": "List KYB records across every user on this platform.",
+        "summary": "List Business Checks for All Users",
+        "description": "Get the business verification (KYB) records for every user on your\nplatform.",
         "operationId": "list_platform_kybs_v1_platform_kyb_records_get",
         "security": [
           {
@@ -1747,10 +1824,10 @@
                   "type": "null"
                 }
               ],
-              "description": "Filter rows by KYB status (e.g. pending, in_review, approved, rejected).",
+              "description": "Show only records with this status — for example pending, in_review, approved, or rejected.",
               "title": "Status Filter"
             },
-            "description": "Filter rows by KYB status (e.g. pending, in_review, approved, rejected)."
+            "description": "Show only records with this status — for example pending, in_review, approved, or rejected."
           },
           {
             "name": "limit",
@@ -1760,9 +1837,11 @@
               "type": "integer",
               "maximum": 200,
               "minimum": 1,
+              "description": "How many records to return per page (1 to 200).",
               "default": 50,
               "title": "Limit"
-            }
+            },
+            "description": "How many records to return per page (1 to 200)."
           },
           {
             "name": "offset",
@@ -1771,9 +1850,11 @@
             "schema": {
               "type": "integer",
               "minimum": 0,
+              "description": "How many records to skip before this page starts.",
               "default": 0,
               "title": "Offset"
-            }
+            },
+            "description": "How many records to skip before this page starts."
           }
         ],
         "responses": {
@@ -1805,7 +1886,8 @@
         "tags": [
           "verification"
         ],
-        "summary": "Get Platform Verification (status only)",
+        "summary": "Get Your Verification Status",
+        "description": "Get a short summary of your platform's verification status, without the full details.",
         "operationId": "get_platform_verification_v1_platform_verification_get",
         "responses": {
           "200": {
@@ -1831,7 +1913,8 @@
         "tags": [
           "verification"
         ],
-        "summary": "Get User Verification Summary",
+        "summary": "Get a User's Verification Summary",
+        "description": "Get a short summary of one user's identity and business verification status.",
         "operationId": "get_user_verification_summary_v1_platform_users_verification_summary__user_id__get",
         "security": [
           {
@@ -1879,8 +1962,8 @@
         "tags": [
           "verification"
         ],
-        "summary": "Get User Verification",
-        "description": "Latest KYC record for one user on this platform.\n\nReturns ``data: null`` (200) when the user has not started KYC yet —\nthat state is meaningful for integrators and shouldn't surface as 404.",
+        "summary": "Get a User's Identity Check",
+        "description": "Get the most recent identity verification (KYC) record for one user.\n\nIf the user has not started identity verification yet, the response is\nstill a success and ``data`` comes back empty — that is a normal,\nexpected state, not an error.",
         "operationId": "get_user_verification_v1_platform_users_verification__user_id__get",
         "security": [
           {
@@ -1928,7 +2011,8 @@
         "tags": [
           "verification"
         ],
-        "summary": "List User KYB Records",
+        "summary": "Get a User's Business Checks",
+        "description": "Get the business verification (KYB) records for one user. Leave ``kyb_id`` out to get the full list of records, or provide a ``kyb_id`` to get just that single record.",
         "operationId": "get_or_list_user_kybs_v1_platform_users_kyb_records__user_id__get",
         "security": [
           {
@@ -2001,7 +2085,8 @@
         "tags": [
           "verification"
         ],
-        "summary": "Start User KYC",
+        "summary": "Start a User's Identity Check",
+        "description": "Begin identity verification (KYC) for one user.",
         "operationId": "start_user_kyc_v1_platform_users_kyc_start__user_id__post",
         "security": [
           {
@@ -2049,8 +2134,8 @@
         "tags": [
           "verification"
         ],
-        "summary": "Sync User KYC",
-        "description": "Force-sync the user's KYC verification check with Persona (when a webhook was missed).",
+        "summary": "Refresh a User's Identity Check",
+        "description": "Manually refresh a user's identity verification (KYC) status. Use\nthis if an automatic update was missed and the status looks out of date.",
         "operationId": "sync_user_kyc_v1_platform_users_kyc_sync__user_id__post",
         "security": [
           {
@@ -2098,7 +2183,8 @@
         "tags": [
           "verification"
         ],
-        "summary": "Create User KYB Record",
+        "summary": "Submit a User's Business Check",
+        "description": "Submit business verification (KYB) details for one user. You can also attach supporting documents as files along with the details.\n\nThe **`payload`** field is a JSON object with this shape:\n\n- `business_legal_name` (string, **required**) — the official registered name of the business.\n- `business_ein` (string, optional) — the business's US federal tax ID (EIN).\n- `business_data` (object, optional) — structured business details:\n    - `business_type`, `dba`, `website`, `registration_number`, `formation_date`, `mcc`, `business_description`\n    - `business_email`, `business_phone`, `phone_country_code` — business contact details\n    - `contact_first_name`, `contact_last_name`, `contact_email` — the contact person\n    - `business_address` (object) — `line1`, `city`, `state`, `postal_code`, `country`\n    - `ownership` (array) — the beneficial owners, each `{ name, role, ownership_pct }`\n\nAny field not listed above is still accepted and stored.\n\nExample `payload`:\n\n```json\n{\n  \"business_legal_name\": \"Lovelace Analytics LLC\",\n  \"business_ein\": \"12-3456789\",\n  \"business_data\": {\n    \"business_type\": \"llc\",\n    \"dba\": \"Lovelace Analytics\",\n    \"website\": \"https://lovelace.example.com\",\n    \"business_address\": {\n      \"line1\": \"500 Terry Francois Blvd\",\n      \"city\": \"San Francisco\",\n      \"state\": \"CA\",\n      \"postal_code\": \"94158\",\n      \"country\": \"US\"\n    },\n    \"ownership\": [\n      { \"name\": \"Ada Lovelace\", \"role\": \"founder\", \"ownership_pct\": 100 }\n    ]\n  }\n}\n```",
         "operationId": "create_user_kyb_v1_platform_users_kyb_start__user_id__post",
         "security": [
           {
@@ -2123,6 +2209,11 @@
             "multipart/form-data": {
               "schema": {
                 "$ref": "#/components/schemas/Body_create_user_kyb_v1_platform_users_kyb_start__user_id__post"
+              },
+              "encoding": {
+                "payload": {
+                  "contentType": "application/json"
+                }
               }
             }
           }
@@ -2156,8 +2247,8 @@
         "tags": [
           "pending-applications"
         ],
-        "summary": "List pending applications (platform, read-only)",
-        "description": "Paginated list of the calling tenant's pending applications. Defaults to non-terminal statuses (['pending', 'under_review', 'requires_changes']). Status changes are not available on this surface — use the admin endpoints.",
+        "summary": "List Applications Awaiting Review",
+        "description": "Get the list of your platform's applications that are still being reviewed (for example, requests to switch on a new product or service). The list is split into pages. By default it shows only applications that are not yet finished (['pending', 'under_review', 'requires_changes']). You can view applications here but not change them — approving or rejecting them is handled by Finogate's review team.",
         "operationId": "platform_list_pending_applications_v1_platform_pending_applications_get",
         "security": [
           {
@@ -2179,8 +2270,10 @@
                   "type": "null"
                 }
               ],
+              "description": "Show only applications handled by this partner.",
               "title": "Provider Name"
-            }
+            },
+            "description": "Show only applications handled by this partner."
           },
           {
             "name": "application_type",
@@ -2196,8 +2289,10 @@
                   "type": "null"
                 }
               ],
+              "description": "Show only applications of this type.",
               "title": "Application Type"
-            }
+            },
+            "description": "Show only applications of this type."
           },
           {
             "name": "status",
@@ -2215,10 +2310,10 @@
                   "type": "null"
                 }
               ],
-              "description": "Status filter. Repeat to combine.",
+              "description": "Show only applications in these states. Add this more than once to include several states.",
               "title": "Status"
             },
-            "description": "Status filter. Repeat to combine."
+            "description": "Show only applications in these states. Add this more than once to include several states."
           },
           {
             "name": "search",
@@ -2233,10 +2328,10 @@
                   "type": "null"
                 }
               ],
-              "description": "Substring match on application_reference_id.",
+              "description": "Show only applications whose reference number contains this text.",
               "title": "Search"
             },
-            "description": "Substring match on application_reference_id."
+            "description": "Show only applications whose reference number contains this text."
           },
           {
             "name": "created_from",
@@ -2252,8 +2347,10 @@
                   "type": "null"
                 }
               ],
+              "description": "Show only applications created on or after this date and time.",
               "title": "Created From"
-            }
+            },
+            "description": "Show only applications created on or after this date and time."
           },
           {
             "name": "created_to",
@@ -2269,8 +2366,10 @@
                   "type": "null"
                 }
               ],
+              "description": "Show only applications created on or before this date and time.",
               "title": "Created To"
-            }
+            },
+            "description": "Show only applications created on or before this date and time."
           },
           {
             "name": "limit",
@@ -2280,9 +2379,11 @@
               "type": "integer",
               "maximum": 200,
               "minimum": 1,
+              "description": "How many applications to return per page (1 to 200).",
               "default": 50,
               "title": "Limit"
-            }
+            },
+            "description": "How many applications to return per page (1 to 200)."
           },
           {
             "name": "offset",
@@ -2291,9 +2392,11 @@
             "schema": {
               "type": "integer",
               "minimum": 0,
+              "description": "How many applications to skip before this page starts.",
               "default": 0,
               "title": "Offset"
-            }
+            },
+            "description": "How many applications to skip before this page starts."
           }
         ],
         "responses": {
@@ -2325,7 +2428,8 @@
         "tags": [
           "pending-applications"
         ],
-        "summary": "Get pending application (platform, read-only)",
+        "summary": "Get One Application Awaiting Review",
+        "description": "Get the full details of a single application that is being reviewed, looked up by its unique ID. You can view it here but not change it. The application must belong to your platform.",
         "operationId": "platform_get_pending_application_v1_platform_pending_applications__application_id__get",
         "security": [
           {
@@ -2373,8 +2477,8 @@
         "tags": [
           "auth"
         ],
-        "summary": "Exchange Client Token",
-        "description": "Exchange client credentials for a short-lived JWT access token.\n\nThis endpoint implements the **OAuth2 client_credentials** grant:\n\n- Accepts ``client_id`` and ``client_secret`` issued during onboarding\n- Returns a JWT scoped to the client's environment (sandbox / production)\n- Token lifetime is **24 minutes (1440 seconds)** — re-authenticate when it expires\n- IP allowlist is enforced when configured on the client\n\n### Authentication\n\nThis endpoint is **unauthenticated** — it is the authentication step itself.\n\n### Mode\n\nThe request mode (sandbox / production) is determined by the **server URL**\nyou call (e.g. ``sandbox-api.finogates.com`` vs ``api.finogates.com``).\nThe client's environment must match the resolved mode.\n\n### Rate Limiting\n\nStandard rate limits apply.  Repeated authentication failures may trigger\ntemporary blocks.",
+        "summary": "Get an Access Token",
+        "description": "Log your app in and get an **access token**. You need this token before you\ncan call any other endpoint — send it with every request to prove who you are.\n\n### What you send\n\nThe two values you were given when your account was set up:\n\n- ``client_id`` — your app's public ID\n- ``client_secret`` — your app's secret password (keep it private and safe)\n\n### What you get back\n\nA short-lived access token. It works for about **24 minutes**. When it stops\nworking, just call this endpoint again to get a fresh one.\n\n### Good to know\n\n- This is the only endpoint that does **not** need a token already — it is\n  how you get one in the first place.\n- Test mode and live mode are kept separate. The web address you call decides\n  which one you get (the test address or the live address), and your\n  credentials must match that mode.\n- If you gave us a list of allowed IP addresses, requests coming from any\n  other address are turned away.\n- Too many failed login attempts in a short time can block you for a while.",
         "operationId": "exchange_client_token_v1_platform_auth_token_post",
         "requestBody": {
           "content": {
@@ -2415,8 +2519,8 @@
         "tags": [
           "users"
         ],
-        "summary": "Create User",
-        "description": "Creates a new user account on the platform.\n\nThis endpoint enables platforms to:\n\n- Register a new user with email and name\n- Automatically generate a wallet for the user\n- Initialize default settings for the newly created user\n\nAt least an **email** is required.  A primary wallet is created in the\nspecified currency (defaults to USD).",
+        "summary": "Add a New User",
+        "description": "Create a new user (one of your customers) on your platform.\n\nWhen you add a user, we automatically:\n\n- Set up their account using the email and name you provide\n- Create a money wallet for them so they can hold and move funds\n- Apply the standard starting settings\n\nAn **email address** is the only required detail. The wallet is created in\nthe currency you choose, or US dollars (USD) if you don't pick one.",
         "operationId": "create_user_v1_platform_users_post",
         "security": [
           {
@@ -2461,7 +2565,7 @@
           "users"
         ],
         "summary": "List Users",
-        "description": "Returns a paginated list of end users belonging to the authenticated platform.\n\nResults are ordered by creation date (newest first).",
+        "description": "Get the list of users (your customers) on your platform.\n\nThe newest users appear first, and the list is split into pages.",
         "operationId": "list_users_v1_platform_users_get",
         "security": [
           {
@@ -2477,12 +2581,12 @@
               "type": "integer",
               "maximum": 200,
               "minimum": 1,
-              "description": "Maximum records per page.",
+              "description": "How many users to return per page (1 to 200).",
               "examples": [50],
               "default": 50,
               "title": "Limit"
             },
-            "description": "Maximum records per page."
+            "description": "How many users to return per page (1 to 200)."
           },
           {
             "name": "offset",
@@ -2491,12 +2595,12 @@
             "schema": {
               "type": "integer",
               "minimum": 0,
-              "description": "Records to skip.",
+              "description": "How many users to skip before this page starts.",
               "examples": [0],
               "default": 0,
               "title": "Offset"
             },
-            "description": "Records to skip."
+            "description": "How many users to skip before this page starts."
           }
         ],
         "responses": {
@@ -2528,8 +2632,8 @@
         "tags": [
           "users"
         ],
-        "summary": "Get User",
-        "description": "Returns details for a single user identified by their UUID.\n\nThe user must belong to the authenticated platform.",
+        "summary": "Get One User",
+        "description": "Get the details of a single user, looked up by their unique ID.\n\nThe user must belong to your platform.",
         "operationId": "get_user_v1_platform_users__user_id__get",
         "security": [
           {
@@ -2544,13 +2648,13 @@
             "schema": {
               "type": "string",
               "format": "uuid",
-              "description": "Unique identifier (UUID) of the user.",
+              "description": "The unique ID of the user you want.",
               "examples": [
                 "b3a9b622-cc63-4d3c-aad6-2d8e29e6f9d4"
               ],
               "title": "User Id"
             },
-            "description": "Unique identifier (UUID) of the user."
+            "description": "The unique ID of the user you want."
           }
         ],
         "responses": {
@@ -2580,8 +2684,8 @@
         "tags": [
           "users"
         ],
-        "summary": "Deactivate User",
-        "description": "Soft-deletes an end user by marking their tenant membership as deleted.\n\nThe user record is preserved for audit purposes — only the membership\nassociation is removed.  The user will no longer appear in list\nresponses and cannot be used for new operations.\n\nThis operation is **idempotent** — deactivating an already-deleted user\nsucceeds silently.",
+        "summary": "Deactivate a User",
+        "description": "Turn off a user's account.\n\nThe user's record is kept for your records — nothing is permanently erased —\nbut the user stops appearing in your user list and can no longer be used for\nanything new.\n\nYou can safely call this more than once. Deactivating a user who is already\ndeactivated simply succeeds and changes nothing.",
         "operationId": "deactivate_user_v1_platform_users__user_id__delete",
         "security": [
           {
@@ -2596,13 +2700,13 @@
             "schema": {
               "type": "string",
               "format": "uuid",
-              "description": "Unique identifier (UUID) of the user to deactivate.",
+              "description": "The unique ID of the user you want to deactivate.",
               "examples": [
                 "b3a9b622-cc63-4d3c-aad6-2d8e29e6f9d4"
               ],
               "title": "User Id"
             },
-            "description": "Unique identifier (UUID) of the user to deactivate."
+            "description": "The unique ID of the user you want to deactivate."
           }
         ],
         "responses": {
@@ -2634,8 +2738,8 @@
         "tags": [
           "wallets"
         ],
-        "summary": "Get Wallet",
-        "description": "Returns the primary wallet for a user, including real-time balance breakdown.\n\n**Balance fields** returned:\n- ``available`` — funds available for immediate use\n- ``pending`` — funds awaiting settlement\n- ``escrow`` — funds held in escrow\n- ``hold`` — temporary holds\n- ``fees`` — accrued fee balance\n\nThe user must belong to the authenticated platform.",
+        "summary": "Get a User's Wallet",
+        "description": "Get a user's main wallet, with an up-to-the-minute breakdown of their money.\n\nThe balance is split into these parts:\n\n- ``available`` — money the user can spend right now\n- ``pending`` — money on the way in that hasn't fully cleared yet\n- ``escrow`` — money set aside while a payment is being completed\n- ``hold`` — money temporarily frozen\n- ``fees`` — fees that have built up\n\nThe user must belong to your platform.",
         "operationId": "get_wallet_v1_platform_wallets__user_id__get",
         "security": [
           {
@@ -2650,13 +2754,13 @@
             "schema": {
               "type": "string",
               "format": "uuid",
-              "description": "Unique identifier (UUID) of the wallet owner.",
+              "description": "The unique ID of the user whose wallet you want.",
               "examples": [
                 "b3a9b622-cc63-4d3c-aad6-2d8e29e6f9d4"
               ],
               "title": "User Id"
             },
-            "description": "Unique identifier (UUID) of the wallet owner."
+            "description": "The unique ID of the user whose wallet you want."
           }
         ],
         "responses": {
@@ -2688,8 +2792,8 @@
         "tags": [
           "wallets"
         ],
-        "summary": "Get Wallet Activity",
-        "description": "Returns the transaction activity for a user's primary wallet.\n\nThe response includes:\n\n- **Scoped balances** — ``available``, ``outbound_pending``,\n  ``inbound_pending``, and ``current``.\n- **Activity rows** — one row per payment intent, ordered newest first.\n  Each row includes journey description, status, amount, direction\n  (``amount_sign``), and timestamps.\n\nThe user must belong to the authenticated platform.",
+        "summary": "Get a User's Wallet Activity",
+        "description": "Get the money in-and-out history for a user's main wallet.\n\nYou get back:\n\n- **Balances** — ``available`` (spendable now), ``outbound_pending`` (money\n  leaving that hasn't cleared), ``inbound_pending`` (money arriving that\n  hasn't cleared), and ``current`` (the overall balance).\n- **Activity list** — one entry per payment, newest first. Each entry has a\n  short description of what happened, its status, the amount, whether it was\n  money in or money out (``amount_sign``), and the date and time.\n\nThe user must belong to your platform.",
         "operationId": "get_wallet_activity_v1_platform_wallets__user_id__activity_get",
         "security": [
           {
@@ -2704,13 +2808,13 @@
             "schema": {
               "type": "string",
               "format": "uuid",
-              "description": "Unique identifier (UUID) of the wallet owner.",
+              "description": "The unique ID of the user whose wallet activity you want.",
               "examples": [
                 "b3a9b622-cc63-4d3c-aad6-2d8e29e6f9d4"
               ],
               "title": "User Id"
             },
-            "description": "Unique identifier (UUID) of the wallet owner."
+            "description": "The unique ID of the user whose wallet activity you want."
           }
         ],
         "responses": {
@@ -2742,8 +2846,8 @@
         "tags": [
           "payments"
         ],
-        "summary": "Submit Payment",
-        "description": "Submit a payment on the platform — creates the intent **and** executes\nit against the resolved provider in a single call (one-shot submit).\n\nThis endpoint enables platforms to:\n\n- Initiate a **funding** (deposit from external source into a wallet)\n- Initiate a **payout** (withdrawal from a wallet to an external method)\n- Initiate a **transfer** (wallet-to-wallet movement)\n- Initiate a **relay** (external-to-external pass-through)\n\nThe ``intent_type`` field determines which auxiliary fields are required:\n\n| Intent type | Required fields |\n|-------------|----------------|\n| `funding`   | `product_id`, `payment_method_id` |\n| `payout`    | `product_id`, **either** `payee_destination_id` (modern) **or** `payee_payment_method_id` (legacy) |\n| `transfer`  | `destination_wallet_id` |\n| `relay`     | `payment_method_id`, **either** `payee_destination_id` **or** `payee_payment_method_id` |\n\nFor payout / relay flows that use Checkbook auto-deposit, ACH push to a\nsaved bank, or email-tokenized payouts, pass ``payee_destination_id`` —\nthat's the canonical model. ``payee_payment_method_id`` remains accepted\nfor backward compatibility.\n\nThe response carries the post-execution intent state. Inspect\n``status`` to determine the outcome:\n\n- ``processing`` — provider call is in flight; final state arrives via\n  webhook (e.g. ``payment_intent.settled``).\n- ``succeeded`` — provider accepted; awaiting settlement webhook.\n- ``settled`` — terminal (rare on submit; usually arrives by webhook).\n- ``failed`` — terminal; ``failure_reason`` carries a machine-readable\n  code (e.g. ``checkbook_returned_R01``).\n- ``pending_review`` — an admin approval rule flagged the intent.\n  No provider call was made; status will advance via webhook once\n  reviewed.\n\nAn **idempotency_key** is mandatory to prevent duplicate payments.",
+        "summary": "Make a Payment",
+        "description": "Create a payment and send it through, all in one call.\n\nYou can use this to:\n\n- **funding** — bring money into a wallet from an outside source (a deposit)\n- **payout** — send money out of a wallet to an outside account (a payout)\n- **transfer** — move money from one wallet to another inside Finogate\n- **relay** — pass money straight from one outside account to another\n\nThe ``intent_type`` field says which kind of payment this is, and that\ndecides which other fields you must include:\n\n| Payment type | Fields you must also send |\n|--------------|---------------------------|\n| `funding`    | `product_id`, `payment_method_id` |\n| `payout`     | `product_id`, plus **either** `payee_destination_id` (preferred) **or** `payee_payment_method_id` (older style) |\n| `transfer`   | `destination_wallet_id` |\n| `relay`      | `payment_method_id`, plus **either** `payee_destination_id` **or** `payee_payment_method_id` |\n\nFor payouts and relays, sending ``payee_destination_id`` is the recommended\nway. ``payee_payment_method_id`` still works and is kept for older\nintegrations.\n\nOnce the payment runs, check the ``status`` field in the response to see\nwhat happened:\n\n- ``processing`` — the payment is still being handled. The final result\n  will reach you later as an automatic notification (a webhook).\n- ``succeeded`` — accepted; the money is still settling.\n- ``settled`` — fully finished (you'll usually see this through a webhook\n  rather than right here).\n- ``failed`` — the payment did not go through. The ``failure_reason`` field\n  explains why.\n- ``pending_review`` — the payment was held for a manual check. Nothing has\n  been sent out yet; you'll be notified once the review is done.\n\nYou **must** include an ``idempotency_key`` — a unique value you pick for\neach payment. If the same request reaches us twice by mistake, this makes\nsure the payment only happens once.",
         "operationId": "create_payment_v1_platform_payments_post",
         "security": [
           {
@@ -2788,7 +2892,7 @@
           "payments"
         ],
         "summary": "List Payments",
-        "description": "Returns a paginated list of payments belonging to the authenticated platform.\n\nResults are ordered by creation date (newest first).",
+        "description": "Get the list of payments made on your platform.\n\nThe newest payments appear first, and the list is split into pages.",
         "operationId": "list_payments_v1_platform_payments_get",
         "security": [
           {
@@ -2804,12 +2908,12 @@
               "type": "integer",
               "maximum": 200,
               "minimum": 1,
-              "description": "Maximum records per page.",
+              "description": "How many payments to return per page (1 to 200).",
               "examples": [50],
               "default": 50,
               "title": "Limit"
             },
-            "description": "Maximum records per page."
+            "description": "How many payments to return per page (1 to 200)."
           },
           {
             "name": "offset",
@@ -2818,12 +2922,12 @@
             "schema": {
               "type": "integer",
               "minimum": 0,
-              "description": "Records to skip.",
+              "description": "How many payments to skip before this page starts.",
               "examples": [0],
               "default": 0,
               "title": "Offset"
             },
-            "description": "Records to skip."
+            "description": "How many payments to skip before this page starts."
           }
         ],
         "responses": {
@@ -2855,8 +2959,8 @@
         "tags": [
           "payments"
         ],
-        "summary": "Get Payment",
-        "description": "Returns details for a single payment identified by its UUID.\n\nThe payment must belong to the authenticated platform.",
+        "summary": "Get One Payment",
+        "description": "Get the full details of a single payment, looked up by its unique ID.\n\nThe payment must belong to your platform.",
         "operationId": "get_payment_v1_platform_payments__payment_id__get",
         "security": [
           {
@@ -2871,13 +2975,13 @@
             "schema": {
               "type": "string",
               "format": "uuid",
-              "description": "Unique identifier (UUID) of the payment.",
+              "description": "The unique ID of the payment you want.",
               "examples": [
                 "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
               ],
               "title": "Payment Id"
             },
-            "description": "Unique identifier (UUID) of the payment."
+            "description": "The unique ID of the payment you want."
           }
         ],
         "responses": {
@@ -2909,8 +3013,8 @@
         "tags": [
           "bank accounts"
         ],
-        "summary": "Add Bank Account",
-        "description": "Register a bank account as a payment method for a user.\n\nThe bank account is stored securely with encryption at rest.\nOnly masked values (``account_mask``, ``routing_last4``) are returned in\nsubsequent API responses — the full account number is never re-exposed.\n\n### Required Fields\n- ``user_id`` — the owner of the payment method\n- ``account_holder_name`` — name on the bank account\n- ``bank_account_number`` — full account number (encrypted at rest)\n- ``routing_number`` — 9-digit ACH routing number",
+        "summary": "Add a Bank Account",
+        "description": "Save a bank account so one of your users can pay with it.\n\nThe bank account is stored safely and kept encrypted. After it is saved, our\nresponses only ever show a masked version (a masked account number and the\nlast 4 digits of the routing number) — the full account number is never\nshown again.\n\n### What you need to send\n- ``user_id`` — the user this bank account belongs to\n- ``account_holder_name`` — the name on the bank account\n- ``bank_account_number`` — the full bank account number\n- ``routing_number`` — the bank's 9-digit routing number",
         "operationId": "add_bank_account_v1_platform_bank_add_bank_manually_post",
         "requestBody": {
           "content": {
@@ -2956,8 +3060,8 @@
         "tags": [
           "bank accounts"
         ],
-        "summary": "List Bank Payment Methods",
-        "description": "Returns only **bank account** payment methods for a user.\n\nIncludes all bank-family types: bank, ACH, RTP, wire, and Plaid-linked\naccounts. Results include masked data only — account mask and routing\nlast 4 digits.",
+        "summary": "List a User's Bank Accounts",
+        "description": "Get only the **bank account** payment methods saved for a user.\n\nThis covers every kind of bank account — standard bank, ACH, RTP, wire\ntransfer, and accounts that were linked instantly. For safety, the details\nare masked: you only see a masked account number and the last 4 digits of\nthe routing number.",
         "operationId": "list_banks_v1_platform_bank_banks__user_id__get",
         "security": [
           {
@@ -2972,13 +3076,13 @@
             "schema": {
               "type": "string",
               "format": "uuid",
-              "description": "UUID of the user whose bank payment methods to list.",
+              "description": "The unique ID of the user whose bank accounts you want.",
               "examples": [
                 "b3a9b622-cc63-4d3c-aad6-2d8e29e6f9d4"
               ],
               "title": "User Id"
             },
-            "description": "UUID of the user whose bank payment methods to list."
+            "description": "The unique ID of the user whose bank accounts you want."
           },
           {
             "name": "limit",
@@ -2988,11 +3092,11 @@
               "type": "integer",
               "maximum": 200,
               "minimum": 1,
-              "description": "Max records per page.",
+              "description": "How many bank accounts to return per page (1 to 200).",
               "default": 50,
               "title": "Limit"
             },
-            "description": "Max records per page."
+            "description": "How many bank accounts to return per page (1 to 200)."
           },
           {
             "name": "offset",
@@ -3001,11 +3105,11 @@
             "schema": {
               "type": "integer",
               "minimum": 0,
-              "description": "Records to skip.",
+              "description": "How many bank accounts to skip before this page starts.",
               "default": 0,
               "title": "Offset"
             },
-            "description": "Records to skip."
+            "description": "How many bank accounts to skip before this page starts."
           }
         ],
         "responses": {
@@ -3037,8 +3141,8 @@
         "tags": [
           "bank accounts"
         ],
-        "summary": "Get Hosted Add-Bank URL",
-        "description": "Return a short-lived hosted add-bank URL the integrator embeds as an\niframe ``src``. The hosted page renders Plaid Link inside the iframe,\nexchanges the resulting public token, stores the bank account as a\nPaymentMethod, and emits a ``payment_method.bank.added`` webhook to the\nplatform on success.\n\n### Response\n- ``user_id`` — the end user the URL is bound to.\n- ``add_bank_url`` — iframe-ready URL with a single-use path token.\n- ``expires_at`` — absolute UTC expiry (~10 minutes from now).\n\n### Notification\n- On success, the platform receives a ``payment_method.bank.added``\n  webhook carrying the linked account data and ``user_id``. This webhook\n  is the authoritative success channel — the hosted page does not\n  postMessage to the parent window.\n- On hosted-page failure (expired/tampered token, validation error)\n  no add is attempted and no webhook is fired. Re-call this endpoint\n  to mint a fresh URL — there is no refresh.\n\nThe URL does NOT carry any provider-specific identifiers (the word\n``plaid`` never appears). Treat it as opaque.",
+        "summary": "Get a Link for the User to Add a Bank Account",
+        "description": "Get a ready-made web page link that lets one of your users add their own\nbank account. You show this page inside your own website (inside an\niframe). The user connects their bank on that page, and we save the\naccount for them automatically.\n\n### What you get back\n- ``user_id`` — the user this link is for.\n- ``add_bank_url`` — the link to load inside an iframe. It can be used once.\n- ``expires_at`` — the time the link stops working (about 10 minutes away).\n\n### How you find out the result\n- When the bank account is added successfully, we send your server an\n  automatic notification (a ``payment_method.bank.added`` webhook) with the\n  new account details and the ``user_id``. This notification is the\n  official way to know it worked.\n- If something goes wrong on the page (the link expired, was tampered with,\n  or the details didn't pass our checks), nothing is saved and no\n  notification is sent. Simply call this endpoint again to get a fresh link\n  — links cannot be renewed.\n\nThe link contains no details about which company connects the bank behind\nthe scenes. Treat it as a plain string with no meaning of its own.",
         "operationId": "get_hosted_add_bank_url_v1_platform_bank_add_account_instantly__user_id__get",
         "security": [
           {
@@ -3053,13 +3157,13 @@
             "schema": {
               "type": "string",
               "format": "uuid",
-              "description": "UUID of the end user the bank is being added for.",
+              "description": "The unique ID of the user the bank account is being added for.",
               "examples": [
                 "b3a9b622-cc63-4d3c-aad6-2d8e29e6f9d4"
               ],
               "title": "User Id"
             },
-            "description": "UUID of the end user the bank is being added for."
+            "description": "The unique ID of the user the bank account is being added for."
           }
         ],
         "responses": {
@@ -3091,8 +3195,8 @@
         "tags": [
           "bank accounts"
         ],
-        "summary": "Remove Bank Account",
-        "description": "Disables a bank account payment method so it can no longer be used for\ntransactions.\n\nThis is a **soft delete** — the record is retained for audit purposes but\nmarked as disabled.\n\n``bank_account_id`` is the payment method UUID.",
+        "summary": "Remove a Bank Account",
+        "description": "Switch off a saved bank account so it can no longer be used for payments.\n\nThe record is kept for your history — nothing is permanently erased — it is\nsimply marked as switched off.",
         "operationId": "remove_bank_v1_platform_bank_delete__bank_account_id__delete",
         "security": [
           {
@@ -3107,13 +3211,13 @@
             "schema": {
               "type": "string",
               "format": "uuid",
-              "description": "UUID of the bank account payment method to remove.",
+              "description": "The unique ID of the saved bank account you want to remove.",
               "examples": [
                 "e5f6a7b8-c9d0-1234-5678-9abcdef01234"
               ],
               "title": "Bank Account Id"
             },
-            "description": "UUID of the bank account payment method to remove."
+            "description": "The unique ID of the saved bank account you want to remove."
           }
         ],
         "responses": {
@@ -3145,8 +3249,8 @@
         "tags": [
           "card processing"
         ],
-        "summary": "List Card Payment Methods",
-        "description": "Returns only **card** payment methods for a user.\n\nResults include masked data only — last 4 digits, brand, and expiration.",
+        "summary": "List a User's Cards",
+        "description": "Get only the **card** payment methods saved for a user.\n\nFor safety, the details are masked: you only see the last 4 digits, the card\nbrand (such as Visa), and the expiry date.",
         "operationId": "list_cards_v1_platform_card_cards__user_id__get",
         "security": [
           {
@@ -3161,13 +3265,13 @@
             "schema": {
               "type": "string",
               "format": "uuid",
-              "description": "UUID of the user whose card payment methods to list.",
+              "description": "The unique ID of the user whose cards you want.",
               "examples": [
                 "b3a9b622-cc63-4d3c-aad6-2d8e29e6f9d4"
               ],
               "title": "User Id"
             },
-            "description": "UUID of the user whose card payment methods to list."
+            "description": "The unique ID of the user whose cards you want."
           },
           {
             "name": "limit",
@@ -3177,11 +3281,11 @@
               "type": "integer",
               "maximum": 200,
               "minimum": 1,
-              "description": "Max records per page.",
+              "description": "How many cards to return per page (1 to 200).",
               "default": 50,
               "title": "Limit"
             },
-            "description": "Max records per page."
+            "description": "How many cards to return per page (1 to 200)."
           },
           {
             "name": "offset",
@@ -3190,11 +3294,11 @@
             "schema": {
               "type": "integer",
               "minimum": 0,
-              "description": "Records to skip.",
+              "description": "How many cards to skip before this page starts.",
               "default": 0,
               "title": "Offset"
             },
-            "description": "Records to skip."
+            "description": "How many cards to skip before this page starts."
           }
         ],
         "responses": {
@@ -3226,8 +3330,8 @@
         "tags": [
           "card processing"
         ],
-        "summary": "Get Hosted Add-Card URL",
-        "description": "Return a short-lived hosted add-card URL the integrator embeds as an\niframe ``src``. The hosted page renders the card-capture form, stores\nthe resulting card in Finogate's vault, and emits a\n``payment_method.card.added`` webhook to the platform on success.\n\n### Response\n- ``user_id`` — the end user the URL is bound to.\n- ``add_card_url`` — iframe-ready URL with a single-use path token.\n- ``expires_at`` — absolute UTC expiry (~10 minutes from now).\n\n### Notification\n- On success, the platform receives a ``payment_method.card.added``\n  webhook carrying the card data and ``user_id``. This webhook is the\n  authoritative success channel — the hosted page does not postMessage\n  to the parent window.\n- On hosted-page failure (expired/tampered token, validation error)\n  no add is attempted and no webhook is fired. Re-call this endpoint\n  to mint a fresh URL — there is no refresh.\n\nThe URL does NOT carry any provider-specific identifiers. Treat it as\nopaque.",
+        "summary": "Get a Link for the User to Add a Card",
+        "description": "Get a ready-made web page link that lets one of your users add their own\npayment card. You show this page inside your own website (inside an\niframe). The user types their card details on that page, and we store the\ncard safely for them.\n\n### What you get back\n- ``user_id`` — the user this link is for.\n- ``add_card_url`` — the link to load inside an iframe. It can be used once.\n- ``expires_at`` — the time the link stops working (about 10 minutes away).\n\n### How you find out the result\n- When the card is added successfully, we send your server an automatic\n  notification (a ``payment_method.card.added`` webhook) with the card\n  details and the ``user_id``. This notification is the official way to\n  know it worked.\n- If something goes wrong on the page (the link expired, was tampered with,\n  or the details didn't pass our checks), nothing is saved and no\n  notification is sent. Simply call this endpoint again to get a fresh link\n  — links cannot be renewed.\n\nThe link contains no details about which company processes the card behind\nthe scenes. Treat it as a plain string with no meaning of its own.",
         "operationId": "get_hosted_add_card_url_v1_platform_card_add_card__user_id__get",
         "security": [
           {
@@ -3242,13 +3346,13 @@
             "schema": {
               "type": "string",
               "format": "uuid",
-              "description": "UUID of the end user the card is being added for.",
+              "description": "The unique ID of the user the card is being added for.",
               "examples": [
                 "b3a9b622-cc63-4d3c-aad6-2d8e29e6f9d4"
               ],
               "title": "User Id"
             },
-            "description": "UUID of the end user the card is being added for."
+            "description": "The unique ID of the user the card is being added for."
           },
           {
             "name": "card_processing_id",
@@ -3264,10 +3368,10 @@
                   "type": "null"
                 }
               ],
-              "description": "Optional. Pin the card to a specific approved card-processing merchant account (``id`` returned by ``GET /v1/platform/card-processing/users/{user_id}``). The iframe will load Collect.js against that merchant's tokenization key, and the card binding will be permanently pinned to it so every later charge / capture / refund routes through the same MID. Omit to use the user's default approved merchant (deterministic picker).",
+              "description": "Optional. Tie this card to one specific approved card-processing account (use the ``id`` returned by ``GET /v1/platform/card-processing/users/{user_id}``). The card will then always be charged, captured, and refunded through that same account. Leave this out to use the user's default card-processing account.",
               "title": "Card Processing Id"
             },
-            "description": "Optional. Pin the card to a specific approved card-processing merchant account (``id`` returned by ``GET /v1/platform/card-processing/users/{user_id}``). The iframe will load Collect.js against that merchant's tokenization key, and the card binding will be permanently pinned to it so every later charge / capture / refund routes through the same MID. Omit to use the user's default approved merchant (deterministic picker)."
+            "description": "Optional. Tie this card to one specific approved card-processing account (use the ``id`` returned by ``GET /v1/platform/card-processing/users/{user_id}``). The card will then always be charged, captured, and refunded through that same account. Leave this out to use the user's default card-processing account."
           }
         ],
         "responses": {
@@ -3299,8 +3403,8 @@
         "tags": [
           "card processing"
         ],
-        "summary": "Remove Card",
-        "description": "Disables a card payment method so it can no longer be used for\ntransactions.\n\nThis is a **soft delete** — the record is retained for audit purposes but\nmarked as disabled.\n\n``card_id`` is the payment method UUID.",
+        "summary": "Remove a Card",
+        "description": "Switch off a saved card so it can no longer be used for payments.\n\nThe record is kept for your history — nothing is permanently erased — it is\nsimply marked as switched off.",
         "operationId": "remove_card_v1_platform_card_delete__card_id__delete",
         "security": [
           {
@@ -3315,13 +3419,13 @@
             "schema": {
               "type": "string",
               "format": "uuid",
-              "description": "UUID of the card payment method to remove.",
+              "description": "The unique ID of the saved card you want to remove.",
               "examples": [
                 "e5f6a7b8-c9d0-1234-5678-9abcdef01234"
               ],
               "title": "Card Id"
             },
-            "description": "UUID of the card payment method to remove."
+            "description": "The unique ID of the saved card you want to remove."
           }
         ],
         "responses": {
@@ -3353,8 +3457,8 @@
         "tags": [
           "card processing"
         ],
-        "summary": "Create Card Processing Application",
-        "description": "Create a card-processing application for the target user.",
+        "summary": "Apply for Card Processing",
+        "description": "Apply for card processing for one of your users, so that user can\naccept card payments. This creates a new application, which Finogate's\nteam then reviews.",
         "operationId": "create_user_card_processing_v1_platform_card_processing_users__user_id__post",
         "security": [
           {
@@ -3410,8 +3514,8 @@
         "tags": [
           "card processing"
         ],
-        "summary": "Get Card Processing Record(s)",
-        "description": "List the user's card-processing applications, or fetch one.\n\nOmit ``application_id`` to list every card-processing application for\nthe target user; supply ``application_id`` to fetch a single\napplication. The response envelope differs accordingly: ``ListResponse``\nfor the list case, ``CommonResponse`` for the single-record case.",
+        "summary": "Get Card Processing Applications",
+        "description": "Get a user's card-processing applications.\n\nLeave ``application_id`` out to get the full list of that user's\ncard-processing applications. Provide an ``application_id`` to get just\nthat single application instead.",
         "operationId": "read_user_card_processing_v1_platform_card_processing_users__user_id__get",
         "security": [
           {
@@ -3443,10 +3547,10 @@
                   "type": "null"
                 }
               ],
-              "description": "Optional. When supplied, fetch the single card-processing application with this id — the response is a CommonResponse. When omitted, list every card-processing application for the user — the response is a ListResponse.",
+              "description": "Optional. Provide an application ID to get just that one card-processing application. Leave it out to get the full list of the user's card-processing applications.",
               "title": "Application Id"
             },
-            "description": "Optional. When supplied, fetch the single card-processing application with this id — the response is a CommonResponse. When omitted, list every card-processing application for the user — the response is a ListResponse."
+            "description": "Optional. Provide an application ID to get just that one card-processing application. Leave it out to get the full list of the user's card-processing applications."
           }
         ],
         "responses": {
@@ -3478,7 +3582,8 @@
         "tags": [
           "payees"
         ],
-        "summary": "Create Payee",
+        "summary": "Add a Payee",
+        "description": "Add a payee — a person or business that one of your users wants to send money to. Once the payee is added, you can give them one or more payout destinations (the actual accounts where the money is delivered).",
         "operationId": "create_payee_v1_platform_payees_post",
         "security": [
           {
@@ -3493,10 +3598,10 @@
             "schema": {
               "type": "string",
               "format": "uuid",
-              "description": "Owner user UUID.",
+              "description": "The unique ID of the user who owns this payee.",
               "title": "User Id"
             },
-            "description": "Owner user UUID."
+            "description": "The unique ID of the user who owns this payee."
           }
         ],
         "requestBody": {
@@ -3537,6 +3642,7 @@
           "payees"
         ],
         "summary": "List Payees",
+        "description": "Get the list of payees (people or businesses that money can be sent to) belonging to one of your users.",
         "operationId": "list_payees_v1_platform_payees_get",
         "security": [
           {
@@ -3551,10 +3657,10 @@
             "schema": {
               "type": "string",
               "format": "uuid",
-              "description": "Owner user UUID.",
+              "description": "The unique ID of the user who owns these payees.",
               "title": "User Id"
             },
-            "description": "Owner user UUID."
+            "description": "The unique ID of the user who owns these payees."
           },
           {
             "name": "status",
@@ -3569,8 +3675,10 @@
                   "type": "null"
                 }
               ],
+              "description": "Show only payees in this state.",
               "title": "Status"
-            }
+            },
+            "description": "Show only payees in this state."
           },
           {
             "name": "limit",
@@ -3580,9 +3688,11 @@
               "type": "integer",
               "maximum": 200,
               "minimum": 1,
+              "description": "How many payees to return per page (1 to 200).",
               "default": 50,
               "title": "Limit"
-            }
+            },
+            "description": "How many payees to return per page (1 to 200)."
           },
           {
             "name": "offset",
@@ -3591,9 +3701,11 @@
             "schema": {
               "type": "integer",
               "minimum": 0,
+              "description": "How many payees to skip before this page starts.",
               "default": 0,
               "title": "Offset"
-            }
+            },
+            "description": "How many payees to skip before this page starts."
           }
         ],
         "responses": {
@@ -3625,7 +3737,8 @@
         "tags": [
           "payees"
         ],
-        "summary": "Get Payee",
+        "summary": "Get One Payee",
+        "description": "Get the full details of a single payee, looked up by their unique ID. You can also ask for the payee's payout destinations to be included in the response.",
         "operationId": "get_payee_v1_platform_payees__payee_id__get",
         "security": [
           {
@@ -3650,10 +3763,10 @@
             "schema": {
               "type": "string",
               "format": "uuid",
-              "description": "Owner user UUID.",
+              "description": "The unique ID of the user who owns this payee.",
               "title": "User Id"
             },
-            "description": "Owner user UUID."
+            "description": "The unique ID of the user who owns this payee."
           },
           {
             "name": "includeDestinations",
@@ -3661,9 +3774,11 @@
             "required": false,
             "schema": {
               "type": "boolean",
+              "description": "Set to true to also include the payee's payout destinations in the response.",
               "default": false,
               "title": "Includedestinations"
-            }
+            },
+            "description": "Set to true to also include the payee's payout destinations in the response."
           },
           {
             "name": "includeMethods",
@@ -3671,9 +3786,11 @@
             "required": false,
             "schema": {
               "type": "boolean",
+              "description": "Set to true to also include the payee's payout destinations in the response.",
               "default": false,
               "title": "Includemethods"
-            }
+            },
+            "description": "Set to true to also include the payee's payout destinations in the response."
           }
         ],
         "responses": {
@@ -3703,7 +3820,8 @@
         "tags": [
           "payees"
         ],
-        "summary": "Update Payee",
+        "summary": "Update a Payee",
+        "description": "Change the details of an existing payee.",
         "operationId": "update_payee_v1_platform_payees__payee_id__patch",
         "security": [
           {
@@ -3728,10 +3846,10 @@
             "schema": {
               "type": "string",
               "format": "uuid",
-              "description": "Owner user UUID.",
+              "description": "The unique ID of the user who owns this payee.",
               "title": "User Id"
             },
-            "description": "Owner user UUID."
+            "description": "The unique ID of the user who owns this payee."
           }
         ],
         "requestBody": {
@@ -3771,7 +3889,8 @@
         "tags": [
           "payees"
         ],
-        "summary": "Archive Payee",
+        "summary": "Archive a Payee",
+        "description": "Archive a payee so they can no longer be paid. The payee's record is kept for your history — nothing is permanently erased.",
         "operationId": "archive_payee_v1_platform_payees__payee_id__delete",
         "security": [
           {
@@ -3796,10 +3915,10 @@
             "schema": {
               "type": "string",
               "format": "uuid",
-              "description": "Owner user UUID.",
+              "description": "The unique ID of the user who owns this payee.",
               "title": "User Id"
             },
-            "description": "Owner user UUID."
+            "description": "The unique ID of the user who owns this payee."
           }
         ],
         "responses": {
@@ -3826,13 +3945,216 @@
         }
       }
     },
-    "/v1/platform/payees/{payee_id}/destinations": {
+    "/v1/platform/payees/destinations/ach-push": {
+      "post": {
+        "tags": [
+          "payees"
+        ],
+        "summary": "Set Up a Bank for ACH Payouts (removed)",
+        "description": "**This endpoint has been removed.** It used to set up a bank account\nup front so money could be sent to it by ACH bank transfer. That step\nis no longer needed — the bank is now set up automatically the first\ntime an approved payout is sent to it.\n\nCalling this endpoint now returns an error (HTTP 410) on purpose, so\nany older code still using it fails clearly. Instead, simply create a\npayout and have it approved.",
+        "operationId": "onboard_destination_to_checkbook_v1_platform_payees_destinations_ach_push_post",
+        "deprecated": true,
+        "security": [
+          {
+            "_AuthenticatedBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "payee_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "The unique ID of the payee.",
+              "title": "Payee Id"
+            },
+            "description": "The unique ID of the payee."
+          },
+          {
+            "name": "destination_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "The unique ID of the payout destination.",
+              "title": "Destination Id"
+            },
+            "description": "The unique ID of the payout destination."
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/CheckbookOnboardRequest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Payload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommonResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "payees"
+        ],
+        "summary": "Check a Bank's ACH Payout Setup",
+        "description": "Check whether a payee's payout destination has been set up for ACH bank payouts, and see its current setup status.",
+        "operationId": "get_destination_checkbook_state_v1_platform_payees_destinations_ach_push_get",
+        "security": [
+          {
+            "_AuthenticatedBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "payee_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "The unique ID of the payee.",
+              "title": "Payee Id"
+            },
+            "description": "The unique ID of the payee."
+          },
+          {
+            "name": "destination_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "The unique ID of the payout destination.",
+              "title": "Destination Id"
+            },
+            "description": "The unique ID of the payout destination."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommonResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "payees"
+        ],
+        "summary": "Turn Off a Bank's ACH Payout Setup",
+        "description": "Switch off the ACH bank-payout setup for a payee's payout destination so it can no longer be used for ACH payouts.",
+        "operationId": "disable_destination_checkbook_v1_platform_payees_destinations_ach_push_delete",
+        "security": [
+          {
+            "_AuthenticatedBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "payee_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "The unique ID of the payee.",
+              "title": "Payee Id"
+            },
+            "description": "The unique ID of the payee."
+          },
+          {
+            "name": "destination_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "The unique ID of the payout destination.",
+              "title": "Destination Id"
+            },
+            "description": "The unique ID of the payout destination."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommonResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/platform/payees/destinations/{payee_id}": {
       "post": {
         "tags": [
           "payees"
         ],
         "summary": "Create Destination",
-        "operationId": "create_destination_v1_platform_payees__payee_id__destinations_post",
+        "operationId": "create_destination_v1_platform_payees_destinations__payee_id__post",
         "security": [
           {
             "_AuthenticatedBearer": []
@@ -3900,7 +4222,7 @@
           "payees"
         ],
         "summary": "List Destinations",
-        "operationId": "list_destinations_v1_platform_payees__payee_id__destinations_get",
+        "operationId": "list_destinations_v1_platform_payees_destinations__payee_id__get",
         "security": [
           {
             "_AuthenticatedBearer": []
@@ -3954,13 +4276,13 @@
         }
       }
     },
-    "/v1/platform/payees/{payee_id}/destinations/{destination_id}": {
+    "/v1/platform/payees/destinations/{payee_id}/{destination_id}": {
       "delete": {
         "tags": [
           "payees"
         ],
         "summary": "Revoke Destination",
-        "operationId": "revoke_destination_v1_platform_payees__payee_id__destinations__destination_id__delete",
+        "operationId": "revoke_destination_v1_platform_payees_destinations__payee_id___destination_id__delete",
         "security": [
           {
             "_AuthenticatedBearer": []
@@ -3998,207 +4320,6 @@
               "title": "User Id"
             },
             "description": "Owner user UUID."
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CommonResponse"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/platform/payees/destinations/ach-push": {
-      "post": {
-        "tags": [
-          "payees"
-        ],
-        "summary": "Onboard destination for ach-push (REMOVED — returns 410)",
-        "description": "**Removed.** Explicit pre-onboarding bypassed the SUA approval\ngate by registering routing/account details for ach-push before any\nreview. The post-SUA-approval execution task now onboards on demand.\nCalls to this route receive HTTP 410 so any stale integrations fail\nloud.",
-        "operationId": "onboard_destination_to_checkbook_v1_platform_payees_destinations_ach_push_post",
-        "deprecated": true,
-        "security": [
-          {
-            "_AuthenticatedBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "payee_id",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "description": "Payee UUID.",
-              "title": "Payee Id"
-            },
-            "description": "Payee UUID."
-          },
-          {
-            "name": "destination_id",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "description": "Payee destination UUID.",
-              "title": "Destination Id"
-            },
-            "description": "Payee destination UUID."
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/CheckbookOnboardRequest"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Payload"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CommonResponse"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      },
-      "get": {
-        "tags": [
-          "payees"
-        ],
-        "summary": "Get destination's ach-push onboarding state",
-        "operationId": "get_destination_checkbook_state_v1_platform_payees_destinations_ach_push_get",
-        "security": [
-          {
-            "_AuthenticatedBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "payee_id",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "description": "Payee UUID.",
-              "title": "Payee Id"
-            },
-            "description": "Payee UUID."
-          },
-          {
-            "name": "destination_id",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "description": "Payee destination UUID.",
-              "title": "Destination Id"
-            },
-            "description": "Payee destination UUID."
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CommonResponse"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "payees"
-        ],
-        "summary": "Disable destination's ach-push attachment",
-        "operationId": "disable_destination_checkbook_v1_platform_payees_destinations_ach_push_delete",
-        "security": [
-          {
-            "_AuthenticatedBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "payee_id",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "description": "Payee UUID.",
-              "title": "Payee Id"
-            },
-            "description": "Payee UUID."
-          },
-          {
-            "name": "destination_id",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "description": "Payee destination UUID.",
-              "title": "Destination Id"
-            },
-            "description": "Payee destination UUID."
           }
         ],
         "responses": {
@@ -4230,8 +4351,8 @@
         "tags": [
           "catalog"
         ],
-        "summary": "List Products",
-        "description": "Returns a paginated list of products available to the authenticated platform.\n\nEach product includes its parent rail, tenant-specific limits, and\nenablement status.  Results are ordered alphabetically by product name.",
+        "summary": "List Available Products",
+        "description": "Get the list of products your platform can use — things like card payments,\nbank transfers, or international payouts.\n\nEach product shows the payment network it belongs to, any limits set for your\nplatform, and whether it is currently switched on. The list is sorted by\nproduct name (A to Z) and split into pages.",
         "operationId": "list_products_v1_platform_catalog_products_get",
         "security": [
           {
@@ -4247,12 +4368,12 @@
               "type": "integer",
               "maximum": 200,
               "minimum": 1,
-              "description": "Maximum records per page.",
+              "description": "How many products to return per page (1 to 200).",
               "examples": [50],
               "default": 50,
               "title": "Limit"
             },
-            "description": "Maximum records per page."
+            "description": "How many products to return per page (1 to 200)."
           },
           {
             "name": "offset",
@@ -4261,12 +4382,12 @@
             "schema": {
               "type": "integer",
               "minimum": 0,
-              "description": "Records to skip.",
+              "description": "How many products to skip before this page starts.",
               "examples": [0],
               "default": 0,
               "title": "Offset"
             },
-            "description": "Records to skip."
+            "description": "How many products to skip before this page starts."
           }
         ],
         "responses": {
@@ -4298,8 +4419,8 @@
         "tags": [
           "catalog"
         ],
-        "summary": "Get Product",
-        "description": "Returns full details for a single product identified by its UUID.\n\nThe response includes extended metadata in addition to the standard\nproduct fields.  The product must be associated with the authenticated\nplatform.",
+        "summary": "Get One Product",
+        "description": "Get the full details of a single product, looked up by its unique ID.\n\nYou see everything from the product list, plus some extra information. The\nproduct must belong to your platform.",
         "operationId": "get_product_v1_platform_catalog_products__product_id__get",
         "security": [
           {
@@ -4314,13 +4435,13 @@
             "schema": {
               "type": "string",
               "format": "uuid",
-              "description": "Unique identifier (UUID) of the product.",
+              "description": "The unique ID of the product you want.",
               "examples": [
                 "d4e5f6a7-b8c9-0d1e-2f3a-4b5c6d7e8f9a"
               ],
               "title": "Product Id"
             },
-            "description": "Unique identifier (UUID) of the product."
+            "description": "The unique ID of the product you want."
           }
         ],
         "responses": {
@@ -4352,8 +4473,8 @@
         "tags": [
           "webhooks"
         ],
-        "summary": "List Webhook Event Types",
-        "description": "Returns available webhook event groups and their individual event types.",
+        "summary": "List the Events You Can Subscribe To",
+        "description": "Get the full list of events you can be notified about, grouped by topic. A webhook is an automatic message Finogate sends to your server the moment something happens (for example, a payment succeeds). Use this list to choose which events you want to receive when you set up a webhook.",
         "operationId": "list_webhook_event_types_v1_platform_webhooks_event_types_get",
         "responses": {
           "200": {
@@ -4379,8 +4500,8 @@
         "tags": [
           "webhooks"
         ],
-        "summary": "Create Webhook",
-        "description": "Creates a new webhook endpoint for the authenticated platform.\n\nThis endpoint enables platforms to:\n\n- Register a URL to receive event notifications via HTTP POST\n- Subscribe to specific event types or all events\n- Obtain a signing secret (shown only once) for payload verification\n\nThe signing secret is returned **only** in the creation response. Store it\nsecurely — it cannot be retrieved again.",
+        "summary": "Set Up a Webhook",
+        "description": "Set up a webhook so Finogate can automatically notify your server when\nthings happen.\n\nWhen you set one up, you:\n\n- Give us a web address (URL) where you want notifications sent\n- Choose which events you want to hear about — specific ones, or all of them\n- Receive a **signing secret**, a private key you use to confirm that a\n  notification really came from Finogate\n\nThe signing secret is shown **only once**, right here in this response. Save\nit somewhere safe — it cannot be shown to you again.",
         "operationId": "create_webhook_v1_platform_webhooks_post",
         "security": [
           {
@@ -4425,7 +4546,7 @@
           "webhooks"
         ],
         "summary": "List Webhooks",
-        "description": "Returns a paginated list of webhook endpoints belonging to the authenticated\nplatform.\n\nResults include both active and inactive endpoints.",
+        "description": "Get the list of webhooks set up for your platform.\n\nThe list includes both webhooks that are switched on and ones that are\nswitched off, and it is split into pages.",
         "operationId": "list_webhooks_v1_platform_webhooks_get",
         "security": [
           {
@@ -4441,12 +4562,12 @@
               "type": "integer",
               "maximum": 200,
               "minimum": 1,
-              "description": "Maximum records per page.",
+              "description": "How many webhooks to return per page (1 to 200).",
               "examples": [50],
               "default": 50,
               "title": "Limit"
             },
-            "description": "Maximum records per page."
+            "description": "How many webhooks to return per page (1 to 200)."
           },
           {
             "name": "offset",
@@ -4455,12 +4576,12 @@
             "schema": {
               "type": "integer",
               "minimum": 0,
-              "description": "Records to skip.",
+              "description": "How many webhooks to skip before this page starts.",
               "examples": [0],
               "default": 0,
               "title": "Offset"
             },
-            "description": "Records to skip."
+            "description": "How many webhooks to skip before this page starts."
           }
         ],
         "responses": {
@@ -4492,8 +4613,8 @@
         "tags": [
           "webhooks"
         ],
-        "summary": "Delete Webhook",
-        "description": "Deactivates a webhook endpoint identified by its UUID.\n\nThe endpoint will no longer receive event notifications. This operation\nis idempotent — deleting an already-inactive endpoint succeeds silently.",
+        "summary": "Delete a Webhook",
+        "description": "Switch off a webhook, looked up by its unique ID.\n\nThat web address will stop receiving event notifications. You can safely\ncall this more than once — deleting a webhook that is already switched off\nsimply succeeds and changes nothing.",
         "operationId": "delete_webhook_v1_platform_webhooks__webhook_id__delete",
         "security": [
           {
@@ -4508,13 +4629,13 @@
             "schema": {
               "type": "string",
               "format": "uuid",
-              "description": "Unique identifier (UUID) of the webhook endpoint to delete.",
+              "description": "The unique ID of the webhook you want to delete.",
               "examples": [
                 "c4f2e8a1-3b7d-4e9f-a1c2-6d8e3f7a9b0c"
               ],
               "title": "Webhook Id"
             },
-            "description": "Unique identifier (UUID) of the webhook endpoint to delete."
+            "description": "The unique ID of the webhook you want to delete."
           }
         ],
         "responses": {
@@ -4546,8 +4667,8 @@
         "tags": [
           "webhooks"
         ],
-        "summary": "Replay Failed Webhook Deliveries",
-        "description": "Replays failed webhook deliveries for the authenticated platform.\n\nFailed deliveries are reset to ``pending`` and the background dispatch\nworker is triggered for immediate retry.\n\n### Filters\n\nProvide one or more optional filters to narrow the replay scope:\n\n- ``delivery_id`` — replay a single delivery\n- ``event_id`` — replay all failed deliveries for a specific event\n- ``endpoint_id`` — replay all failed deliveries for a specific endpoint\n- ``limit`` — maximum number of deliveries to replay (default 100, max 500)\n\nIf no filters are provided, the most recent failures up to ``limit``\nare replayed.",
+        "summary": "Resend Failed Webhook Notifications",
+        "description": "Try sending your failed webhook notifications again.\n\nSometimes a notification can't reach your server (for example, your server\nwas briefly down). This endpoint takes those failed notifications and tries\nto send them again right away.\n\n### Choosing what to resend\n\nYou can add one or more of these optional filters to control what gets\nresent:\n\n- ``delivery_id`` — resend just one specific notification\n- ``event_id`` — resend every failed notification for one specific event\n- ``endpoint_id`` — resend every failed notification for one specific webhook\n- ``limit`` — the most notifications to resend at once (default 100, up to 500)\n\nIf you don't add any filters, the most recent failed notifications are\nresent, up to the ``limit``.",
         "operationId": "replay_failed_deliveries_v1_platform_webhooks_deliveries_replay_failed_post",
         "requestBody": {
           "content": {
@@ -4594,7 +4715,7 @@
           "bank accounts"
         ],
         "summary": "Apply for Virtual Bank Account",
-        "description": "Apply for a virtual bank account (\"DDA Account\") on behalf of one of\nyour end users.\n\n**Pre-conditions** — the request fails with 403 unless all are met:\n- Your platform has the ``dda_account`` product enabled (request access\n  via the standard onboarding flow; SUA admins approve the product\n  request in their approvals queue before this endpoint is callable).\n- The end user has an **approved** KYC record.\n- The end user has at least one **approved** KYB record.\n\n**Lifecycle** — the account is created in ``initiated`` status. A\nFinogate administrator manually reviews each application, marks it as\n``applied`` once verified, and finally enters the routing / account\nnumbers issued by the banking partner before flipping the account to\n``approved``. Your integration is notified through the outbound\n``virtual_bank_account.approved`` webhook (or\n``virtual_bank_account.rejected`` on decline) — that event is the\nsingle signal that the account is live and may be surfaced to the end\nuser. **Until ``approved``, the account must not be used for\ntransactions, payouts, deposits, or wallet linkage.**\n\n**Idempotency** is enforced two ways:\n- An optional ``idempotency_key`` field provides exact request-level\n  de-duplication (a duplicate key with a different payload returns 409).\n- A partial unique index prevents the same end user from holding two\n  non-rejected accounts of the same ``account_type`` for the same\n  platform — duplicate attempts return 409.",
+        "description": "Apply for a virtual bank account (a \"DDA Account\") for one of your users. A\nvirtual bank account gives the user their own account number and routing\nnumber for receiving money.\n\n**Before this works** — the request is turned down unless all of these are\ntrue:\n- Your platform has the virtual bank account product (``dda_account``)\n  switched on. You ask for it during the normal sign-up process, and\n  Finogate's team must approve that request first.\n- The user has passed identity verification (an approved KYC record).\n- The user has passed business verification (at least one approved KYB\n  record).\n\n**What happens next** — the account starts in the ``initiated`` state.\nFinogate's team reviews every application by hand, marks it ``applied`` once\nchecked, and finally fills in the real account and routing numbers from the\nbanking partner before setting the account to ``approved``. We tell you the\nresult by sending your server an automatic notification — a\n``virtual_bank_account.approved`` webhook if it succeeds, or a\n``virtual_bank_account.rejected`` webhook if it is declined. That\nnotification is the only sign that the account is ready. **Until the account\nis ``approved``, it must not be used for any payments, payouts, deposits, or\nlinked to a wallet.**\n\n**Avoiding duplicates** — there are two safeguards:\n- You can include an ``idempotency_key`` — a unique value you choose. If the\n  same request reaches us twice by mistake, the account is only created\n  once. (Reusing the same key with different details is rejected.)\n- The same user cannot hold two active accounts of the same type on your\n  platform. A repeat attempt is rejected.",
         "operationId": "create_virtual_bank_account_v1_platform_virtual_bank_accounts_post",
         "security": [
           {
@@ -4639,7 +4760,7 @@
           "bank accounts"
         ],
         "summary": "List Virtual Bank Accounts",
-        "description": "List virtual bank account applications filed by your platform. Pass ``user_id`` to scope the result to a single end user. The response carries the live status of each application — poll this endpoint or rely on outbound webhooks to detect terminal transitions (``approved`` / ``rejected``).",
+        "description": "Get the list of virtual bank account applications your platform has submitted. Add ``user_id`` to see only one user's applications. Each application shows its current status — you can check here, or wait for our automatic notifications (webhooks), to learn when an application is finally approved or rejected.",
         "operationId": "list_virtual_bank_accounts_v1_platform_virtual_bank_accounts_get",
         "security": [
           {
@@ -4661,10 +4782,10 @@
                   "type": "null"
                 }
               ],
-              "description": "Optional end user UUID filter.",
+              "description": "Optional. Show only applications for this one user.",
               "title": "User Id"
             },
-            "description": "Optional end user UUID filter."
+            "description": "Optional. Show only applications for this one user."
           },
           {
             "name": "limit",
@@ -4674,9 +4795,11 @@
               "type": "integer",
               "maximum": 200,
               "minimum": 1,
+              "description": "How many applications to return per page (1 to 200).",
               "default": 50,
               "title": "Limit"
-            }
+            },
+            "description": "How many applications to return per page (1 to 200)."
           },
           {
             "name": "offset",
@@ -4685,9 +4808,11 @@
             "schema": {
               "type": "integer",
               "minimum": 0,
+              "description": "How many applications to skip before this page starts.",
               "default": 0,
               "title": "Offset"
-            }
+            },
+            "description": "How many applications to skip before this page starts."
           }
         ],
         "responses": {
@@ -4719,8 +4844,8 @@
         "tags": [
           "bank accounts"
         ],
-        "summary": "Get Virtual Bank Account",
-        "description": "Fetch the current status and (once approved) bank credentials for a virtual bank account. Tenant-scoped — returns 404 for accounts owned by other platforms.",
+        "summary": "Get One Virtual Bank Account",
+        "description": "Get the current status of one virtual bank account, and — once it is approved — its account number and routing number. You can only see accounts that belong to your own platform.",
         "operationId": "get_virtual_bank_account_v1_platform_virtual_bank_accounts__account_id__get",
         "security": [
           {
@@ -4735,10 +4860,10 @@
             "schema": {
               "type": "string",
               "format": "uuid",
-              "description": "Virtual bank account UUID.",
+              "description": "The unique ID of the virtual bank account.",
               "title": "Account Id"
             },
-            "description": "Virtual bank account UUID."
+            "description": "The unique ID of the virtual bank account."
           }
         ],
         "responses": {
@@ -4770,8 +4895,8 @@
         "tags": [
           "phone-numbers"
         ],
-        "summary": "Issue Voice Access Token",
-        "description": "Issue a short-lived voice access token for the authenticated user.",
+        "summary": "Get a Calling Token",
+        "description": "Get a short-lived token that lets your app make and receive phone\ncalls on behalf of the signed-in user.",
         "operationId": "issue_voice_access_token_v1_platform_phone_numbers_access_token_get",
         "responses": {
           "200": {
@@ -4797,8 +4922,8 @@
         "tags": [
           "phone-numbers"
         ],
-        "summary": "List Available Numbers",
-        "description": "List available US phone numbers from Twilio with optional filters.",
+        "summary": "Find Available Phone Numbers",
+        "description": "Search for US phone numbers that are available to buy. You can narrow\nthe search by what the number starts with, ends with, or contains.",
         "operationId": "list_available_numbers_v1_platform_phone_numbers_available_get",
         "security": [
           {
@@ -4822,8 +4947,10 @@
                   "type": "null"
                 }
               ],
+              "description": "Find numbers that begin with these digits.",
               "title": "Starts With"
-            }
+            },
+            "description": "Find numbers that begin with these digits."
           },
           {
             "name": "ends_with",
@@ -4841,8 +4968,10 @@
                   "type": "null"
                 }
               ],
+              "description": "Find numbers that end with these digits.",
               "title": "Ends With"
-            }
+            },
+            "description": "Find numbers that end with these digits."
           },
           {
             "name": "contains",
@@ -4860,8 +4989,10 @@
                   "type": "null"
                 }
               ],
+              "description": "Find numbers that contain these digits anywhere.",
               "title": "Contains"
-            }
+            },
+            "description": "Find numbers that contain these digits anywhere."
           }
         ],
         "responses": {
@@ -4893,8 +5024,8 @@
         "tags": [
           "phone-numbers"
         ],
-        "summary": "Get User Phone Numbers Endpoint",
-        "description": "List phone numbers assigned to a user.",
+        "summary": "List a User's Phone Numbers",
+        "description": "Get the phone numbers that have been given to a user.",
         "operationId": "get_user_phone_numbers_endpoint_v1_platform_phone_numbers_users__user_id__get",
         "security": [
           {
@@ -4939,8 +5070,8 @@
         "tags": [
           "phone-numbers"
         ],
-        "summary": "Request Phone Number For User",
-        "description": "Submit a phone-number purchase request for admin approval.",
+        "summary": "Request a Phone Number for a User",
+        "description": "Ask to buy a phone number for one of your users. The request is sent\nto Finogate's team for approval before the number is bought.",
         "operationId": "request_phone_number_for_user_v1_platform_phone_numbers_users__user_id__post",
         "security": [
           {
@@ -4997,8 +5128,8 @@
         "tags": [
           "phone-numbers"
         ],
-        "summary": "Issue Voice Access Token For User",
-        "description": "Mint a Twilio Voice access token for a target end user.",
+        "summary": "Get a Calling Token for a User",
+        "description": "Get a short-lived token that lets your app make and receive phone\ncalls on behalf of one specific user.",
         "operationId": "issue_voice_access_token_for_user_v1_platform_phone_numbers_users__user_id__access_token_get",
         "security": [
           {
@@ -5045,8 +5176,8 @@
         "tags": [
           "phone-numbers"
         ],
-        "summary": "Get Call Status",
-        "description": "Fetch current call status from Twilio for a PhoneCallLog id.",
+        "summary": "Check a Call's Status",
+        "description": "Get the latest status of a phone call — for example whether it is\nringing, in progress, or completed.",
         "operationId": "get_call_status_v1_platform_phone_numbers_calls__call_id__status_get",
         "security": [
           {
@@ -5093,8 +5224,8 @@
         "tags": [
           "phone-numbers"
         ],
-        "summary": "Update Phone Number Status Endpoint",
-        "description": "Update phone number status (enable/disable).",
+        "summary": "Switch a Phone Number On or Off",
+        "description": "Switch a user's phone number on or off.",
         "operationId": "update_phone_number_status_endpoint_v1_platform_phone_numbers_users__user_id___phone_number_id__put",
         "security": [
           {
@@ -5158,8 +5289,8 @@
         "tags": [
           "phone-numbers"
         ],
-        "summary": "Delete Phone Number",
-        "description": "Soft-delete a phone number by setting status to ``deleted`` (3).",
+        "summary": "Remove a Phone Number",
+        "description": "Remove a phone number from a user. The record is kept for your\nhistory — nothing is permanently erased.",
         "operationId": "delete_phone_number_v1_platform_phone_numbers_users__user_id___phone_number_id__delete",
         "security": [
           {
@@ -5215,8 +5346,8 @@
         "tags": [
           "sms"
         ],
-        "summary": "Send Sms To Number",
-        "description": "Send an SMS from one of the caller's Twilio numbers to any destination.",
+        "summary": "Send an SMS",
+        "description": "Send a text message (SMS) from one of your platform's own phone\nnumbers to any phone number you choose.",
         "operationId": "send_sms_to_number_v1_platform_sms_send_to_number_post",
         "requestBody": {
           "content": {
@@ -5262,8 +5393,8 @@
         "tags": [
           "sms"
         ],
-        "summary": "List Phone Sms Messages",
-        "description": "List phone SMS messages for this tenant.",
+        "summary": "List SMS Messages",
+        "description": "Get the history of text messages (SMS) sent and received on your\nplatform.\n\nYou can narrow the list down using the filters — for example by user,\nby phone number, by direction (sent or received), or by status.",
         "operationId": "list_phone_sms_messages_v1_platform_sms_messages_get",
         "security": [
           {
@@ -5284,10 +5415,10 @@
                   "type": "null"
                 }
               ],
-              "description": "Messages where this user is sender or recipient",
+              "description": "Show only messages where this user either sent or received the message.",
               "title": "User Id"
             },
-            "description": "Messages where this user is sender or recipient"
+            "description": "Show only messages where this user either sent or received the message."
           },
           {
             "name": "from_user_id",
@@ -5302,10 +5433,10 @@
                   "type": "null"
                 }
               ],
-              "description": "Messages sent by this user",
+              "description": "Show only messages sent by this user.",
               "title": "From User Id"
             },
-            "description": "Messages sent by this user"
+            "description": "Show only messages sent by this user."
           },
           {
             "name": "to_user_id",
@@ -5320,10 +5451,10 @@
                   "type": "null"
                 }
               ],
-              "description": "Messages received by this user",
+              "description": "Show only messages received by this user.",
               "title": "To User Id"
             },
-            "description": "Messages received by this user"
+            "description": "Show only messages received by this user."
           },
           {
             "name": "from_number",
@@ -5338,10 +5469,10 @@
                   "type": "null"
                 }
               ],
-              "description": "Messages sent from this number",
+              "description": "Show only messages sent from this phone number.",
               "title": "From Number"
             },
-            "description": "Messages sent from this number"
+            "description": "Show only messages sent from this phone number."
           },
           {
             "name": "to_number",
@@ -5356,10 +5487,10 @@
                   "type": "null"
                 }
               ],
-              "description": "Messages sent to this number",
+              "description": "Show only messages sent to this phone number.",
               "title": "To Number"
             },
-            "description": "Messages sent to this number"
+            "description": "Show only messages sent to this phone number."
           },
           {
             "name": "number",
@@ -5374,10 +5505,10 @@
                   "type": "null"
                 }
               ],
-              "description": "Messages involving this number (from or to)",
+              "description": "Show only messages that involve this phone number, whether it sent or received.",
               "title": "Number"
             },
-            "description": "Messages involving this number (from or to)"
+            "description": "Show only messages that involve this phone number, whether it sent or received."
           },
           {
             "name": "direction",
@@ -5392,10 +5523,10 @@
                   "type": "null"
                 }
               ],
-              "description": "inbound or outbound",
+              "description": "Show only 'inbound' messages (received) or 'outbound' messages (sent).",
               "title": "Direction"
             },
-            "description": "inbound or outbound"
+            "description": "Show only 'inbound' messages (received) or 'outbound' messages (sent)."
           },
           {
             "name": "status",
@@ -5410,10 +5541,10 @@
                   "type": "null"
                 }
               ],
-              "description": "1=queued 2=sent 3=delivered 4=failed 5=received",
+              "description": "Show only messages in this state: 1 = waiting to send, 2 = sent, 3 = delivered, 4 = failed, 5 = received.",
               "title": "Status"
             },
-            "description": "1=queued 2=sent 3=delivered 4=failed 5=received"
+            "description": "Show only messages in this state: 1 = waiting to send, 2 = sent, 3 = delivered, 4 = failed, 5 = received."
           },
           {
             "name": "limit",
@@ -5423,9 +5554,11 @@
               "type": "integer",
               "maximum": 200,
               "minimum": 1,
+              "description": "How many messages to return per page (1 to 200).",
               "default": 50,
               "title": "Limit"
-            }
+            },
+            "description": "How many messages to return per page (1 to 200)."
           },
           {
             "name": "offset",
@@ -5434,9 +5567,11 @@
             "schema": {
               "type": "integer",
               "minimum": 0,
+              "description": "How many messages to skip before this page starts.",
               "default": 0,
               "title": "Offset"
-            }
+            },
+            "description": "How many messages to skip before this page starts."
           }
         ],
         "responses": {
@@ -5469,7 +5604,7 @@
           "calls"
         ],
         "summary": "List Phone Calls",
-        "description": "List phone call logs for this tenant.",
+        "description": "Get the history of phone calls made and received on your platform.\n\nYou can narrow the list down using the filters — for example by user,\nby phone number, by direction (made or received), or by call status.",
         "operationId": "list_phone_calls_v1_platform_calls_get",
         "security": [
           {
@@ -5490,10 +5625,10 @@
                   "type": "null"
                 }
               ],
-              "description": "Calls where this user is caller or recipient",
+              "description": "Show only calls where this user either made or received the call.",
               "title": "User Id"
             },
-            "description": "Calls where this user is caller or recipient"
+            "description": "Show only calls where this user either made or received the call."
           },
           {
             "name": "from_user_id",
@@ -5508,10 +5643,10 @@
                   "type": "null"
                 }
               ],
-              "description": "Calls made by this user",
+              "description": "Show only calls made by this user.",
               "title": "From User Id"
             },
-            "description": "Calls made by this user"
+            "description": "Show only calls made by this user."
           },
           {
             "name": "to_user_id",
@@ -5526,10 +5661,10 @@
                   "type": "null"
                 }
               ],
-              "description": "Calls received by this user",
+              "description": "Show only calls received by this user.",
               "title": "To User Id"
             },
-            "description": "Calls received by this user"
+            "description": "Show only calls received by this user."
           },
           {
             "name": "from_number",
@@ -5544,8 +5679,10 @@
                   "type": "null"
                 }
               ],
+              "description": "Show only calls made from this phone number.",
               "title": "From Number"
-            }
+            },
+            "description": "Show only calls made from this phone number."
           },
           {
             "name": "to_number",
@@ -5560,8 +5697,10 @@
                   "type": "null"
                 }
               ],
+              "description": "Show only calls made to this phone number.",
               "title": "To Number"
-            }
+            },
+            "description": "Show only calls made to this phone number."
           },
           {
             "name": "number",
@@ -5576,10 +5715,10 @@
                   "type": "null"
                 }
               ],
-              "description": "Calls involving this number (from or to)",
+              "description": "Show only calls that involve this phone number, whether it called or was called.",
               "title": "Number"
             },
-            "description": "Calls involving this number (from or to)"
+            "description": "Show only calls that involve this phone number, whether it called or was called."
           },
           {
             "name": "direction",
@@ -5594,10 +5733,10 @@
                   "type": "null"
                 }
               ],
-              "description": "inbound or outbound",
+              "description": "Show only 'inbound' calls (received) or 'outbound' calls (made).",
               "title": "Direction"
             },
-            "description": "inbound or outbound"
+            "description": "Show only 'inbound' calls (received) or 'outbound' calls (made)."
           },
           {
             "name": "status",
@@ -5612,10 +5751,10 @@
                   "type": "null"
                 }
               ],
-              "description": "ringing, in-progress, completed, failed, busy, no-answer, canceled",
+              "description": "Show only calls in this state: ringing, in-progress, completed, failed, busy, no-answer, or canceled.",
               "title": "Status"
             },
-            "description": "ringing, in-progress, completed, failed, busy, no-answer, canceled"
+            "description": "Show only calls in this state: ringing, in-progress, completed, failed, busy, no-answer, or canceled."
           },
           {
             "name": "limit",
@@ -5625,9 +5764,11 @@
               "type": "integer",
               "maximum": 200,
               "minimum": 1,
+              "description": "How many calls to return per page (1 to 200).",
               "default": 50,
               "title": "Limit"
-            }
+            },
+            "description": "How many calls to return per page (1 to 200)."
           },
           {
             "name": "offset",
@@ -5636,9 +5777,11 @@
             "schema": {
               "type": "integer",
               "minimum": 0,
+              "description": "How many calls to skip before this page starts.",
               "default": 0,
               "title": "Offset"
-            }
+            },
+            "description": "How many calls to skip before this page starts."
           }
         ],
         "responses": {
@@ -5670,8 +5813,8 @@
         "tags": [
           "listings"
         ],
-        "summary": "List Model",
-        "description": "Platform listing endpoint with automatic tenant scoping.",
+        "summary": "Search Your Records",
+        "description": "A flexible search tool for your platform's records.\n\nChoose what kind of records you want to look through by setting it in\nthe web address (``model_key`` — for example ``users``, ``wallets``, or\n``payment_intents``). Then send your filters, sorting, and page settings\nin the request body. The results only ever include your own platform's\nrecords — you can never see another platform's data.",
         "operationId": "list_model_v1_platform_listings__model_key__post",
         "security": [
           {
@@ -5728,8 +5871,8 @@
         "tags": [
           "embed-tokens"
         ],
-        "summary": "Mint Embed Token",
-        "description": "Mint a short-lived (~10 minute), single-purpose embed token bound to one\nend user and one operation (currently ``add_card``).\n\nHand the returned ``token`` to the browser and load the iframe with:\n\n```\n\u003Ciframe src=\"{embed_url}#token={token}&mode={mode}\"\u003E\u003C/iframe\u003E\n```\n\nThe token is rejected outside ``/v1/embed/*`` and can only act on the\n``user_id`` it was minted for.",
+        "summary": "Create an Embed Token",
+        "description": "Create a short-lived pass (an \"embed token\") that lets one of your users do\none specific job inside a Finogate-hosted page shown on your website. Right\nnow that job is adding a card (``add_card``).\n\nThe pass lasts about **10 minutes**. Take the ``token`` we return and load\nthe page inside an iframe on your site, like this:\n\n```\n\u003Ciframe src=\"{embed_url}#token={token}&mode={mode}\"\u003E\u003C/iframe\u003E\n```\n\nThe pass only works for the one user it was created for, and only for that\none job — it can't be used for anything else.",
         "operationId": "mint_embed_token_v1_platform_embed_tokens_post",
         "requestBody": {
           "content": {
@@ -7272,9 +7415,66 @@
       "Body_create_user_kyb_v1_platform_users_kyb_start__user_id__post": {
         "properties": {
           "payload": {
-            "type": "string",
-            "title": "Payload",
-            "description": "JSON-encoded KybRecordCreate body."
+            "additionalProperties": false,
+            "example": {
+              "business_data": {
+                "business_address": {
+                  "city": "San Francisco",
+                  "country": "US",
+                  "line1": "500 Terry Francois Blvd",
+                  "postal_code": "94158",
+                  "state": "CA"
+                },
+                "business_email": "ops@lovelace.example.com",
+                "business_phone": "+14155550199",
+                "business_type": "llc",
+                "dba": "Lovelace Analytics",
+                "formation_date": "2021-04-12",
+                "ownership": [
+                  {
+                    "name": "Ada Lovelace",
+                    "ownership_pct": 100,
+                    "role": "founder"
+                  }
+                ],
+                "website": "https://lovelace.example.com"
+              },
+              "business_ein": "12-3456789",
+              "business_legal_name": "Lovelace Analytics LLC"
+            },
+            "properties": {
+              "business_legal_name": {
+                "description": "The official registered name of the business.",
+                "maxLength": 255,
+                "minLength": 1,
+                "title": "Business Legal Name",
+                "type": "string"
+              },
+              "business_ein": {
+                "anyOf": [
+                  {
+                    "maxLength": 40,
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "The business's US federal tax ID, also called an Employer Identification Number (EIN). Optional.",
+                "title": "Business Ein"
+              },
+              "business_data": {
+                "$ref": "#/components/schemas/KybBusinessData",
+                "description": "Structured business details to verify."
+              }
+            },
+            "required": [
+              "business_legal_name"
+            ],
+            "title": "KybRecordCreate",
+            "type": "object",
+            "description": "The business verification details, sent as JSON text."
           },
           "files": {
             "items": {
@@ -8040,7 +8240,7 @@
         },
         "type": "object",
         "title": "CheckbookOnboardRequest",
-        "description": "Request body for ``POST /checkbook``.\n\nCurrently empty. The body exists so future onboarding flows (Plaid\nprocessor token, IAV, etc.) can be selected via a ``method_type``\nfield without breaking the URL contract. v1 only supports the raw\nrouting+account attachment, so we accept a no-op body."
+        "description": "Request body for the (removed, HTTP 410) checkbook-onboarding POST\nroute — ``POST .../payees/destinations/checkbook/...``.\n\nCurrently empty. The body exists so future onboarding flows (Plaid\nprocessor token, IAV, etc.) can be selected via a ``method_type``\nfield without breaking the URL contract. v1 only supports the raw\nrouting+account attachment, so we accept a no-op body."
       },
       "ClientEnvironment": {
         "type": "string",
@@ -17140,6 +17340,365 @@
         ],
         "title": "WebhookInboundLogSettingsUpdate",
         "description": "Update payload for the retention setting."
+      },
+      "KybBeneficialOwner": {
+        "additionalProperties": true,
+        "description": "A person who owns part of the business.",
+        "properties": {
+          "name": {
+            "description": "Full legal name of the owner.",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "role": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The owner's role in the business, for example \"founder\" or \"director\".",
+            "title": "Role"
+          },
+          "ownership_pct": {
+            "anyOf": [
+              {
+                "maximum": 100,
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Share of the business this person owns, as a percentage from 0 to 100.",
+            "title": "Ownership Pct"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "KybBeneficialOwner",
+        "type": "object"
+      },
+      "KybBusinessAddress": {
+        "additionalProperties": true,
+        "description": "Registered address of a business, used inside :class:`KybBusinessData`.",
+        "properties": {
+          "line1": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Street address.",
+            "title": "Line1"
+          },
+          "city": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "City.",
+            "title": "City"
+          },
+          "state": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "State, province, or region.",
+            "title": "State"
+          },
+          "postal_code": {
+            "anyOf": [
+              {
+                "maxLength": 40,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "ZIP or postal code.",
+            "title": "Postal Code"
+          },
+          "country": {
+            "anyOf": [
+              {
+                "maxLength": 80,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Two-letter country code, for example \"US\".",
+            "title": "Country"
+          }
+        },
+        "title": "KybBusinessAddress",
+        "type": "object"
+      },
+      "KybBusinessData": {
+        "additionalProperties": true,
+        "description": "Structured business details submitted for verification.\n\nEvery field is optional. Fields not listed here are still accepted and\nstored, but only the documented fields are guaranteed to be understood.",
+        "properties": {
+          "business_type": {
+            "anyOf": [
+              {
+                "maxLength": 80,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Legal structure of the business, for example \"llc\" or \"corporation\".",
+            "title": "Business Type"
+          },
+          "dba": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Trading name (\"doing business as\"), if different from the legal name.",
+            "title": "Dba"
+          },
+          "website": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Public website address of the business.",
+            "title": "Website"
+          },
+          "registration_number": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Government business registration or incorporation number.",
+            "title": "Registration Number"
+          },
+          "formation_date": {
+            "anyOf": [
+              {
+                "maxLength": 32,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Date the business was formed, written as YYYY-MM-DD.",
+            "title": "Formation Date"
+          },
+          "mcc": {
+            "anyOf": [
+              {
+                "maxLength": 8,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Merchant Category Code — the four-digit number that classifies the business's industry.",
+            "title": "Mcc"
+          },
+          "business_description": {
+            "anyOf": [
+              {
+                "maxLength": 1000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "A short description of what the business does.",
+            "title": "Business Description"
+          },
+          "business_email": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Main contact email address for the business.",
+            "title": "Business Email"
+          },
+          "business_phone": {
+            "anyOf": [
+              {
+                "maxLength": 32,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Main contact phone number for the business.",
+            "title": "Business Phone"
+          },
+          "phone_country_code": {
+            "anyOf": [
+              {
+                "maxLength": 12,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Dialing code for the phone number, for example \"+1\".",
+            "title": "Phone Country Code"
+          },
+          "contact_first_name": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "First name of the main contact person.",
+            "title": "Contact First Name"
+          },
+          "contact_last_name": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Last name of the main contact person.",
+            "title": "Contact Last Name"
+          },
+          "contact_email": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Email address of the main contact person.",
+            "title": "Contact Email"
+          },
+          "business_address": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/KybBusinessAddress"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Registered address of the business."
+          },
+          "ownership": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/KybBeneficialOwner"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The people who own the business (its beneficial owners).",
+            "title": "Ownership"
+          },
+          "business_documents": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "References to supporting documents. Normally filled in automatically from the files you upload — you do not need to set this yourself.",
+            "title": "Business Documents"
+          }
+        },
+        "title": "KybBusinessData",
+        "type": "object"
       }
     },
     "securitySchemes": {
