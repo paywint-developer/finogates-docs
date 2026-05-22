@@ -53,6 +53,7 @@
               "api-reference/payees/create-destination",
               "api-reference/payees/list-destinations",
               "api-reference/payees/revoke-destination",
+              "api-reference/payees/set-up-a-bank-for-ach-payouts-removed",
               "api-reference/payees/get-ach-push-status",
               "api-reference/payees/disable-ach-push"
             ]
@@ -82,7 +83,6 @@
               "api-reference/bank-accounts/add-account-instantly",
               "api-reference/bank-accounts/remove-bank-account",
               "api-reference/bank-accounts/apply-for-virtual-bank-account",
-              "api-reference/bank-accounts/list-virtual-bank-accounts",
               "api-reference/bank-accounts/get-virtual-bank-account"
             ]
           },
@@ -126,10 +126,17 @@
               "api-reference/international/payers",
               "api-reference/international/payer-rules",
               "api-reference/international/branches",
+              "api-reference/international/register-a-foreign-bank-account",
+              "api-reference/international/list-beneficiaries",
+              "api-reference/international/add-a-beneficiary",
+              "api-reference/international/get-one-beneficiary",
+              "api-reference/international/update-a-beneficiary",
+              "api-reference/international/archive-a-beneficiary",
               "api-reference/international/rates",
               "api-reference/international/rate-calculator",
               "api-reference/international/balance",
               "api-reference/international/create-an-international-payout",
+              "api-reference/international/send-an-international-payout-older-method",
               "api-reference/international/platform-retry-payout",
               "api-reference/international/platform-payout-status"
             ]
