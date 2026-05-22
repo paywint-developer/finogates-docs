@@ -1474,7 +1474,7 @@
           "international"
         ],
         "summary": "Send an International Payout",
-        "description": "Send money abroad to a recipient — this is the recommended way.\n\nYou only need to send Finogate's own simple IDs (``beneficiaryId`` and\n``bankAccountId``) plus the transaction details (``amount``,\n``sourceCurrency``, and ``destinationCurrency``). Everything else — the\nsender's details, the recipient's full details, the bank details, the\ncollection branch, and which partner delivers the money — is worked out\nfor you behind the scenes.\n\nBefore calling this, save the recipient and their bank account using:\n\n* ``POST /v1/platform/payees``, or\n* ``POST /v1/platform/bank/add-bank-manually``\n\nYour sender details are set up for your platform by Finogate's team.\n\nUse this endpoint for all new work. It replaces the older\n``POST /v1/platform/international/payouts/process`` endpoint.",
+        "description": "Send money abroad to a recipient — this is the recommended way.\n\nYou only need to send Finogate's own simple IDs (``beneficiaryId`` and\n``bankAccountId``) plus the transaction details (``amount``,\n``sourceCurrency``, and ``destinationCurrency``). Everything else — the\nsender's details, the recipient's full details, the bank details, the\ncollection branch, and which partner delivers the money — is worked out\nfor you behind the scenes.\n\nBefore calling this, set up the recipient in two steps:\n\n1. Register their bank account —\n   ``POST /v1/platform/international/bank-accounts`` (a foreign\n   SWIFT/IBAN account; the response gives you a ``payment_method_id``).\n2. Create the beneficiary —\n   ``POST /v1/platform/international/beneficiaries`` (set\n   ``payment_method_id`` to the bank from step 1). The beneficiary's\n   ``id`` is the ``beneficiaryId`` you pass here.\n\nYour sender details are set up for your platform by Finogate's team.\n\nUse this endpoint for all new work. It replaces the older\n``POST /v1/platform/international/payouts/process`` endpoint.",
         "operationId": "platform_create_payout_v1_platform_international_process_payouts_post",
         "requestBody": {
           "content": {
@@ -1686,6 +1686,278 @@
         }
       }
     },
+    "/v1/platform/international/beneficiaries": {
+      "get": {
+        "tags": [
+          "international"
+        ],
+        "summary": "List Beneficiaries",
+        "description": "List the international payout recipients you have saved.",
+        "operationId": "platform_list_beneficiaries_v1_platform_international_beneficiaries_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommonResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "_AuthenticatedBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "international"
+        ],
+        "summary": "Add a Beneficiary",
+        "description": "Save an international payout recipient.\n\nLink the recipient's bank account by setting ``payment_method_id`` to the\n``payment_method_id`` returned by\n``POST /v1/platform/international/bank-accounts``. The new beneficiary's\n``id`` is what you pass as ``beneficiaryId`` to\n``POST /v1/platform/international/process-payouts``.",
+        "operationId": "platform_create_beneficiary_v1_platform_international_beneficiaries_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternationalBeneficiaryCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommonResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "_AuthenticatedBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/platform/international/beneficiaries/{beneficiary_id}": {
+      "get": {
+        "tags": [
+          "international"
+        ],
+        "summary": "Get One Beneficiary",
+        "description": "Get the full details of a single saved recipient.",
+        "operationId": "platform_get_beneficiary_v1_platform_international_beneficiaries__beneficiary_id__get",
+        "security": [
+          {
+            "_AuthenticatedBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "beneficiary_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Beneficiary Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommonResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "international"
+        ],
+        "summary": "Update a Beneficiary",
+        "description": "Update a saved recipient. Only the fields you send are changed.",
+        "operationId": "platform_update_beneficiary_v1_platform_international_beneficiaries__beneficiary_id__patch",
+        "security": [
+          {
+            "_AuthenticatedBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "beneficiary_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Beneficiary Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternationalBeneficiaryUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommonResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "international"
+        ],
+        "summary": "Archive a Beneficiary",
+        "description": "Archive a saved recipient. The record is kept (soft-delete) so past\npayouts continue to resolve their beneficiary reference.",
+        "operationId": "platform_delete_beneficiary_v1_platform_international_beneficiaries__beneficiary_id__delete",
+        "security": [
+          {
+            "_AuthenticatedBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "beneficiary_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Beneficiary Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommonResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/platform/international/bank-accounts": {
+      "post": {
+        "tags": [
+          "international"
+        ],
+        "summary": "Register a Foreign Bank Account",
+        "description": "Save a recipient's foreign bank account (SWIFT/BIC + account or IBAN).\n\nUnlike the domestic ``POST /v1/platform/bank/add-bank-manually`` endpoint,\nno 9-digit ACH routing number is needed. The returned\n``payment_method_id`` is what you link to a beneficiary\n(``payment_method_id``) or pass as ``bankAccountId`` to\n``POST /v1/platform/international/process-payouts``.",
+        "operationId": "platform_create_international_bank_account_v1_platform_international_bank_accounts_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlatformInternationalBankAccountCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommonResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "_AuthenticatedBearer": []
+          }
+        ]
+      }
+    },
     "/v1/platform/me/verification": {
       "get": {
         "tags": [
@@ -1700,7 +1972,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CommonResponse"
+                  "$ref": "#/components/schemas/CommonResponse_PlatformUserComplianceRead_"
                 }
               }
             }
@@ -1779,7 +2051,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ListResponse"
+                  "$ref": "#/components/schemas/ListResponse_list_KycRecordRead__"
                 }
               }
             }
@@ -1863,7 +2135,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ListResponse"
+                  "$ref": "#/components/schemas/ListResponse_list_KybRecordRead__"
                 }
               }
             }
@@ -1939,7 +2211,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CommonResponse"
+                  "$ref": "#/components/schemas/CommonResponse_PlatformUserComplianceSummary_"
                 }
               }
             }
@@ -1988,7 +2260,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CommonResponse"
+                  "$ref": "#/components/schemas/CommonResponse_Union_KycRecordRead__NoneType__"
                 }
               }
             }
@@ -2056,10 +2328,10 @@
                 "schema": {
                   "anyOf": [
                     {
-                      "$ref": "#/components/schemas/CommonResponse"
+                      "$ref": "#/components/schemas/CommonResponse_KybRecordRead_"
                     },
                     {
-                      "$ref": "#/components/schemas/ListResponse"
+                      "$ref": "#/components/schemas/ListResponse_list_KybRecordRead__"
                     }
                   ],
                   "title": "Response Get Or List User Kybs V1 Platform Users Kyb Records  User Id  Get"
@@ -2111,7 +2383,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CommonResponse"
+                  "$ref": "#/components/schemas/CommonResponse_PersonaInquiryResponse_"
                 }
               }
             }
@@ -2160,7 +2432,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CommonResponse"
+                  "$ref": "#/components/schemas/CommonResponse_PlatformKycSyncRead_"
                 }
               }
             }
@@ -2224,7 +2496,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CommonResponse"
+                  "$ref": "#/components/schemas/CommonResponse_KybRecordRead_"
                 }
               }
             }
@@ -3053,87 +3325,6 @@
             "_AuthenticatedBearer": []
           }
         ]
-      }
-    },
-    "/v1/platform/bank/banks/{user_id}": {
-      "get": {
-        "tags": [
-          "bank accounts"
-        ],
-        "summary": "List a User's Bank Accounts",
-        "description": "Get only the **bank account** payment methods saved for a user.\n\nThis covers every kind of bank account — standard bank, ACH, RTP, wire\ntransfer, and accounts that were linked instantly. For safety, the details\nare masked: you only see a masked account number and the last 4 digits of\nthe routing number.",
-        "operationId": "list_banks_v1_platform_bank_banks__user_id__get",
-        "security": [
-          {
-            "_AuthenticatedBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "user_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "description": "The unique ID of the user whose bank accounts you want.",
-              "examples": [
-                "b3a9b622-cc63-4d3c-aad6-2d8e29e6f9d4"
-              ],
-              "title": "User Id"
-            },
-            "description": "The unique ID of the user whose bank accounts you want."
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "maximum": 200,
-              "minimum": 1,
-              "description": "How many bank accounts to return per page (1 to 200).",
-              "default": 50,
-              "title": "Limit"
-            },
-            "description": "How many bank accounts to return per page (1 to 200)."
-          },
-          {
-            "name": "offset",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "minimum": 0,
-              "description": "How many bank accounts to skip before this page starts.",
-              "default": 0,
-              "title": "Offset"
-            },
-            "description": "How many bank accounts to skip before this page starts."
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ListResponse"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
       }
     },
     "/v1/platform/bank/add-account-instantly/{user_id}": {
@@ -4717,20 +4908,15 @@
         "summary": "Apply for Virtual Bank Account",
         "description": "Apply for a virtual bank account (a \"DDA Account\") for one of your users. A\nvirtual bank account gives the user their own account number and routing\nnumber for receiving money.\n\n**Before this works** — the request is turned down unless all of these are\ntrue:\n- Your platform has the virtual bank account product (``dda_account``)\n  switched on. You ask for it during the normal sign-up process, and\n  Finogate's team must approve that request first.\n- The user has passed identity verification (an approved KYC record).\n- The user has passed business verification (at least one approved KYB\n  record).\n\n**What happens next** — the account starts in the ``initiated`` state.\nFinogate's team reviews every application by hand, marks it ``applied`` once\nchecked, and finally fills in the real account and routing numbers from the\nbanking partner before setting the account to ``approved``. We tell you the\nresult by sending your server an automatic notification — a\n``virtual_bank_account.approved`` webhook if it succeeds, or a\n``virtual_bank_account.rejected`` webhook if it is declined. That\nnotification is the only sign that the account is ready. **Until the account\nis ``approved``, it must not be used for any payments, payouts, deposits, or\nlinked to a wallet.**\n\n**Avoiding duplicates** — there are two safeguards:\n- You can include an ``idempotency_key`` — a unique value you choose. If the\n  same request reaches us twice by mistake, the account is only created\n  once. (Reusing the same key with different details is rejected.)\n- The same user cannot hold two active accounts of the same type on your\n  platform. A repeat attempt is rejected.",
         "operationId": "create_virtual_bank_account_v1_platform_virtual_bank_accounts_post",
-        "security": [
-          {
-            "_AuthenticatedBearer": []
-          }
-        ],
         "requestBody": {
-          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/PlatformVirtualBankAccountCreate"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "201": {
@@ -4753,90 +4939,12 @@
               }
             }
           }
-        }
-      },
-      "get": {
-        "tags": [
-          "bank accounts"
-        ],
-        "summary": "List Virtual Bank Accounts",
-        "description": "Get the list of virtual bank account applications your platform has submitted. Add ``user_id`` to see only one user's applications. Each application shows its current status — you can check here, or wait for our automatic notifications (webhooks), to learn when an application is finally approved or rejected.",
-        "operationId": "list_virtual_bank_accounts_v1_platform_virtual_bank_accounts_get",
+        },
         "security": [
           {
             "_AuthenticatedBearer": []
           }
-        ],
-        "parameters": [
-          {
-            "name": "user_id",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string",
-                  "format": "uuid"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Optional. Show only applications for this one user.",
-              "title": "User Id"
-            },
-            "description": "Optional. Show only applications for this one user."
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "maximum": 200,
-              "minimum": 1,
-              "description": "How many applications to return per page (1 to 200).",
-              "default": 50,
-              "title": "Limit"
-            },
-            "description": "How many applications to return per page (1 to 200)."
-          },
-          {
-            "name": "offset",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "minimum": 0,
-              "description": "How many applications to skip before this page starts.",
-              "default": 0,
-              "title": "Offset"
-            },
-            "description": "How many applications to skip before this page starts."
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ListResponse"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
+        ]
       }
     },
     "/v1/platform/virtual-bank-accounts/{account_id}": {
@@ -4873,6 +4981,87 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CommonResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/platform/bank-accounts/{user_id}": {
+      "get": {
+        "tags": [
+          "bank accounts"
+        ],
+        "summary": "List a User's Bank Accounts",
+        "description": "Get every bank account on file for one of your users, in a single list.\n\nThis combines two kinds of bank account into one response:\n\n- **Linked bank accounts** — bank accounts the user connected from an\n  outside bank (for example a standard bank account, or an ACH, RTP, or\n  wire account, or an account that was linked instantly). These have a\n  ``type`` of ``linked_bank_account``.\n- **Virtual bank accounts** — bank accounts Finogate issued to the user so\n  they have their own account number and routing number for receiving\n  money. These have a ``type`` of ``virtual_bank_account``.\n\nThe ``type`` field on each item tells you which kind it is. Fields that\nonly apply to one kind are filled in for that kind and left empty\n(``null``) for the other.\n\nFor safety, linked bank account details are always masked — you only ever\nsee a masked account number and the last 4 digits of the routing number.\n\nThe list is ordered newest first, and is split into pages using ``limit``\nand ``offset``.",
+        "operationId": "list_bank_accounts_v1_platform_bank_accounts__user_id__get",
+        "security": [
+          {
+            "_AuthenticatedBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "The unique ID of the user whose bank accounts you want.",
+              "examples": [
+                "b3a9b622-cc63-4d3c-aad6-2d8e29e6f9d4"
+              ],
+              "title": "User Id"
+            },
+            "description": "The unique ID of the user whose bank accounts you want."
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "description": "How many bank accounts to return per page (1 to 200).",
+              "default": 50,
+              "title": "Limit"
+            },
+            "description": "How many bank accounts to return per page (1 to 200)."
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "How many bank accounts to skip before this page starts.",
+              "default": 0,
+              "title": "Offset"
+            },
+            "description": "How many bank accounts to skip before this page starts."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListResponse"
                 }
               }
             }
@@ -8305,7 +8494,164 @@
           "query_generated_time"
         ],
         "title": "CommonResponse",
-        "description": "Standard response wrapper for single-object responses and errors."
+        "description": "Standard response wrapper for single-object responses and errors.\n\nGeneric over the payload type. A route that declares\n``CommonResponse[SomeModel]`` gets the real ``data`` schema rendered in\nOpenAPI/Swagger; a bare ``CommonResponse`` leaves ``data`` untyped."
+      },
+      "CommonResponse_KybRecordRead_": {
+        "properties": {
+          "status_code": {
+            "type": "integer",
+            "title": "Status Code",
+            "description": "HTTP status code for the response."
+          },
+          "data": {
+            "$ref": "#/components/schemas/KybRecordRead",
+            "description": "Payload or error details."
+          },
+          "query_generated_time": {
+            "type": "integer",
+            "title": "Query Generated Time",
+            "description": "UTC timestamp (milliseconds since epoch) when response was generated."
+          }
+        },
+        "type": "object",
+        "required": [
+          "status_code",
+          "data",
+          "query_generated_time"
+        ],
+        "title": "CommonResponse[KybRecordRead]"
+      },
+      "CommonResponse_PersonaInquiryResponse_": {
+        "properties": {
+          "status_code": {
+            "type": "integer",
+            "title": "Status Code",
+            "description": "HTTP status code for the response."
+          },
+          "data": {
+            "$ref": "#/components/schemas/PersonaInquiryResponse",
+            "description": "Payload or error details."
+          },
+          "query_generated_time": {
+            "type": "integer",
+            "title": "Query Generated Time",
+            "description": "UTC timestamp (milliseconds since epoch) when response was generated."
+          }
+        },
+        "type": "object",
+        "required": [
+          "status_code",
+          "data",
+          "query_generated_time"
+        ],
+        "title": "CommonResponse[PersonaInquiryResponse]"
+      },
+      "CommonResponse_PlatformKycSyncRead_": {
+        "properties": {
+          "status_code": {
+            "type": "integer",
+            "title": "Status Code",
+            "description": "HTTP status code for the response."
+          },
+          "data": {
+            "$ref": "#/components/schemas/PlatformKycSyncRead",
+            "description": "Payload or error details."
+          },
+          "query_generated_time": {
+            "type": "integer",
+            "title": "Query Generated Time",
+            "description": "UTC timestamp (milliseconds since epoch) when response was generated."
+          }
+        },
+        "type": "object",
+        "required": [
+          "status_code",
+          "data",
+          "query_generated_time"
+        ],
+        "title": "CommonResponse[PlatformKycSyncRead]"
+      },
+      "CommonResponse_PlatformUserComplianceRead_": {
+        "properties": {
+          "status_code": {
+            "type": "integer",
+            "title": "Status Code",
+            "description": "HTTP status code for the response."
+          },
+          "data": {
+            "$ref": "#/components/schemas/PlatformUserComplianceRead",
+            "description": "Payload or error details."
+          },
+          "query_generated_time": {
+            "type": "integer",
+            "title": "Query Generated Time",
+            "description": "UTC timestamp (milliseconds since epoch) when response was generated."
+          }
+        },
+        "type": "object",
+        "required": [
+          "status_code",
+          "data",
+          "query_generated_time"
+        ],
+        "title": "CommonResponse[PlatformUserComplianceRead]"
+      },
+      "CommonResponse_PlatformUserComplianceSummary_": {
+        "properties": {
+          "status_code": {
+            "type": "integer",
+            "title": "Status Code",
+            "description": "HTTP status code for the response."
+          },
+          "data": {
+            "$ref": "#/components/schemas/PlatformUserComplianceSummary",
+            "description": "Payload or error details."
+          },
+          "query_generated_time": {
+            "type": "integer",
+            "title": "Query Generated Time",
+            "description": "UTC timestamp (milliseconds since epoch) when response was generated."
+          }
+        },
+        "type": "object",
+        "required": [
+          "status_code",
+          "data",
+          "query_generated_time"
+        ],
+        "title": "CommonResponse[PlatformUserComplianceSummary]"
+      },
+      "CommonResponse_Union_KycRecordRead__NoneType__": {
+        "properties": {
+          "status_code": {
+            "type": "integer",
+            "title": "Status Code",
+            "description": "HTTP status code for the response."
+          },
+          "data": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/KycRecordRead"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Payload or error details."
+          },
+          "query_generated_time": {
+            "type": "integer",
+            "title": "Query Generated Time",
+            "description": "UTC timestamp (milliseconds since epoch) when response was generated."
+          }
+        },
+        "type": "object",
+        "required": [
+          "status_code",
+          "data",
+          "query_generated_time"
+        ],
+        "title": "CommonResponse[Union[KycRecordRead, NoneType]]"
       },
       "ComplianceCheckCreate": {
         "properties": {
@@ -8966,26 +9312,6 @@
         "type": "object",
         "title": "CryptoTenantEnabledAssetsUpdate",
         "description": "SUA payload for setting a tenant's per-platform asset allowlist.\n\n``enabled_assets`` is the operator-supplied list of\n``\"\u003Casset_code\u003E:\u003Cnetwork_code\u003E\"`` pairs. The service normaliser\nauto-pulls any required gas-asset dependencies (so SUA never has\nto list TRX/ETH/etc. by hand) and rejects unknown / inactive /\n``is_gas_only`` entries with stable codes in ``rejected``. Pass an\nempty list to disable the platform entirely without revoking the\nFireblocks ``TenantProviderConfig``."
-      },
-      "CryptoTenantSettingsUpdate": {
-        "properties": {
-          "max_wallets_per_user": {
-            "anyOf": [
-              {
-                "type": "integer",
-                "minimum": 1
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Max Wallets Per User",
-            "description": "Hard cap on the number of crypto wallets an end-user may hold under this tenant (counts active wallets + still-pending vault requests). null clears the override; positive int sets it."
-          }
-        },
-        "type": "object",
-        "title": "CryptoTenantSettingsUpdate",
-        "description": "SUA payload for ``PUT /admin/crypto/tenants/{id}/settings``.\n\n``max_wallets_per_user = null`` clears any override and restores\nthe default; a positive integer sets the override."
       },
       "CryptoTransferRejectCreate": {
         "properties": {
@@ -10896,6 +11222,532 @@
         ],
         "title": "InvoiceStatusUpdate"
       },
+      "KybBeneficialOwner": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Name",
+            "description": "Full legal name of the owner."
+          },
+          "role": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Role",
+            "description": "The owner's role in the business, for example \"founder\" or \"director\"."
+          },
+          "ownership_pct": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100,
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ownership Pct",
+            "description": "Share of the business this person owns, as a percentage from 0 to 100."
+          }
+        },
+        "additionalProperties": true,
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "KybBeneficialOwner",
+        "description": "A person who owns part of the business."
+      },
+      "KybRecordRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "approved_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approved At"
+          },
+          "rejected_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rejected At"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "decline_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decline Reason"
+          },
+          "user_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "User Id"
+          },
+          "subject_email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subject Email"
+          },
+          "subject_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subject Name"
+          },
+          "business_legal_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Business Legal Name"
+          },
+          "business_ein": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Business Ein"
+          },
+          "business_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Business Type"
+          },
+          "dba": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dba"
+          },
+          "website": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Website"
+          },
+          "registration_number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Registration Number"
+          },
+          "formation_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Formation Date"
+          },
+          "mcc": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mcc"
+          },
+          "business_description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Business Description"
+          },
+          "business_email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Business Email"
+          },
+          "business_phone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Business Phone"
+          },
+          "phone_country_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phone Country Code"
+          },
+          "address": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Address"
+          },
+          "city": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "City"
+          },
+          "state": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "State"
+          },
+          "country": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Country"
+          },
+          "zip": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Zip"
+          },
+          "contact_first_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contact First Name"
+          },
+          "contact_last_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contact Last Name"
+          },
+          "contact_email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contact Email"
+          },
+          "business_documents": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Business Documents"
+          },
+          "ownership": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/KybBeneficialOwner"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ownership"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "status",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "KybRecordRead"
+      },
+      "KycRecordRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "approved_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approved At"
+          },
+          "rejected_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rejected At"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "decline_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decline Reason"
+          },
+          "user_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "User Id"
+          },
+          "subject_email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subject Email"
+          },
+          "subject_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subject Name"
+          },
+          "inquiry_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Inquiry Id"
+          },
+          "provider_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider Code"
+          },
+          "provider_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "status",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "KycRecordRead"
+      },
       "ListResponse": {
         "properties": {
           "status_code": {
@@ -10978,7 +11830,181 @@
           "row_count"
         ],
         "title": "ListResponse",
-        "description": "Standard response wrapper for list responses."
+        "description": "Standard response wrapper for list responses.\n\nDeclare ``ListResponse[list[SomeModel]]`` to render the real ``data``\narray schema in OpenAPI/Swagger; a bare ``ListResponse`` leaves ``data``\nuntyped."
+      },
+      "ListResponse_list_KybRecordRead__": {
+        "properties": {
+          "status_code": {
+            "type": "integer",
+            "title": "Status Code",
+            "description": "HTTP status code for the response."
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/KybRecordRead"
+            },
+            "type": "array",
+            "title": "Data",
+            "description": "Payload or error details."
+          },
+          "query_generated_time": {
+            "type": "integer",
+            "title": "Query Generated Time",
+            "description": "UTC timestamp (milliseconds since epoch) when response was generated."
+          },
+          "row_count": {
+            "type": "integer",
+            "minimum": 0,
+            "title": "Row Count",
+            "description": "Total rows matching the request filters (not just this page)."
+          },
+          "limit": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Limit",
+            "description": "Page size used for this response. Null for cursor-paginated endpoints."
+          },
+          "current_page": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Page",
+            "description": "1-indexed page number for this response. Null for cursor-paginated endpoints."
+          },
+          "total_page_number": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Page Number",
+            "description": "Total number of pages given the current limit. Null for cursor-paginated endpoints."
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor",
+            "description": "Cursor for the next page, if available."
+          }
+        },
+        "type": "object",
+        "required": [
+          "status_code",
+          "data",
+          "query_generated_time",
+          "row_count"
+        ],
+        "title": "ListResponse[list[KybRecordRead]]"
+      },
+      "ListResponse_list_KycRecordRead__": {
+        "properties": {
+          "status_code": {
+            "type": "integer",
+            "title": "Status Code",
+            "description": "HTTP status code for the response."
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/KycRecordRead"
+            },
+            "type": "array",
+            "title": "Data",
+            "description": "Payload or error details."
+          },
+          "query_generated_time": {
+            "type": "integer",
+            "title": "Query Generated Time",
+            "description": "UTC timestamp (milliseconds since epoch) when response was generated."
+          },
+          "row_count": {
+            "type": "integer",
+            "minimum": 0,
+            "title": "Row Count",
+            "description": "Total rows matching the request filters (not just this page)."
+          },
+          "limit": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Limit",
+            "description": "Page size used for this response. Null for cursor-paginated endpoints."
+          },
+          "current_page": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Page",
+            "description": "1-indexed page number for this response. Null for cursor-paginated endpoints."
+          },
+          "total_page_number": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Page Number",
+            "description": "Total number of pages given the current limit. Null for cursor-paginated endpoints."
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor",
+            "description": "Cursor for the next page, if available."
+          }
+        },
+        "type": "object",
+        "required": [
+          "status_code",
+          "data",
+          "query_generated_time",
+          "row_count"
+        ],
+        "title": "ListResponse[list[KycRecordRead]]"
       },
       "ListingFilter": {
         "properties": {
@@ -14073,6 +15099,35 @@
         ],
         "title": "PendingApplicationRequestChanges"
       },
+      "PersonaInquiryResponse": {
+        "properties": {
+          "inquiry_id": {
+            "type": "string",
+            "title": "Inquiry Id"
+          },
+          "session_token": {
+            "type": "string",
+            "title": "Session Token",
+            "default": ""
+          },
+          "inquiry_url": {
+            "type": "string",
+            "title": "Inquiry Url",
+            "default": ""
+          },
+          "kyc_id": {
+            "type": "string",
+            "title": "Kyc Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "inquiry_id",
+          "kyc_id"
+        ],
+        "title": "PersonaInquiryResponse",
+        "description": "Result of starting (or resuming) a Persona identity check.\n\nTwo ways to continue the check may be returned — use whichever is set,\npreferring ``inquiry_url`` when present:\n\n- ``inquiry_url`` — a hosted page the user should be sent to (browser\n  redirect, new tab, QR code, or iframe).\n- ``session_token`` — a token for loading Persona's JavaScript SDK\n  directly, together with ``inquiry_id``."
+      },
       "PersonaKycRequest": {
         "properties": {
           "first_name": {
@@ -14390,6 +15445,211 @@
         "title": "PlatformBankAccountCreate",
         "description": "Add a bank account as a payment method."
       },
+      "PlatformInternationalBankAccountCreate": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "User Id",
+            "description": "Owner user UUID.",
+            "examples": [
+              "b3a9b622-cc63-4d3c-aad6-2d8e29e6f9d4"
+            ]
+          },
+          "account_holder_name": {
+            "type": "string",
+            "maxLength": 120,
+            "title": "Account Holder Name",
+            "description": "Name on the recipient's bank account.",
+            "examples": [
+              "Jane Doe"
+            ]
+          },
+          "bank_account_number": {
+            "type": "string",
+            "maxLength": 34,
+            "minLength": 4,
+            "title": "Bank Account Number",
+            "description": "Recipient account number or IBAN.",
+            "examples": [
+              "DE89370400440532013000"
+            ]
+          },
+          "swift_bic": {
+            "type": "string",
+            "maxLength": 11,
+            "minLength": 8,
+            "title": "Swift Bic",
+            "description": "SWIFT/BIC code of the recipient's bank.",
+            "examples": [
+              "DEUTDEFF"
+            ]
+          },
+          "bank_country": {
+            "type": "string",
+            "maxLength": 2,
+            "minLength": 2,
+            "title": "Bank Country",
+            "description": "ISO-3166 alpha-2 country code of the recipient's bank.",
+            "examples": [
+              "DE"
+            ]
+          },
+          "bank_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bank Name",
+            "description": "Recipient bank name.",
+            "examples": [
+              "Deutsche Bank"
+            ]
+          },
+          "currency": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 3,
+                "minLength": 3
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currency",
+            "description": "ISO-4217 currency the account is paid out in.",
+            "examples": [
+              "EUR"
+            ]
+          },
+          "iban": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 34,
+                "minLength": 15
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Iban",
+            "description": "IBAN, when distinct from bank_account_number."
+          },
+          "payout_branch_id": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Payout Branch Id",
+            "description": "Numeric collection-branch ID (from GET /v1/platform/international/branches)."
+          },
+          "account_type": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 30
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Account Type",
+            "description": "Account type (e.g. ``checking``, ``savings``).",
+            "examples": [
+              "checking"
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "user_id",
+          "account_holder_name",
+          "bank_account_number",
+          "swift_bic",
+          "bank_country"
+        ],
+        "title": "PlatformInternationalBankAccountCreate",
+        "description": "Register a foreign (SWIFT/IBAN) bank account for international payouts.\n\nProduces a ``PaymentMethod`` on the ``wire`` rail that can be used as\n``bankAccountId`` on ``POST /v1/platform/international/process-payouts`` or\nlinked as a beneficiary's default bank (``payment_method_id``). Unlike the\ndomestic ``POST /v1/platform/bank/add-bank-manually`` endpoint, no 9-digit\nACH routing number is required — the recipient bank is identified by its\nSWIFT/BIC code."
+      },
+      "PlatformKycSyncRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "user_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "User Id"
+          },
+          "user_email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "User Email"
+          },
+          "inquiry_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Inquiry Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "status",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "PlatformKycSyncRead",
+        "description": "The current state of a user's identity (KYC) check after a refresh."
+      },
       "PlatformPaymentCreate": {
         "properties": {
           "user_id": {
@@ -14605,6 +15865,106 @@
           "period_end"
         ],
         "title": "PlatformPreviewRequest"
+      },
+      "PlatformProductionEligibilityRead": {
+        "properties": {
+          "active": {
+            "type": "boolean",
+            "title": "Active"
+          },
+          "platform_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Platform Id"
+          },
+          "onboarding_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Onboarding Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "active"
+        ],
+        "title": "PlatformProductionEligibilityRead",
+        "description": "Whether this platform account is cleared to handle real, live money."
+      },
+      "PlatformUserComplianceRead": {
+        "properties": {
+          "kyc": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/KycRecordRead"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "kybs": {
+            "items": {
+              "$ref": "#/components/schemas/KybRecordRead"
+            },
+            "type": "array",
+            "title": "Kybs"
+          },
+          "platform_production_grant": {
+            "$ref": "#/components/schemas/PlatformProductionEligibilityRead"
+          }
+        },
+        "type": "object",
+        "required": [
+          "platform_production_grant"
+        ],
+        "title": "PlatformUserComplianceRead",
+        "description": "A user's full identity (KYC) and business (KYB) verification details."
+      },
+      "PlatformUserComplianceSummary": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "User Id"
+          },
+          "kyc_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kyc Status"
+          },
+          "kyb_counts": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Kyb Counts"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id"
+        ],
+        "title": "PlatformUserComplianceSummary",
+        "description": "A short summary of one user's identity (KYC) and business (KYB) checks."
       },
       "PlatformUserCreate": {
         "properties": {
@@ -17340,53 +18700,6 @@
         ],
         "title": "WebhookInboundLogSettingsUpdate",
         "description": "Update payload for the retention setting."
-      },
-      "KybBeneficialOwner": {
-        "additionalProperties": true,
-        "description": "A person who owns part of the business.",
-        "properties": {
-          "name": {
-            "description": "Full legal name of the owner.",
-            "maxLength": 255,
-            "minLength": 1,
-            "title": "Name",
-            "type": "string"
-          },
-          "role": {
-            "anyOf": [
-              {
-                "maxLength": 120,
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "description": "The owner's role in the business, for example \"founder\" or \"director\".",
-            "title": "Role"
-          },
-          "ownership_pct": {
-            "anyOf": [
-              {
-                "maximum": 100,
-                "minimum": 0,
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "description": "Share of the business this person owns, as a percentage from 0 to 100.",
-            "title": "Ownership Pct"
-          }
-        },
-        "required": [
-          "name"
-        ],
-        "title": "KybBeneficialOwner",
-        "type": "object"
       },
       "KybBusinessAddress": {
         "additionalProperties": true,
