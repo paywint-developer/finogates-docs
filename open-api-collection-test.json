@@ -2235,7 +2235,7 @@
           "verification"
         ],
         "summary": "Get a User's Identity Check",
-        "description": "Get the most recent identity verification (KYC) record for one user.\n\nIf the user has not started identity verification yet, the response is\nstill a success and ``data`` comes back empty — that is a normal,\nexpected state, not an error.",
+        "description": "Get one user's identity verification (KYC) details.\n\nThe response combines the latest identity check (status, decline reason,\ncontact email, Persona inquiry id) with the personal information captured\nduring verification (name, date of birth, address, ID document images).\nImage fields come back as short-lived download links.\n\nIf the user has not started identity verification yet, the response is\nstill a success and ``data`` comes back empty — that is a normal,\nexpected state, not an error.",
         "operationId": "get_user_verification_v1_platform_users_verification__user_id__get",
         "security": [
           {
@@ -2260,7 +2260,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CommonResponse_Union_KycRecordRead__NoneType__"
+                  "$ref": "#/components/schemas/CommonResponse_Union_PlatformUserVerificationRead__NoneType__"
                 }
               }
             }
@@ -2927,6 +2927,58 @@
               "title": "User Id"
             },
             "description": "The unique ID of the user you want."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommonResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Activate or Deactivate a User",
+        "description": "Flip a user on or off with a single call. No request body is needed.\n\n- If the user is currently **on**, this call turns them **off**. Their\n  record is kept for your history, but they can no longer be used for\n  anything new.\n- If the user is currently **off**, this call turns them back **on** so\n  they can be used again straight away.\n\nThe response shows the new state in `is_active`.",
+        "operationId": "toggle_user_active_v1_platform_users__user_id__patch",
+        "security": [
+          {
+            "_AuthenticatedBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "The unique ID of the user you want to flip on or off.",
+              "examples": [
+                "b3a9b622-cc63-4d3c-aad6-2d8e29e6f9d4"
+              ],
+              "title": "User Id"
+            },
+            "description": "The unique ID of the user you want to flip on or off."
           }
         ],
         "responses": {
@@ -4339,13 +4391,14 @@
         }
       }
     },
-    "/v1/platform/payees/destinations/{payee_id}": {
+    "/v1/platform/payees/bank-accounts/{payee_id}": {
       "post": {
         "tags": [
           "payees"
         ],
-        "summary": "Create Destination",
-        "operationId": "create_destination_v1_platform_payees_destinations__payee_id__post",
+        "summary": "Add a Bank Account to a Payee",
+        "description": "Save the bank details where your user wants money to be sent to this payee. The same endpoint handles both:\n\n* **US domestic (ACH)** — send `bank_account_number` and `routing_number` (9 digits, ABA-valid). Add `account_type` (`checking` or `savings`) if you have it.\n* **International (SWIFT)** — send `swift_bic` (8 or 11 chars) along with `iban` or `bank_account_number` depending on the corridor. Include `bank_country`, `bank_name`, and `intermediary_bank_name` when the destination bank requires them.\n\nEvery field is optional, but the body must describe one of the two cases above — otherwise the request is rejected.\n\nAccount, routing and IBAN numbers are encrypted before they are stored, and only the last four digits are ever returned.",
+        "operationId": "add_bank_account_v1_platform_payees_bank_accounts__payee_id__post",
         "security": [
           {
             "_AuthenticatedBearer": []
@@ -4369,10 +4422,10 @@
             "schema": {
               "type": "string",
               "format": "uuid",
-              "description": "Owner user UUID.",
+              "description": "The unique ID of the user who owns this payee.",
               "title": "User Id"
             },
-            "description": "Owner user UUID."
+            "description": "The unique ID of the user who owns this payee."
           }
         ],
         "requestBody": {
@@ -4380,7 +4433,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/PayeeDestinationCreate"
+                "$ref": "#/components/schemas/PayeeBankAccountCreate"
               }
             }
           }
@@ -4412,8 +4465,9 @@
         "tags": [
           "payees"
         ],
-        "summary": "List Destinations",
-        "operationId": "list_destinations_v1_platform_payees_destinations__payee_id__get",
+        "summary": "List a Payee's Bank Accounts",
+        "description": "Return every active bank account that has been saved for this payee. Revoked (deleted) accounts are not included. Each entry shows only the last four digits of the account and routing numbers.",
+        "operationId": "list_bank_accounts_v1_platform_payees_bank_accounts__payee_id__get",
         "security": [
           {
             "_AuthenticatedBearer": []
@@ -4437,10 +4491,10 @@
             "schema": {
               "type": "string",
               "format": "uuid",
-              "description": "Owner user UUID.",
+              "description": "The unique ID of the user who owns this payee.",
               "title": "User Id"
             },
-            "description": "Owner user UUID."
+            "description": "The unique ID of the user who owns this payee."
           }
         ],
         "responses": {
@@ -4467,13 +4521,14 @@
         }
       }
     },
-    "/v1/platform/payees/destinations/{payee_id}/{destination_id}": {
+    "/v1/platform/payees/bank-accounts/{payee_id}/{bank_account_id}": {
       "delete": {
         "tags": [
           "payees"
         ],
-        "summary": "Revoke Destination",
-        "operationId": "revoke_destination_v1_platform_payees_destinations__payee_id___destination_id__delete",
+        "summary": "Delete a Payee's Bank Account",
+        "description": "Remove a saved bank account from a payee so it can no longer be used for new payments. The call is safe to repeat — calling it again on an already-removed account returns the same success response.",
+        "operationId": "delete_bank_account_v1_platform_payees_bank_accounts__payee_id___bank_account_id__delete",
         "security": [
           {
             "_AuthenticatedBearer": []
@@ -4491,13 +4546,13 @@
             }
           },
           {
-            "name": "destination_id",
+            "name": "bank_account_id",
             "in": "path",
             "required": true,
             "schema": {
               "type": "string",
               "format": "uuid",
-              "title": "Destination Id"
+              "title": "Bank Account Id"
             }
           },
           {
@@ -4507,10 +4562,10 @@
             "schema": {
               "type": "string",
               "format": "uuid",
-              "description": "Owner user UUID.",
+              "description": "The unique ID of the user who owns this payee.",
               "title": "User Id"
             },
-            "description": "Owner user UUID."
+            "description": "The unique ID of the user who owns this payee."
           }
         ],
         "responses": {
@@ -4691,9 +4746,9 @@
         "tags": [
           "webhooks"
         ],
-        "summary": "Set Up a Webhook",
-        "description": "Set up a webhook so Finogate can automatically notify your server when\nthings happen.\n\nWhen you set one up, you:\n\n- Give us a web address (URL) where you want notifications sent\n- Choose which events you want to hear about — specific ones, or all of them\n- Receive a **signing secret**, a private key you use to confirm that a\n  notification really came from Finogate\n\nThe signing secret is shown **only once**, right here in this response. Save\nit somewhere safe — it cannot be shown to you again.",
-        "operationId": "create_webhook_v1_platform_webhooks_post",
+        "summary": "Set Up or Update Your Webhook",
+        "description": "Tell Finogate the single web address where it should send you automatic\nupdates when things happen on your platform.\n\nWhen you call this, you:\n\n- Give us one web address (URL) where you want notifications sent\n- Choose which events you want to hear about — specific ones, whole groups,\n  or all of them\n\nYour platform has exactly one webhook. If you have already set one up,\ncalling this again simply replaces it — the web address and the chosen\nevents — with the new details. It does not create a second webhook.\n\nThe **first time** you set up your webhook, the response also includes a\n**signing secret**: a private key you use to confirm that a notification\nreally came from Finogate. The signing secret is shown **only once**, right\nhere in this response — save it somewhere safe, it cannot be shown again.\nWhen you later update an existing webhook, no new secret is issued and the\n``secret`` field is empty.",
+        "operationId": "set_webhook_v1_platform_webhooks_post",
         "security": [
           {
             "_AuthenticatedBearer": []
@@ -8621,7 +8676,7 @@
         ],
         "title": "CommonResponse[PlatformUserComplianceSummary]"
       },
-      "CommonResponse_Union_KycRecordRead__NoneType__": {
+      "CommonResponse_Union_PlatformUserVerificationRead__NoneType__": {
         "properties": {
           "status_code": {
             "type": "integer",
@@ -8631,7 +8686,7 @@
           "data": {
             "anyOf": [
               {
-                "$ref": "#/components/schemas/KycRecordRead"
+                "$ref": "#/components/schemas/PlatformUserVerificationRead"
               },
               {
                 "type": "null"
@@ -8651,7 +8706,7 @@
           "data",
           "query_generated_time"
         ],
-        "title": "CommonResponse[Union[KycRecordRead, NoneType]]"
+        "title": "CommonResponse[Union[PlatformUserVerificationRead, NoneType]]"
       },
       "ComplianceCheckCreate": {
         "properties": {
@@ -13088,6 +13143,196 @@
         "title": "PasswordResetRequest",
         "description": "Initiate a password-reset email."
       },
+      "PayeeBankAccountCreate": {
+        "properties": {
+          "nickname": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nickname",
+            "description": "Optional short label your user gave this bank account (for example, \"Acme — Chase Checking\")."
+          },
+          "account_holder_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Account Holder Name",
+            "description": "The name on the bank account, exactly as the bank has it."
+          },
+          "bank_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bank Name",
+            "description": "The bank's name. Useful for international accounts."
+          },
+          "bank_country": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2,
+                "minLength": 2
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bank Country",
+            "description": "ISO 3166-1 alpha-2 country code of the bank (e.g. US, GB, DE)."
+          },
+          "currency": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 3,
+                "minLength": 3
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currency",
+            "description": "ISO 4217 three-letter currency code (e.g. USD, EUR, GBP). Defaults to USD when not provided."
+          },
+          "bank_account_number": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 34,
+                "minLength": 4
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bank Account Number",
+            "description": "The bank account number where money will be deposited."
+          },
+          "routing_number": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 9
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Routing Number",
+            "description": "US-only: the 9-digit ABA routing number of the bank."
+          },
+          "account_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Account Type",
+            "description": "US-only: either \"checking\" or \"savings\"."
+          },
+          "swift_bic": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 11
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Swift Bic",
+            "description": "International: the SWIFT/BIC code of the recipient's bank (8 or 11 characters)."
+          },
+          "iban": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 34
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Iban",
+            "description": "International: the IBAN of the recipient's account (15-34 characters, used by SEPA and most of EMEA)."
+          },
+          "intermediary_bank_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Intermediary Bank Name",
+            "description": "Optional: the correspondent bank that routes funds to the recipient's bank (sometimes required for USD wires)."
+          },
+          "intermediary_swift_bic": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 11
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Intermediary Swift Bic",
+            "description": "Optional: the SWIFT/BIC of the intermediary bank."
+          },
+          "purpose_of_payment": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Purpose Of Payment",
+            "description": "Optional: a short description of why the money is being sent (some corridors require it)."
+          },
+          "beneficiary_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Beneficiary Type",
+            "description": "Optional: either \"individual\" or \"business\"."
+          }
+        },
+        "type": "object",
+        "title": "PayeeBankAccountCreate",
+        "description": "Request body for adding a bank account to a payee.\n\nEvery field is optional, but the combination must describe either:\n\n* A US domestic account — set ``bank_account_number`` and\n  ``routing_number`` (a 9-digit US ABA-valid routing number); or\n* An international account — set ``swift_bic`` (8 or 11 characters)\n  along with whatever the corridor needs (``iban`` for SEPA / most\n  of EMEA, ``bank_account_number`` for some others).\n\nThe endpoint rejects requests that satisfy neither case."
+      },
       "PayeeCreate": {
         "properties": {
           "display_name": {
@@ -13137,319 +13382,6 @@
           "email": "payments@acme-supplier.com",
           "phone": "+14155550123"
         }
-      },
-      "PayeeDestinationCreate": {
-        "properties": {
-          "method_type": {
-            "type": "string",
-            "maxLength": 30,
-            "title": "Method Type",
-            "default": "bank"
-          },
-          "rail_code": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 30
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Rail Code"
-          },
-          "currency": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 3,
-                "minLength": 3
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Currency"
-          },
-          "nickname": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 120
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Nickname"
-          },
-          "recipient_email": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "email"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Recipient Email"
-          },
-          "recipient_name": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 255,
-                "minLength": 1
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Recipient Name"
-          },
-          "bank_account_number": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 34,
-                "minLength": 4
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Bank Account Number"
-          },
-          "routing_number": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 9,
-                "minLength": 9
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Routing Number"
-          },
-          "account_holder_name": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 120
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Account Holder Name"
-          },
-          "bank_name": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 120
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Bank Name"
-          },
-          "account_type": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 30
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Account Type"
-          },
-          "bank_country": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 2
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Bank Country"
-          },
-          "bank_address": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 160
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Bank Address"
-          },
-          "bank_city": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 120
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Bank City"
-          },
-          "bank_state": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 120
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Bank State"
-          },
-          "bank_zip": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 20
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Bank Zip"
-          },
-          "swift_bic": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 11,
-                "minLength": 8
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Swift Bic"
-          },
-          "iban": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 34,
-                "minLength": 15
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Iban"
-          },
-          "intermediary_bank_name": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 120
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Intermediary Bank Name"
-          },
-          "intermediary_swift_bic": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 11,
-                "minLength": 8
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Intermediary Swift Bic"
-          },
-          "purpose_of_payment": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 120
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Purpose Of Payment"
-          },
-          "beneficiary_type": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 20
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Beneficiary Type"
-          },
-          "provider_id": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Provider Id"
-          },
-          "provider_reference": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 120
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Provider Reference"
-          },
-          "provider_token": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 255
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Provider Token"
-          },
-          "metadata": {
-            "additionalProperties": true,
-            "type": "object",
-            "title": "Metadata"
-          }
-        },
-        "type": "object",
-        "title": "PayeeDestinationCreate",
-        "description": "Request body for attaching a destination to a payee.\n\nFor ``method_type=\"bank\"``: supply either domestic\n(``routing_number`` + ``bank_account_number``) or international\n(``swift_bic``) fields.\n\nFor ``method_type=\"email\"``: supply ``recipient_email`` +\n``recipient_name``. Bank fields are not required and ignored."
       },
       "PayeeUpdate": {
         "properties": {
@@ -15997,6 +15929,223 @@
         "title": "PlatformUserCreate",
         "description": "Create a new end user on the platform."
       },
+      "PlatformUserVerificationRead": {
+        "properties": {
+          "user_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "User Id"
+          },
+          "first_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Name"
+          },
+          "last_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Name"
+          },
+          "dob": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dob"
+          },
+          "phone_no": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phone No"
+          },
+          "ssn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ssn"
+          },
+          "address": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Address"
+          },
+          "city": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "City"
+          },
+          "state": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "State"
+          },
+          "zip": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Zip"
+          },
+          "country": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Country"
+          },
+          "id_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id Type"
+          },
+          "selfie": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Selfie"
+          },
+          "id_front_img": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id Front Img"
+          },
+          "id_back_img": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id Back Img"
+          },
+          "kyc_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kyc Status"
+          },
+          "decline_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decline Reason"
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email"
+          },
+          "inquiry_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Inquiry Id"
+          }
+        },
+        "type": "object",
+        "title": "PlatformUserVerificationRead",
+        "description": "The identity verification (KYC) details on file for one user.\n\nCombines the latest identity check (status, decline reason, email,\nPersona inquiry id) with the personal information captured during\nverification (name, date of birth, address, ID document images, etc.)."
+      },
       "PlatformVirtualBankAccountCreate": {
         "properties": {
           "user_id": {
@@ -17500,6 +17649,21 @@
         ],
         "title": "TenantOnboardingStatusUpdate",
         "description": "Admin update of onboarding status."
+      },
+      "TenantProductReactivateRequest": {
+        "properties": {
+          "product_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Product Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "product_id"
+        ],
+        "title": "TenantProductReactivateRequest",
+        "description": "Tenant request to reactivate a product currently disabled for the tenant."
       },
       "TenantProductRequest": {
         "properties": {
