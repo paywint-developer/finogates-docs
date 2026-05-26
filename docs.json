@@ -38,6 +38,7 @@
               "api-reference/users/create-user",
               "api-reference/users/list-users",
               "api-reference/users/get-user",
+              "api-reference/users/activate-or-deactivate-user",
               "api-reference/users/deactivate-user"
             ]
           },
