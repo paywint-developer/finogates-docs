@@ -3008,8 +3008,8 @@
         "tags": [
           "users"
         ],
-        "summary": "Deactivate a User",
-        "description": "Turn off a user's account.\n\nThe user's record is kept for your records — nothing is permanently erased —\nbut the user stops appearing in your user list and can no longer be used for\nanything new.\n\nYou can safely call this more than once. Deactivating a user who is already\ndeactivated simply succeeds and changes nothing.",
+        "summary": "Delete a User",
+        "description": "Delete a user from your platform.\n\nThis is a **soft delete** — we mark the user as deleted, but their full\nrecord stays in our system for your history and audit trail. Nothing is\npermanently erased. After this call the user no longer appears in your\nuser list and can't be used for anything new.\n\nThe user's email becomes free to use again straight away, so you can add a\nnew user with the same email later if you need to. That new user will be a\nseparate record with its own ID and its own wallet — the old user's history\nstays linked to the old ID.\n\nYou can safely call this more than once. Deleting a user who is already\ndeleted simply succeeds and changes nothing.",
         "operationId": "deactivate_user_v1_platform_users__user_id__delete",
         "security": [
           {
@@ -3024,13 +3024,388 @@
             "schema": {
               "type": "string",
               "format": "uuid",
-              "description": "The unique ID of the user you want to deactivate.",
+              "description": "The unique ID of the user you want to delete.",
               "examples": [
                 "b3a9b622-cc63-4d3c-aad6-2d8e29e6f9d4"
               ],
               "title": "User Id"
             },
-            "description": "The unique ID of the user you want to deactivate."
+            "description": "The unique ID of the user you want to delete."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommonResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/platform/wallets": {
+      "post": {
+        "tags": [
+          "wallets"
+        ],
+        "summary": "Create a Wallet",
+        "description": "Create a named wallet for one of your end users.\n\nProvide a unique ``name`` (per user) and the currency. Pass\n``make_primary=true`` to atomically promote this wallet to the user's\nprimary in that currency (the previous primary is demoted in the same\ntransaction). The user's first wallet in a currency is always primary\nregardless of this flag.\n\nMaster wallets cannot be created here — they are auto-provisioned at\ntenant bootstrap.",
+        "operationId": "create_wallet_v1_platform_wallets_post",
+        "security": [
+          {
+            "_AuthenticatedBearer": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlatformWalletCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommonResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "wallets"
+        ],
+        "summary": "List All Wallets",
+        "description": "Return every wallet owned by your platform — the tenant master wallet plus\nevery end user's wallets — in a single paginated list. Useful for treasury\ndashboards and reconciliation views.\n\nEach row carries the wallet's owner ``user_id`` (``null`` for the master\nwallet), ``wallet_type``, ``is_primary``, ``currency``, ``status``, and\nits balance buckets. Order is stable by creation order.",
+        "operationId": "list_wallets_v1_platform_wallets_get",
+        "security": [
+          {
+            "_AuthenticatedBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/platform/wallets/master": {
+      "get": {
+        "tags": [
+          "wallets"
+        ],
+        "summary": "Get the Master Wallet",
+        "description": "Return your platform's master wallet for the given currency. The master\nwallet is auto-provisioned at tenant bootstrap; it is the single wallet\nfees accrue into and the source/destination for master-routed payments.",
+        "operationId": "get_master_wallet_v1_platform_wallets_master_get",
+        "security": [
+          {
+            "_AuthenticatedBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "currency",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 3,
+              "description": "ISO 4217 currency code.",
+              "default": "USD",
+              "title": "Currency"
+            },
+            "description": "ISO 4217 currency code."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommonResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/platform/wallets/by-user/{user_id}": {
+      "get": {
+        "tags": [
+          "wallets"
+        ],
+        "summary": "List a User's Wallets",
+        "description": "Return every wallet owned by the given end user, across currencies. The\nuser's primary wallet for each currency is flagged via ``is_primary``.",
+        "operationId": "list_wallets_by_user_v1_platform_wallets_by_user__user_id__get",
+        "security": [
+          {
+            "_AuthenticatedBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "The unique ID of the user.",
+              "examples": [
+                "b3a9b622-cc63-4d3c-aad6-2d8e29e6f9d4"
+              ],
+              "title": "User Id"
+            },
+            "description": "The unique ID of the user."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/platform/wallets/by-id/{wallet_id}": {
+      "get": {
+        "tags": [
+          "wallets"
+        ],
+        "summary": "Get a Wallet by ID",
+        "description": "Return a specific wallet by its UUID. Useful when you already have a\nwallet reference (e.g., from a payment intent) and want the latest\nbalance + state.",
+        "operationId": "get_wallet_by_id_v1_platform_wallets_by_id__wallet_id__get",
+        "security": [
+          {
+            "_AuthenticatedBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "wallet_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "The wallet UUID.",
+              "title": "Wallet Id"
+            },
+            "description": "The wallet UUID."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommonResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/platform/wallets/{wallet_id}": {
+      "patch": {
+        "tags": [
+          "wallets"
+        ],
+        "summary": "Rename or Promote a Wallet",
+        "description": "Rename a wallet and/or promote it to the user's primary for its currency.\n\nTo change which wallet is primary, PATCH the wallet you want to\n**promote** with ``is_primary=true`` — the previous primary is demoted\nautomatically in the same transaction. Sending ``is_primary=false`` is\nrejected; every (user, currency) must have exactly one primary.\n\nMaster wallets cannot be renamed or re-prioritized.",
+        "operationId": "update_wallet_v1_platform_wallets__wallet_id__patch",
+        "security": [
+          {
+            "_AuthenticatedBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "wallet_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "The wallet UUID.",
+              "title": "Wallet Id"
+            },
+            "description": "The wallet UUID."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WalletUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommonResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "wallets"
+        ],
+        "summary": "Close a Wallet",
+        "description": "Close a wallet (sets its status to ``closed``). Returns 409 if the\nwallet is primary AND other active wallets exist for the same\n(user, currency) — promote a sibling to primary first. Closing the\nuser's last active wallet in a currency is allowed.",
+        "operationId": "close_wallet_v1_platform_wallets__wallet_id__delete",
+        "security": [
+          {
+            "_AuthenticatedBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "wallet_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "The wallet UUID.",
+              "title": "Wallet Id"
+            },
+            "description": "The wallet UUID."
           }
         ],
         "responses": {
@@ -7111,6 +7486,44 @@
         "title": "AdminWalletBalanceAdjustment",
         "description": "Admin manual balance adjustment (credit or debit)."
       },
+      "AdminWalletCreate": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "User Id",
+            "description": "End-user UUID owning the wallet."
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 60,
+            "minLength": 1,
+            "title": "Name",
+            "description": "Human-readable label, unique per (tenant, user)."
+          },
+          "currency": {
+            "type": "string",
+            "maxLength": 3,
+            "minLength": 3,
+            "title": "Currency",
+            "description": "ISO 4217 currency code.",
+            "default": "USD"
+          },
+          "make_primary": {
+            "type": "boolean",
+            "title": "Make Primary",
+            "description": "If true, atomically demotes the existing primary wallet in (user, currency) and promotes this new one. The user's first wallet in a currency is always primary regardless of this flag.",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "name"
+        ],
+        "title": "AdminWalletCreate",
+        "description": "Admin payload to create a named wallet for any tenant's end user.\n\nTenant is derived from the target user's ``tenant_internal_id``;\ncallers only need to specify ``user_id``. Master wallets are not\ncreatable here — only user wallets."
+      },
       "AdminWalletFreezeUpdate": {
         "properties": {
           "is_frozen": {
@@ -8098,6 +8511,13 @@
               "USD"
             ]
           },
+          "wallet_type": {
+            "type": "string",
+            "const": "user_wallet",
+            "title": "Wallet Type",
+            "description": "Wallet v2 routing discriminator. Cards always reload from the owner's user wallet — ``master_wallet`` is rejected.",
+            "default": "user_wallet"
+          },
           "metadata": {
             "additionalProperties": true,
             "type": "object",
@@ -8121,7 +8541,8 @@
             "currency": "USD",
             "meta": {
               "reason": "topup"
-            }
+            },
+            "wallet_type": "user_wallet"
           }
         ]
       },
@@ -8262,6 +8683,13 @@
               "USD"
             ]
           },
+          "wallet_type": {
+            "type": "string",
+            "const": "user_wallet",
+            "title": "Wallet Type",
+            "description": "Wallet v2 routing discriminator. Card transfers always source from the owner's user wallet — ``master_wallet`` is rejected.",
+            "default": "user_wallet"
+          },
           "metadata": {
             "additionalProperties": true,
             "type": "object",
@@ -8285,7 +8713,8 @@
             "currency": "USD",
             "meta": {
               "reason": "refund"
-            }
+            },
+            "wallet_type": "user_wallet"
           }
         ]
       },
@@ -13937,9 +14366,19 @@
       },
       "PaymentIntentCreate": {
         "properties": {
+          "wallet_type": {
+            "$ref": "#/components/schemas/PaymentWalletType"
+          },
           "user_id": {
-            "type": "string",
-            "format": "uuid",
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "User Id"
           },
           "wallet_id": {
@@ -13958,6 +14397,28 @@
               }
             ],
             "title": "Product Id"
+          },
+          "destination_wallet_type": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PaymentWalletType"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "destination_user_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Destination User Id"
           },
           "destination_wallet_id": {
             "anyOf": [
@@ -14056,13 +14517,13 @@
         },
         "type": "object",
         "required": [
-          "user_id",
+          "wallet_type",
           "wallet_id",
           "amount",
           "idempotency_key"
         ],
         "title": "PaymentIntentCreate",
-        "description": "Payment intent creation payload."
+        "description": "Payment intent creation payload.\n\nWallet v2.1: ``wallet_id`` is **required** and pins the source wallet\nby UUID (master or user). The server cross-checks ``wallet_type`` and\n``currency`` against the supplied wallet. ``user_id`` is optional and\ntreated as an additional safety check when sent. For transfer\nintents, ``destination_wallet_id`` is also required."
       },
       "PaymentIntentReviewRequest": {
         "properties": {
@@ -14120,9 +14581,19 @@
       },
       "PaymentIntentSubmit": {
         "properties": {
+          "wallet_type": {
+            "$ref": "#/components/schemas/PaymentWalletType"
+          },
           "user_id": {
-            "type": "string",
-            "format": "uuid",
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "User Id"
           },
           "wallet_id": {
@@ -14141,6 +14612,28 @@
               }
             ],
             "title": "Product Id"
+          },
+          "destination_wallet_type": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PaymentWalletType"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "destination_user_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Destination User Id"
           },
           "destination_wallet_id": {
             "anyOf": [
@@ -14251,7 +14744,7 @@
         },
         "type": "object",
         "required": [
-          "user_id",
+          "wallet_type",
           "wallet_id",
           "amount",
           "idempotency_key"
@@ -14683,6 +15176,15 @@
         "type": "integer",
         "enum": [0, 1, 2, 3, 4],
         "title": "PaymentMethodStatus"
+      },
+      "PaymentWalletType": {
+        "type": "string",
+        "enum": [
+          "master_wallet",
+          "user_wallet"
+        ],
+        "title": "PaymentWalletType",
+        "description": "Wallet routing discriminator on payment-initiating endpoints.\n\n``master_wallet`` resolves the tenant's master wallet via\n``tenants.master_user_id``. ``user_wallet`` resolves to the user's\nprimary wallet — caller MUST also pass ``user_id``."
       },
       "PayoutCountryCreate": {
         "properties": {
@@ -15584,11 +16086,25 @@
       },
       "PlatformPaymentCreate": {
         "properties": {
+          "wallet_type": {
+            "$ref": "#/components/schemas/PaymentWalletType",
+            "description": "Which wallet acts in this payment. ``master_wallet`` uses the tenant's master wallet; ``user_wallet`` uses one of the user's wallets. Server cross-checks this against ``wallet_id``.",
+            "examples": [
+              "user_wallet"
+            ]
+          },
           "user_id": {
-            "type": "string",
-            "format": "uuid",
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "User Id",
-            "description": "UUID of the end user initiating the payment.",
+            "description": "UUID of the end user. Optional safety cross-check — when sent, the server validates it matches the owner of ``wallet_id``.",
             "examples": [
               "b3a9b622-cc63-4d3c-aad6-2d8e29e6f9d4"
             ]
@@ -15597,7 +16113,7 @@
             "type": "string",
             "format": "uuid",
             "title": "Wallet Id",
-            "description": "UUID of the wallet to debit (or credit for funding).",
+            "description": "Required wallet UUID — accepts either the tenant's master wallet UUID or any of the user's wallet UUIDs. Server validates tenant ownership, ``wallet_type``, and ``currency``.",
             "examples": [
               "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
             ]
@@ -15618,6 +16134,36 @@
               "d4e5f6a7-b8c9-0123-4567-890abcdef012"
             ]
           },
+          "destination_wallet_type": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PaymentWalletType"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Required for transfer intents. Picks the destination wallet (``master_wallet`` or ``user_wallet``).",
+            "examples": [
+              "user_wallet"
+            ]
+          },
+          "destination_user_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Destination User Id",
+            "description": "UUID of the destination user. Required when ``destination_wallet_type='user_wallet'``.",
+            "examples": [
+              "c4b5a6d7-e8f9-0123-4567-890abcdef012"
+            ]
+          },
           "destination_wallet_id": {
             "anyOf": [
               {
@@ -15629,7 +16175,7 @@
               }
             ],
             "title": "Destination Wallet Id",
-            "description": "UUID of the destination wallet.  Required for transfer intents.",
+            "description": "Required for transfer intents (and must be ``None`` for any other intent type). Holds the destination wallet UUID; server validates tenant ownership, ``destination_wallet_type``, and ``currency``.",
             "examples": [
               "c3d4e5f6-a7b8-9012-3456-7890abcdef01"
             ]
@@ -15741,13 +16287,13 @@
         },
         "type": "object",
         "required": [
-          "user_id",
+          "wallet_type",
           "wallet_id",
           "amount",
           "idempotency_key"
         ],
         "title": "PlatformPaymentCreate",
-        "description": "Create a new payment on the platform.\n\nMaps to creating a payment intent internally.  Only public UUIDs are\naccepted — no internal IDs are ever exposed."
+        "description": "Create a new payment on the platform.\n\nMaps to creating a payment intent internally.  Only public UUIDs are\naccepted — no internal IDs are ever exposed.\n\nWallet v2.1: ``wallet_id`` is **required** and pins the source\nwallet by UUID (master or user). The server cross-checks\n``wallet_type`` and ``currency`` against the supplied wallet.\n``user_id`` is optional and treated as an additional safety check\nwhen sent. For transfer intents ``destination_wallet_id`` is also\nrequired."
       },
       "PlatformPreviewRequest": {
         "properties": {
@@ -16213,6 +16759,58 @@
             "userID": "usr_123456"
           }
         ]
+      },
+      "PlatformWalletCreate": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "User Id",
+            "description": "End-user UUID owning the wallet."
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 60,
+            "minLength": 1,
+            "title": "Name",
+            "description": "Human-readable label, unique per (tenant, user)."
+          },
+          "currency": {
+            "type": "string",
+            "maxLength": 3,
+            "minLength": 3,
+            "title": "Currency",
+            "description": "ISO 4217 currency code.",
+            "default": "USD"
+          },
+          "make_primary": {
+            "type": "boolean",
+            "title": "Make Primary",
+            "description": "If true, atomically demotes the existing primary wallet in (user, currency) and promotes this new one. The user's first wallet in a currency is always primary regardless of this flag.",
+            "default": false
+          },
+          "idempotency_key": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Idempotency Key",
+            "description": "Optional client-provided idempotency key."
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "name"
+        ],
+        "title": "PlatformWalletCreate",
+        "description": "Platform-realm (OAuth2 client) wallet creation payload.\n\nIntegrators provision wallets for their end users via this surface.\nUnlike the tenant-realm payload, ``user_id`` is always required — the\nOAuth2 client acts on behalf of the platform itself, not a logged-in\nuser."
       },
       "PlatformWebhookCreate": {
         "properties": {
@@ -17391,10 +17989,6 @@
             "minLength": 8,
             "title": "Password"
           },
-          "wallet_mode": {
-            "$ref": "#/components/schemas/WalletMode",
-            "default": "segregated"
-          },
           "create_sandbox_client": {
             "type": "boolean",
             "title": "Create Sandbox Client",
@@ -17975,10 +18569,23 @@
         "title": "TenantSwitchRequest",
         "description": "Switch authenticated tenant context."
       },
-      "TenantWalletModeUpdate": {
+      "TenantWalletTransferPolicyUpdate": {
         "properties": {
-          "wallet_mode": {
-            "$ref": "#/components/schemas/WalletMode"
+          "master_to_user": {
+            "type": "boolean",
+            "title": "Master To User"
+          },
+          "user_to_master": {
+            "type": "boolean",
+            "title": "User To Master"
+          },
+          "user_to_user": {
+            "type": "boolean",
+            "title": "User To User"
+          },
+          "master_to_master_cross_tenant": {
+            "type": "boolean",
+            "title": "Master To Master Cross Tenant"
           },
           "reason": {
             "anyOf": [
@@ -17995,10 +18602,13 @@
         },
         "type": "object",
         "required": [
-          "wallet_mode"
+          "master_to_user",
+          "user_to_master",
+          "user_to_user",
+          "master_to_master_cross_tenant"
         ],
-        "title": "TenantWalletModeUpdate",
-        "description": "Admin update payload for tenant wallet operating mode."
+        "title": "TenantWalletTransferPolicyUpdate",
+        "description": "Admin update payload for tenant wallet transfer policy."
       },
       "TwilioCredentialsPatchPayload": {
         "properties": {
@@ -18536,13 +19146,13 @@
         "properties": {
           "name": {
             "type": "string",
-            "maxLength": 120,
+            "maxLength": 60,
             "minLength": 1,
-            "title": "Name"
-          },
-          "wallet_type": {
-            "$ref": "#/components/schemas/WalletType",
-            "default": "user"
+            "title": "Name",
+            "description": "Human-readable label, unique per (tenant, user).",
+            "examples": [
+              "Spending USD"
+            ]
           },
           "currency": {
             "type": "string",
@@ -18562,31 +19172,28 @@
                 "type": "null"
               }
             ],
-            "title": "User Id"
+            "title": "User Id",
+            "description": "End-user UUID. Optional when the caller is the end user themselves; required when a platform operator creates a wallet for one of their users."
           },
-          "daily_limit": {
+          "make_primary": {
+            "type": "boolean",
+            "title": "Make Primary",
+            "description": "If true, atomically demotes the existing primary wallet in (user, currency) and promotes this new one. The user's first wallet in a currency is always primary regardless of this flag.",
+            "default": false
+          },
+          "idempotency_key": {
             "anyOf": [
               {
-                "type": "number",
-                "minimum": 0
+                "type": "string",
+                "maxLength": 120,
+                "minLength": 1
               },
               {
                 "type": "null"
               }
             ],
-            "title": "Daily Limit"
-          },
-          "spend_limit": {
-            "anyOf": [
-              {
-                "type": "number",
-                "minimum": 0
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Spend Limit"
+            "title": "Idempotency Key",
+            "description": "Optional client-provided idempotency key."
           }
         },
         "type": "object",
@@ -18594,7 +19201,7 @@
           "name"
         ],
         "title": "WalletCreate",
-        "description": "Wallet creation payload."
+        "description": "Tenant-realm wallet creation payload.\n\nFor end users calling on their own behalf, ``user_id`` may be omitted\n(it is derived from the caller). Platform users creating a wallet on\nbehalf of an end user MUST supply ``user_id``. Master wallets are NOT\ncreatable through this endpoint — they are auto-provisioned at tenant\nbootstrap."
       },
       "WalletFundRequest": {
         "properties": {
@@ -18660,28 +19267,43 @@
         "title": "WalletFundRequest",
         "description": "Funding intent payload for wallets."
       },
-      "WalletMode": {
-        "type": "string",
-        "enum": [
-          "pooled",
-          "segregated"
-        ],
-        "title": "WalletMode"
-      },
       "WalletStatus": {
         "type": "integer",
         "enum": [1, 2, 3, 4, 5],
         "title": "WalletStatus"
       },
-      "WalletType": {
-        "type": "string",
-        "enum": [
-          "user",
-          "escrow",
-          "platform_fee",
-          "platform_pool"
-        ],
-        "title": "WalletType"
+      "WalletUpdate": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 60,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name",
+            "description": "New display name (unique per (tenant, user))."
+          },
+          "is_primary": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Primary",
+            "description": "Set true to promote this wallet to primary for its (user, currency). Cannot be set to false directly — to change the primary, promote a different wallet instead."
+          }
+        },
+        "type": "object",
+        "title": "WalletUpdate",
+        "description": "Rename and/or promote-to-primary in a single PATCH.\n\nBoth fields are optional; at least one must be present."
       },
       "WebhookDeliveryReplayRequest": {
         "properties": {

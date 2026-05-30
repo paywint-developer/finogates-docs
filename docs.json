@@ -154,6 +154,13 @@
             "group": "Wallets",
             "expanded": false,
             "pages": [
+              "api-reference/wallets/list-all-wallets",
+              "api-reference/wallets/create-a-wallet",
+              "api-reference/wallets/get-the-master-wallet",
+              "api-reference/wallets/list-user-wallets",
+              "api-reference/wallets/get-wallet-by-id",
+              "api-reference/wallets/rename-or-promote-wallet",
+              "api-reference/wallets/close-wallet",
               "api-reference/wallets/get-wallet",
               "api-reference/wallets/get-wallet-activity"
             ]
