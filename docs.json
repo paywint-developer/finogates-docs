@@ -84,6 +84,8 @@
               "api-reference/bank-accounts/add-account-instantly",
               "api-reference/bank-accounts/remove-bank-account",
               "api-reference/bank-accounts/apply-for-virtual-bank-account",
+              "api-reference/bank-accounts/list-virtual-bank-accounts",
+              "api-reference/bank-accounts/refresh-virtual-bank-account-balance",
               "api-reference/bank-accounts/get-virtual-bank-account"
             ]
           },
@@ -95,6 +97,7 @@
               "api-reference/card-processing/add-card",
               "api-reference/card-processing/remove-card",
               "api-reference/card-processing/create-card-processing-application",
+              "api-reference/card-processing/get-card-payment-link",
               "api-reference/card-processing/get-card-processing-record-s"
             ]
           },
@@ -117,27 +120,18 @@
             "group": "International",
             "expanded": false,
             "pages": [
-              "api-reference/international/catalogue-countries",
-              "api-reference/international/catalogue-states",
-              "api-reference/international/catalogue-cities",
-              "api-reference/international/catalogue-currencies",
-              "api-reference/international/catalogue-document-types",
-              "api-reference/international/catalogue-account-types",
-              "api-reference/international/catalogue-business-types",
+              "api-reference/international/list-reference-data",
+              "api-reference/international/list-international-payout-products",
               "api-reference/international/payers",
               "api-reference/international/payer-rules",
               "api-reference/international/branches",
-              "api-reference/international/register-a-foreign-bank-account",
-              "api-reference/international/list-beneficiaries",
-              "api-reference/international/add-a-beneficiary",
-              "api-reference/international/get-one-beneficiary",
-              "api-reference/international/update-a-beneficiary",
-              "api-reference/international/archive-a-beneficiary",
+              "api-reference/international/list-senders",
+              "api-reference/international/register-a-sender",
+              "api-reference/international/get-default-sender-profile",
               "api-reference/international/rates",
               "api-reference/international/rate-calculator",
               "api-reference/international/balance",
               "api-reference/international/create-an-international-payout",
-              "api-reference/international/send-an-international-payout-older-method",
               "api-reference/international/platform-retry-payout",
               "api-reference/international/platform-payout-status"
             ]
@@ -159,6 +153,8 @@
               "api-reference/wallets/get-the-master-wallet",
               "api-reference/wallets/list-user-wallets",
               "api-reference/wallets/get-wallet-by-id",
+              "api-reference/wallets/get-wallet-activity-by-id",
+              "api-reference/wallets/list-wallet-pending-incoming-transfers",
               "api-reference/wallets/rename-or-promote-wallet",
               "api-reference/wallets/close-wallet",
               "api-reference/wallets/get-wallet",
@@ -170,6 +166,7 @@
             "expanded": false,
             "pages": [
               "api-reference/payments/submit-payment",
+              "api-reference/payments/wallet-to-wallet-internal-transfer",
               "api-reference/payments/list-payments",
               "api-reference/payments/get-payment"
             ]
@@ -179,7 +176,8 @@
             "expanded": false,
             "pages": [
               "api-reference/catalog/list-products",
-              "api-reference/catalog/get-product"
+              "api-reference/catalog/get-product",
+              "api-reference/catalog/list-product-catalog"
             ]
           },
           {
@@ -197,9 +195,13 @@
             "group": "Phone Numbers",
             "expanded": false,
             "pages": [
+              "api-reference/phone-numbers/list-all-phone-numbers",
               "api-reference/phone-numbers/issue-voice-access-token",
               "api-reference/phone-numbers/list-available-numbers",
               "api-reference/phone-numbers/get-user-phone-numbers",
+              "api-reference/phone-numbers/list-user-devices",
+              "api-reference/phone-numbers/register-device-for-notifications",
+              "api-reference/phone-numbers/remove-device",
               "api-reference/phone-numbers/request-phone-number-for-user",
               "api-reference/phone-numbers/issue-voice-access-token-for-user",
               "api-reference/phone-numbers/get-call-status",

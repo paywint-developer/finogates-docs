@@ -674,41 +674,14 @@
         }
       }
     },
-    "/v1/platform/international/catalogues/countries": {
+    "/v1/platform/international/catalogues": {
       "get": {
         "tags": [
           "international"
         ],
-        "summary": "List Payout Countries",
-        "description": "Get the list of countries you can send international payouts to.",
-        "operationId": "catalogue_countries_v1_platform_international_catalogues_countries_get",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CommonResponse"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "_AuthenticatedBearer": []
-          }
-        ]
-      }
-    },
-    "/v1/platform/international/catalogues/states": {
-      "get": {
-        "tags": [
-          "international"
-        ],
-        "summary": "List States or Regions",
-        "description": "Get the list of states or regions within a country.",
-        "operationId": "catalogue_states_v1_platform_international_catalogues_states_get",
+        "summary": "List Reference Data",
+        "description": "Look up a single reference list (a \"catalogue\") for building international payouts.\n\nWhich list you get back is chosen by the `type` query parameter. A few lists\nneed extra inputs: `states` needs a `country_id`, and `cities` needs both a\n`country_id` and a `state_id`. Only one list is returned per request.",
+        "operationId": "catalogues_v1_platform_international_catalogues_get",
         "security": [
           {
             "_AuthenticatedBearer": []
@@ -716,76 +689,50 @@
         ],
         "parameters": [
           {
-            "name": "country_id",
+            "name": "type",
             "in": "query",
             "required": true,
             "schema": {
-              "type": "integer",
-              "description": "The ID of the country (from the payout countries list).",
-              "title": "Country Id"
+              "$ref": "#/components/schemas/CatalogueType",
+              "description": "Which reference list to return. Pick exactly one:\n- `countries` — destination countries you can send payouts to.\n- `states` — states or regions within a country (needs `country_id`).\n- `cities` — cities within a state or region (needs `country_id` and `state_id`).\n- `currencies` — currencies you can send payouts in.\n- `document-types` — ID document types the recipient may use (varies by destination country).\n- `account-types` — bank account types you can pay into, such as checking or savings (varies by destination country).\n- `business-types` — allowed sender and business types, such as business-to-customer, business-to-business, or payroll.\nOnly one list is returned per request."
             },
-            "description": "The ID of the country (from the payout countries list)."
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CommonResponse"
-                }
-              }
-            }
+            "description": "Which reference list to return. Pick exactly one:\n- `countries` — destination countries you can send payouts to.\n- `states` — states or regions within a country (needs `country_id`).\n- `cities` — cities within a state or region (needs `country_id` and `state_id`).\n- `currencies` — currencies you can send payouts in.\n- `document-types` — ID document types the recipient may use (varies by destination country).\n- `account-types` — bank account types you can pay into, such as checking or savings (varies by destination country).\n- `business-types` — allowed sender and business types, such as business-to-customer, business-to-business, or payroll.\nOnly one list is returned per request."
           },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/platform/international/catalogues/cities": {
-      "get": {
-        "tags": [
-          "international"
-        ],
-        "summary": "List Cities",
-        "description": "Get the list of cities within a state or region.",
-        "operationId": "catalogue_cities_v1_platform_international_catalogues_cities_get",
-        "security": [
-          {
-            "_AuthenticatedBearer": []
-          }
-        ],
-        "parameters": [
           {
             "name": "country_id",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
-              "type": "integer",
-              "description": "The ID of the country.",
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "The ID of the country (from `type=countries`). Required when `type=states` or `type=cities`.",
               "title": "Country Id"
             },
-            "description": "The ID of the country."
+            "description": "The ID of the country (from `type=countries`). Required when `type=states` or `type=cities`."
           },
           {
             "name": "state_id",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
-              "type": "integer",
-              "description": "The ID of the state or region (from the states list).",
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "The ID of the state or region (from `type=states`). Required when `type=cities`.",
               "title": "State Id"
             },
-            "description": "The ID of the state or region (from the states list)."
+            "description": "The ID of the state or region (from `type=states`). Required when `type=cities`."
           }
         ],
         "responses": {
@@ -810,114 +757,6 @@
             }
           }
         }
-      }
-    },
-    "/v1/platform/international/catalogues/currencies": {
-      "get": {
-        "tags": [
-          "international"
-        ],
-        "summary": "List Payout Currencies",
-        "description": "Get the list of currencies you can send international payouts in.",
-        "operationId": "catalogue_currencies_v1_platform_international_catalogues_currencies_get",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CommonResponse"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "_AuthenticatedBearer": []
-          }
-        ]
-      }
-    },
-    "/v1/platform/international/catalogues/document-types": {
-      "get": {
-        "tags": [
-          "international"
-        ],
-        "summary": "List Accepted ID Document Types",
-        "description": "Get the list of ID document types the recipient is allowed to use.\nThe accepted types can be different for each destination country.",
-        "operationId": "catalogue_document_types_v1_platform_international_catalogues_document_types_get",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CommonResponse"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "_AuthenticatedBearer": []
-          }
-        ]
-      }
-    },
-    "/v1/platform/international/catalogues/account-types": {
-      "get": {
-        "tags": [
-          "international"
-        ],
-        "summary": "List Bank Account Types",
-        "description": "Get the list of bank account types you can pay into, such as\nchecking or savings. The accepted types can be different for each\ndestination country.",
-        "operationId": "catalogue_account_types_v1_platform_international_catalogues_account_types_get",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CommonResponse"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "_AuthenticatedBearer": []
-          }
-        ]
-      }
-    },
-    "/v1/platform/international/catalogues/business-types": {
-      "get": {
-        "tags": [
-          "international"
-        ],
-        "summary": "List Business Types",
-        "description": "Get the list of allowed sender and business types — for example\nbusiness-to-customer, business-to-business, or payroll.",
-        "operationId": "catalogue_business_types_v1_platform_international_catalogues_business_types_get",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CommonResponse"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "_AuthenticatedBearer": []
-          }
-        ]
       }
     },
     "/v1/platform/international/payers": {
@@ -1468,149 +1307,6 @@
         }
       }
     },
-    "/v1/platform/international/process-payouts": {
-      "post": {
-        "tags": [
-          "international"
-        ],
-        "summary": "Send an International Payout",
-        "description": "Send money abroad to a recipient — this is the recommended way.\n\nYou only need to send Finogate's own simple IDs (``beneficiaryId`` and\n``bankAccountId``) plus the transaction details (``amount``,\n``sourceCurrency``, and ``destinationCurrency``). Everything else — the\nsender's details, the recipient's full details, the bank details, the\ncollection branch, and which partner delivers the money — is worked out\nfor you behind the scenes.\n\nBefore calling this, set up the recipient in two steps:\n\n1. Register their bank account —\n   ``POST /v1/platform/international/bank-accounts`` (a foreign\n   SWIFT/IBAN account; the response gives you a ``payment_method_id``).\n2. Create the beneficiary —\n   ``POST /v1/platform/international/beneficiaries`` (set\n   ``payment_method_id`` to the bank from step 1). The beneficiary's\n   ``id`` is the ``beneficiaryId`` you pass here.\n\nYour sender details are set up for your platform by Finogate's team.\n\nUse this endpoint for all new work. It replaces the older\n``POST /v1/platform/international/payouts/process`` endpoint.",
-        "operationId": "platform_create_payout_v1_platform_international_process_payouts_post",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/InternationalPayoutCreate"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "201": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CommonResponse"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "_AuthenticatedBearer": []
-          }
-        ]
-      }
-    },
-    "/v1/platform/international/payouts/process": {
-      "post": {
-        "tags": [
-          "international"
-        ],
-        "summary": "Send an International Payout (older method)",
-        "description": "Send money abroad — this is an older method, kept only so existing\nintegrations keep working.\n\n**Please do not use this for new work.** Use\n``POST /v1/platform/international/process-payouts`` instead — it does\nthe same job in a much simpler way.\n\nThis older endpoint makes you send low-level details that newer\nendpoints work out for you, such as ``product_id`` (which Finogate\nproduct handles the payout) and ``payoutBranchID`` (a numeric ID for\nthe collection branch). The newer endpoint takes care of all of that\nfor you.\n\n### What this endpoint still accepts\n\nYou must pay using a **saved payment method**. The old way of putting\nthe recipient's and bank's full details straight into the request is no\nlonger accepted here and will be turned down with an error.\n\n| Field | Required | What it is |\n|-------|----------|------------|\n| ``orderPartnerID``          | Yes | Your own reference for this payout. Also used to stop the same payout happening twice. |\n| ``orderCurrency``           | Yes | The currency you are paying from (3-letter code). |\n| ``orderAmount``             | Yes | The amount to take from your wallet. |\n| ``payoutBranchID``          | Yes | The numeric branch ID where the money is collected (from ``GET /v1/platform/international/branches``). |\n| ``payoutCurrency``          | Yes | The currency the recipient is paid in (3-letter code). |\n| ``product_id``              | Yes | The ID of the international payout product to use. |\n| ``payee_payment_method_id`` | Yes | The ID of a saved payment method for the recipient's bank. |\n| ``payoutAmount``            | No  | The exact amount the recipient should receive. If you leave it out, Finogate works it out. |\n| ``sender_id``               | No  | Use a specific sender profile instead of your platform's default. |\n\nEverything else — checking your balance, setting the money aside,\nsending it, and recording it — works exactly the same as the newer\nendpoint.",
-        "operationId": "platform_process_payout_v1_platform_international_payouts_process_post",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/MorePayoutRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CommonResponse"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        },
-        "deprecated": true,
-        "security": [
-          {
-            "_AuthenticatedBearer": []
-          }
-        ]
-      }
-    },
-    "/v1/platform/international/payouts/retry": {
-      "post": {
-        "tags": [
-          "international"
-        ],
-        "summary": "Retry a Failed Payout",
-        "description": "Try a failed international payout again. Pass the ID of the failed\npayment in ``intent_id``. The original payment record is kept and\nreused.",
-        "operationId": "platform_retry_payout_v1_platform_international_payouts_retry_post",
-        "security": [
-          {
-            "_AuthenticatedBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "intent_id",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Intent Id"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CommonResponse"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/v1/platform/international/payouts/status": {
       "get": {
         "tags": [
@@ -1686,14 +1382,41 @@
         }
       }
     },
-    "/v1/platform/international/beneficiaries": {
+    "/v1/platform/international/sender-profile": {
       "get": {
         "tags": [
           "international"
         ],
-        "summary": "List Beneficiaries",
-        "description": "List the international payout recipients you have saved.",
-        "operationId": "platform_list_beneficiaries_v1_platform_international_beneficiaries_get",
+        "summary": "Get Your Platform's Default Sender Profile",
+        "description": "Return the sender details applied to your platform's payouts.\n\nSender details are set up for you by the Finogate operations team and\nauto-applied to every payout — you do not need to send them on each\nrequest. This endpoint exists so you can show the active sender block in\nyour UI. When your platform has no custom sender configured, a default\nsender is returned and ``is_default`` is ``true``.",
+        "operationId": "platform_get_sender_profile_v1_platform_international_sender_profile_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommonResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "_AuthenticatedBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/platform/international/senders": {
+      "get": {
+        "tags": [
+          "international"
+        ],
+        "summary": "List Senders",
+        "description": "List sender identities you have registered for international payouts.",
+        "operationId": "platform_list_senders_v1_platform_international_senders_get",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -1716,14 +1439,14 @@
         "tags": [
           "international"
         ],
-        "summary": "Add a Beneficiary",
-        "description": "Save an international payout recipient.\n\nLink the recipient's bank account by setting ``payment_method_id`` to the\n``payment_method_id`` returned by\n``POST /v1/platform/international/bank-accounts``. The new beneficiary's\n``id`` is what you pass as ``beneficiaryId`` to\n``POST /v1/platform/international/process-payouts``.",
-        "operationId": "platform_create_beneficiary_v1_platform_international_beneficiaries_post",
+        "summary": "Register a Sender",
+        "description": "Register a sender identity (the legal entity / individual the funds\nare sent from). Use this when you need to override the platform default\nsender on specific payouts.",
+        "operationId": "platform_create_sender_v1_platform_international_senders_post",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/InternationalBeneficiaryCreate"
+                "$ref": "#/components/schemas/InternationalSenderCreate"
               }
             }
           },
@@ -1758,31 +1481,14 @@
         ]
       }
     },
-    "/v1/platform/international/beneficiaries/{beneficiary_id}": {
+    "/v1/platform/international/products": {
       "get": {
         "tags": [
           "international"
         ],
-        "summary": "Get One Beneficiary",
-        "description": "Get the full details of a single saved recipient.",
-        "operationId": "platform_get_beneficiary_v1_platform_international_beneficiaries__beneficiary_id__get",
-        "security": [
-          {
-            "_AuthenticatedBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "beneficiary_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "title": "Beneficiary Id"
-            }
-          }
-        ],
+        "summary": "List International Payout Products",
+        "description": "List the international payout products your platform is entitled to.\n\nRouting links and entitlements live on the **data** plane (the same plane\nthe payout flow reads), so the product list is resolved there; the control\nplane mirrors carry no routing rows. Authorization still enforces against\nthe control plane.",
+        "operationId": "platform_list_products_v1_platform_international_products_get",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -1791,57 +1497,37 @@
                 "schema": {
                   "$ref": "#/components/schemas/CommonResponse"
                 }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      },
-      "patch": {
-        "tags": [
-          "international"
-        ],
-        "summary": "Update a Beneficiary",
-        "description": "Update a saved recipient. Only the fields you send are changed.",
-        "operationId": "platform_update_beneficiary_v1_platform_international_beneficiaries__beneficiary_id__patch",
-        "security": [
-          {
-            "_AuthenticatedBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "beneficiary_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "title": "Beneficiary Id"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/InternationalBeneficiaryUpdate"
               }
             }
           }
         },
+        "security": [
+          {
+            "_AuthenticatedBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/platform/international/payouts": {
+      "post": {
+        "tags": [
+          "international"
+        ],
+        "summary": "Send an International Payout",
+        "description": "Send money abroad to a recipient.\n\nYou only need to send the recipient's payee id (``payeeId``), the bank\ndestination to pay into (``destinationId``), and the transaction details\n(``amount``, ``sourceCurrency``, ``destinationCurrency``). Everything else —\nthe sender's details, the recipient's full details, the bank details, the\ncollection branch, and which partner delivers the money — is worked out for\nyou behind the scenes. Your sender details are configured for your platform\nby the Finogate team.\n\nSet up the recipient first, in two steps:\n\n1. **Create the payee** — ``POST /v1/platform/payees`` (returns the payee's\n   ``id``, which is the ``payeeId`` you pass here).\n2. **Add their bank destination** —\n   ``POST /v1/platform/payees/bank-accounts/{payee_id}`` (returns the\n   destination's ``id``, which is the ``destinationId`` you pass here).\n   Include ``payout_branch_id`` so the payout can be routed.",
+        "operationId": "platform_create_payout_v1_platform_international_payouts_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InternationalPayoutCreate"
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
-          "200": {
+          "201": {
             "description": "Successful Response",
             "content": {
               "application/json": {
@@ -1861,15 +1547,22 @@
               }
             }
           }
-        }
-      },
-      "delete": {
+        },
+        "security": [
+          {
+            "_AuthenticatedBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/platform/international/payouts/{intent_id}/retry": {
+      "post": {
         "tags": [
           "international"
         ],
-        "summary": "Archive a Beneficiary",
-        "description": "Archive a saved recipient. The record is kept (soft-delete) so past\npayouts continue to resolve their beneficiary reference.",
-        "operationId": "platform_delete_beneficiary_v1_platform_international_beneficiaries__beneficiary_id__delete",
+        "summary": "Retry a Failed Payout",
+        "description": "Try a failed international payout again. Pass the id of the failed payout\nas ``intent_id`` in the path. The original payout record is kept and reused.",
+        "operationId": "platform_retry_payout_by_path_v1_platform_international_payouts__intent_id__retry_post",
         "security": [
           {
             "_AuthenticatedBearer": []
@@ -1877,13 +1570,12 @@
         ],
         "parameters": [
           {
-            "name": "beneficiary_id",
+            "name": "intent_id",
             "in": "path",
             "required": true,
             "schema": {
               "type": "string",
-              "format": "uuid",
-              "title": "Beneficiary Id"
+              "title": "Intent Id"
             }
           }
         ],
@@ -1911,41 +1603,21 @@
         }
       }
     },
-    "/v1/platform/international/bank-accounts": {
-      "post": {
+    "/v1/platform/onboarding/products/catalog": {
+      "get": {
         "tags": [
-          "international"
+          "onboarding"
         ],
-        "summary": "Register a Foreign Bank Account",
-        "description": "Save a recipient's foreign bank account (SWIFT/BIC + account or IBAN).\n\nUnlike the domestic ``POST /v1/platform/bank/add-bank-manually`` endpoint,\nno 9-digit ACH routing number is needed. The returned\n``payment_method_id`` is what you link to a beneficiary\n(``payment_method_id``) or pass as ``bankAccountId`` to\n``POST /v1/platform/international/process-payouts``.",
-        "operationId": "platform_create_international_bank_account_v1_platform_international_bank_accounts_post",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/PlatformInternationalBankAccountCreate"
-              }
-            }
-          },
-          "required": true
-        },
+        "summary": "List Product Catalog",
+        "description": "List every product available for your platform to request, along with your platform's current enablement status for each one.",
+        "operationId": "list_product_catalog_v1_platform_onboarding_products_catalog_get",
         "responses": {
-          "201": {
+          "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CommonResponse"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
+                  "$ref": "#/components/schemas/CommonResponse_list_ProductCatalogItemRead__"
                 }
               }
             }
@@ -2235,7 +1907,7 @@
           "verification"
         ],
         "summary": "Get a User's Identity Check",
-        "description": "Get one user's identity verification (KYC) details.\n\nThe response combines the latest identity check (status, decline reason,\ncontact email, Persona inquiry id) with the personal information captured\nduring verification (name, date of birth, address, ID document images).\nImage fields come back as short-lived download links.\n\nIf the user has not started identity verification yet, the response is\nstill a success and ``data`` comes back empty — that is a normal,\nexpected state, not an error.",
+        "description": "Get one user's identity verification (KYC) details.\n\nThe response combines the latest identity check (status, decline reason,\ncontact email, Persona inquiry id) with the personal information captured\nduring verification (name, date of birth, address, ID document images).\nImage fields come back as short-lived download links.\n\nIf the user has not started identity verification yet, the response is\nstill a success and collapses to ``user_id``, ``kyc_status`` of\n``not_applied``, and a short ``message`` saying so — there is no body full\nof empty fields. That is a normal, expected state, not an error.",
         "operationId": "get_user_verification_v1_platform_users_verification__user_id__get",
         "security": [
           {
@@ -2750,7 +2422,7 @@
           "auth"
         ],
         "summary": "Get an Access Token",
-        "description": "Log your app in and get an **access token**. You need this token before you\ncan call any other endpoint — send it with every request to prove who you are.\n\n### What you send\n\nThe two values you were given when your account was set up:\n\n- ``client_id`` — your app's public ID\n- ``client_secret`` — your app's secret password (keep it private and safe)\n\n### What you get back\n\nA short-lived access token. It works for about **24 minutes**. When it stops\nworking, just call this endpoint again to get a fresh one.\n\n### Good to know\n\n- This is the only endpoint that does **not** need a token already — it is\n  how you get one in the first place.\n- Test mode and live mode are kept separate. The web address you call decides\n  which one you get (the test address or the live address), and your\n  credentials must match that mode.\n- If you gave us a list of allowed IP addresses, requests coming from any\n  other address are turned away.\n- Too many failed login attempts in a short time can block you for a while.",
+        "description": "Log your app in and get an **access token**. You need this token before you\ncan call any other endpoint — send it with every request to prove who you are.\n\n### What you send\n\nThe two values you were given when your account was set up:\n\n- ``client_id`` — your app's public ID\n- ``client_secret`` — your app's secret password (keep it private and safe)\n\n### What you get back\n\nA long-lived access token. By default the token **does not expire** — the\nsame Bearer value keeps working until you rotate the issuing\n``client_secret``. This matches the way Stripe Connect OAuth2 access\ntokens behave.\n\nIf you need a token to stop working, rotate the ``client_secret`` from\nthe developer panel. All tokens previously issued for that client become\ninvalid immediately on the next request. Operators who prefer a strict\nTTL can override by setting the ``CLIENT_ACCESS_TOKEN_EXPIRE_MINUTES``\nenvironment variable to a positive number of minutes on the deployment.\n\n### Good to know\n\n- This is the only endpoint that does **not** need a token already — it is\n  how you get one in the first place.\n- Test mode and live mode are kept separate. The web address you call decides\n  which one you get (the test address or the live address), and your\n  credentials must match that mode.\n- If you gave us a list of allowed IP addresses, requests coming from any\n  other address are turned away.\n- Too many failed login attempts in a short time can block you for a while.\n- The response's ``expires_in`` field is ``null`` when the token has no\n  expiry, and an integer count of seconds otherwise.",
         "operationId": "exchange_client_token_v1_platform_auth_token_post",
         "requestBody": {
           "content": {
@@ -3322,6 +2994,108 @@
         }
       }
     },
+    "/v1/platform/wallets/by-id/{wallet_id}/activity": {
+      "get": {
+        "tags": [
+          "wallets"
+        ],
+        "summary": "Get a Wallet's Activity by ID",
+        "description": "Get the money in-and-out history for a specific wallet by its UUID.\n\nUnlike `GET /{user_id}/activity` — which only ever returns the user's\n**primary** wallet's activity — this works for **any** wallet you own\n(primary or not, user or master), so every wallet's history is reachable.\nUse the `wallet_id` from `List All Wallets`, `List a User's Wallets`, or a\npayment intent.\n\nYou get back the same shape as the by-user activity endpoint:\n\n- **Balances** — `available`, `outbound_pending`, `inbound_pending`, and\n  `current`.\n- **Activity list** — one entry per payment, newest first, each with the\n  journey, status, amount, direction (`amount_sign`), and timestamps.\n\nThe wallet must belong to your platform.",
+        "operationId": "get_wallet_activity_by_id_v1_platform_wallets_by_id__wallet_id__activity_get",
+        "security": [
+          {
+            "_AuthenticatedBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "wallet_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "The wallet UUID.",
+              "title": "Wallet Id"
+            },
+            "description": "The wallet UUID."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommonResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/platform/wallets/by-id/{wallet_id}/pending-incoming": {
+      "get": {
+        "tags": [
+          "wallets"
+        ],
+        "summary": "List a Wallet's Incoming-Pending Transfers",
+        "description": "List inbound transfers awaiting approval for a specific wallet by its UUID.\n\nThese are wallet-to-wallet transfers sent to this wallet that are held for\napproval. The amounts are included in the wallet's `current` balance but **not**\nin `available` — they clear to available once approved, or return to the sender\nif rejected. Each item carries the originating payment intent id, amount,\ncurrency, sending wallet (when resolvable), and creation time.\n\nThe wallet must belong to your platform.",
+        "operationId": "get_wallet_pending_incoming_by_id_v1_platform_wallets_by_id__wallet_id__pending_incoming_get",
+        "security": [
+          {
+            "_AuthenticatedBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "wallet_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "The wallet UUID.",
+              "title": "Wallet Id"
+            },
+            "description": "The wallet UUID."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommonResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/platform/wallets/{wallet_id}": {
       "patch": {
         "tags": [
@@ -3438,7 +3212,7 @@
           "wallets"
         ],
         "summary": "Get a User's Wallet",
-        "description": "Get a user's main wallet, with an up-to-the-minute breakdown of their money.\n\nThe balance is split into these parts:\n\n- ``available`` — money the user can spend right now\n- ``pending`` — money on the way in that hasn't fully cleared yet\n- ``escrow`` — money set aside while a payment is being completed\n- ``hold`` — money temporarily frozen\n- ``fees`` — fees that have built up\n\nThe user must belong to your platform.",
+        "description": "Get a user's **primary** wallet for a currency, with an up-to-the-minute\nbreakdown of their money.\n\nA user can hold several wallets per currency; this returns the one flagged\nprimary. Defaults to ``USD`` — pass ``?currency=`` to select a different\ncurrency's primary.\n\nThe balance is split into these parts:\n\n- ``available`` — money the user can spend right now\n- ``pending`` — money on the way in that hasn't fully cleared yet\n- ``escrow`` — money set aside while a payment is being completed\n- ``hold`` — money temporarily frozen\n- ``fees`` — fees that have built up\n\nThe user must belong to your platform. Returns 404 if the user has no\nprimary wallet in the requested currency.",
         "operationId": "get_wallet_v1_platform_wallets__user_id__get",
         "security": [
           {
@@ -3460,6 +3234,20 @@
               "title": "User Id"
             },
             "description": "The unique ID of the user whose wallet you want."
+          },
+          {
+            "name": "currency",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 3,
+              "description": "ISO 4217 currency code of the primary wallet to return.",
+              "default": "USD",
+              "title": "Currency"
+            },
+            "description": "ISO 4217 currency code of the primary wallet to return."
           }
         ],
         "responses": {
@@ -3492,7 +3280,7 @@
           "wallets"
         ],
         "summary": "Get a User's Wallet Activity",
-        "description": "Get the money in-and-out history for a user's main wallet.\n\nYou get back:\n\n- **Balances** — ``available`` (spendable now), ``outbound_pending`` (money\n  leaving that hasn't cleared), ``inbound_pending`` (money arriving that\n  hasn't cleared), and ``current`` (the overall balance).\n- **Activity list** — one entry per payment, newest first. Each entry has a\n  short description of what happened, its status, the amount, whether it was\n  money in or money out (``amount_sign``), and the date and time.\n\nThe user must belong to your platform.",
+        "description": "Get the money in-and-out history for a user's **primary** wallet.\n\nA user can hold several wallets per currency; this reads the one flagged\nprimary. Defaults to ``USD`` — pass ``?currency=`` to select a different\ncurrency's primary.\n\nYou get back:\n\n- **Balances** — ``available`` (spendable now), ``outbound_pending`` (money\n  leaving that hasn't cleared), ``inbound_pending`` (money arriving that\n  hasn't cleared), and ``current`` (the overall balance).\n- **Activity list** — one entry per payment, newest first. Each entry has a\n  short description of what happened, its status, the amount, whether it was\n  money in or money out (``amount_sign``), and the date and time.\n\nThe user must belong to your platform. Returns 404 if the user has no\nprimary wallet in the requested currency.",
         "operationId": "get_wallet_activity_v1_platform_wallets__user_id__activity_get",
         "security": [
           {
@@ -3514,6 +3302,20 @@
               "title": "User Id"
             },
             "description": "The unique ID of the user whose wallet activity you want."
+          },
+          {
+            "name": "currency",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 3,
+              "description": "ISO 4217 currency code of the primary wallet to read.",
+              "default": "USD",
+              "title": "Currency"
+            },
+            "description": "ISO 4217 currency code of the primary wallet to read."
           }
         ],
         "responses": {
@@ -3540,28 +3342,23 @@
         }
       }
     },
-    "/v1/platform/payments": {
+    "/v1/platform/payments/wallet-to-bank": {
       "post": {
         "tags": [
           "payments"
         ],
-        "summary": "Make a Payment",
-        "description": "Create a payment and send it through, all in one call.\n\nYou can use this to:\n\n- **funding** — bring money into a wallet from an outside source (a deposit)\n- **payout** — send money out of a wallet to an outside account (a payout)\n- **transfer** — move money from one wallet to another inside Finogate\n- **relay** — pass money straight from one outside account to another\n\nThe ``intent_type`` field says which kind of payment this is, and that\ndecides which other fields you must include:\n\n| Payment type | Fields you must also send |\n|--------------|---------------------------|\n| `funding`    | `product_id`, `payment_method_id` |\n| `payout`     | `product_id`, plus **either** `payee_destination_id` (preferred) **or** `payee_payment_method_id` (older style) |\n| `transfer`   | `destination_wallet_id` |\n| `relay`      | `payment_method_id`, plus **either** `payee_destination_id` **or** `payee_payment_method_id` |\n\nFor payouts and relays, sending ``payee_destination_id`` is the recommended\nway. ``payee_payment_method_id`` still works and is kept for older\nintegrations.\n\nOnce the payment runs, check the ``status`` field in the response to see\nwhat happened:\n\n- ``processing`` — the payment is still being handled. The final result\n  will reach you later as an automatic notification (a webhook).\n- ``succeeded`` — accepted; the money is still settling.\n- ``settled`` — fully finished (you'll usually see this through a webhook\n  rather than right here).\n- ``failed`` — the payment did not go through. The ``failure_reason`` field\n  explains why.\n- ``pending_review`` — the payment was held for a manual check. Nothing has\n  been sent out yet; you'll be notified once the review is done.\n\nYou **must** include an ``idempotency_key`` — a unique value you pick for\neach payment. If the same request reaches us twice by mistake, this makes\nsure the payment only happens once.",
-        "operationId": "create_payment_v1_platform_payments_post",
-        "security": [
-          {
-            "_AuthenticatedBearer": []
-          }
-        ],
+        "summary": "Wallet → Bank (payout)",
+        "description": "Pay out from a wallet to a payee's **bank account** (ACH push or\ndigital-check auto-deposit). A `payout` payment.\n\nIdentify the destination with `payee_destination_id` (recommended) or\nthe legacy `payee_payment_method_id`. Funds move `available → escrow` on\nsubmit and settle via webhook.",
+        "operationId": "create_wallet_to_bank_payment_v1_platform_payments_wallet_to_bank_post",
         "requestBody": {
-          "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/PlatformPaymentCreate"
+                "$ref": "#/components/schemas/PaymentWalletPayoutCreate"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
@@ -3584,8 +3381,62 @@
               }
             }
           }
-        }
-      },
+        },
+        "security": [
+          {
+            "_AuthenticatedBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/platform/payments/wallet-to-wallet": {
+      "post": {
+        "tags": [
+          "payments"
+        ],
+        "summary": "Wallet → Wallet (internal transfer)",
+        "description": "Move money between two wallets on your platform. A `transfer` payment —\nno external rail or provider.\n\nPick the destination with `destination_wallet_id` (the server resolves\nthe owning user from the wallet).",
+        "operationId": "create_wallet_to_wallet_payment_v1_platform_payments_wallet_to_wallet_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PaymentWalletToWalletCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommonResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "_AuthenticatedBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/platform/payments": {
       "get": {
         "tags": [
           "payments"
@@ -4016,6 +3867,53 @@
         }
       }
     },
+    "/v1/platform/card/payment-link": {
+      "post": {
+        "tags": [
+          "card processing"
+        ],
+        "summary": "Get a Link for the User to Pay by Card",
+        "description": "Get a ready-made web page link that lets one of your users pay a fixed\namount with their card. You show this page inside your own website\n(inside an iframe). The user enters their card on that page, taps\n**Pay**, and we charge the card.\n\n### What you need to send\n- ``user_id`` — the user who will pay.\n- ``amount`` — the amount to charge, in major units (e.g. ``12.50``).\n- ``currency`` — optional ISO currency code; defaults to ``USD``.\n- ``card_processing_id`` — optional; pin the charge to one specific\n  approved card-processing account.\n\n### What you get back\n- ``payment_intent_id`` — the recorded payment. It is created straight\n  away in a ``pending`` state and shows up in your payment listings, so\n  you can track or reconcile it. It becomes ``succeeded`` or ``failed``\n  once the user pays.\n- ``pay_url`` — the link to load inside an iframe. It can be used once.\n- ``expires_at`` — the time the link stops working (about 10 minutes).\n\n### How you find out the result\nThe user sees the outcome on the page itself. Your server is also\nnotified by a ``payment_intent.succeeded`` or ``payment_intent.failed``\nwebhook carrying the ``payment_intent_id``.\n\nThe page also offers the user a \"save card for future use\" choice; when\nthey accept, the card is stored so they can reuse it later.\n\nThe link contains no details about which company processes the card\nbehind the scenes. Treat it as a plain string with no meaning of its own.",
+        "operationId": "create_card_payment_link_v1_platform_card_payment_link_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CardPaymentLinkCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommonResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "_AuthenticatedBearer": []
+          }
+        ]
+      }
+    },
     "/v1/platform/card/delete/{card_id}": {
       "delete": {
         "tags": [
@@ -4070,40 +3968,23 @@
         }
       }
     },
-    "/v1/platform/card-processing/users/{user_id}": {
+    "/v1/platform/card-processing": {
       "post": {
         "tags": [
           "card processing"
         ],
         "summary": "Apply for Card Processing",
         "description": "Apply for card processing for one of your users, so that user can\naccept card payments. This creates a new application, which Finogate's\nteam then reviews.",
-        "operationId": "create_user_card_processing_v1_platform_card_processing_users__user_id__post",
-        "security": [
-          {
-            "_AuthenticatedBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "user_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "title": "User Id"
-            }
-          }
-        ],
+        "operationId": "create_user_card_processing_v1_platform_card_processing_post",
         "requestBody": {
-          "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CardAcquiringCreate"
+                "$ref": "#/components/schemas/PlatformCardProcessingCreate"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
@@ -4126,8 +4007,15 @@
               }
             }
           }
-        }
-      },
+        },
+        "security": [
+          {
+            "_AuthenticatedBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/platform/card-processing/users/{user_id}": {
       "get": {
         "tags": [
           "card processing"
@@ -4603,23 +4491,6 @@
             "description": "The unique ID of the payout destination."
           }
         ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/CheckbookOnboardRequest"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Payload"
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -5336,17 +5207,22 @@
           "bank accounts"
         ],
         "summary": "Apply for Virtual Bank Account",
-        "description": "Apply for a virtual bank account (a \"DDA Account\") for one of your users. A\nvirtual bank account gives the user their own account number and routing\nnumber for receiving money.\n\n**Before this works** — the request is turned down unless all of these are\ntrue:\n- Your platform has the virtual bank account product (``dda_account``)\n  switched on. You ask for it during the normal sign-up process, and\n  Finogate's team must approve that request first.\n- The user has passed identity verification (an approved KYC record).\n- The user has passed business verification (at least one approved KYB\n  record).\n\n**What happens next** — the account starts in the ``initiated`` state.\nFinogate's team reviews every application by hand, marks it ``applied`` once\nchecked, and finally fills in the real account and routing numbers from the\nbanking partner before setting the account to ``approved``. We tell you the\nresult by sending your server an automatic notification — a\n``virtual_bank_account.approved`` webhook if it succeeds, or a\n``virtual_bank_account.rejected`` webhook if it is declined. That\nnotification is the only sign that the account is ready. **Until the account\nis ``approved``, it must not be used for any payments, payouts, deposits, or\nlinked to a wallet.**\n\n**Avoiding duplicates** — there are two safeguards:\n- You can include an ``idempotency_key`` — a unique value you choose. If the\n  same request reaches us twice by mistake, the account is only created\n  once. (Reusing the same key with different details is rejected.)\n- The same user cannot hold two active accounts of the same type on your\n  platform. A repeat attempt is rejected.",
+        "description": "Apply for a virtual bank account (a \"Virtual Account\") for one of your users. A\nvirtual bank account gives the user their own account number and routing\nnumber for receiving money.\n\n**Before this works** — the request is turned down unless all of these are\ntrue:\n- Your platform has the virtual bank account product (``virtual_account``)\n  switched on. You ask for it during the normal sign-up process, and\n  Finogate's team must approve that request first.\n- The user has passed identity verification (an approved KYC record).\n- The user has passed business verification (at least one approved KYB\n  record).\n\n**What happens next** — the account starts in the ``initiated`` state.\nFinogate's team reviews every application by hand, marks it ``applied`` once\nchecked, and finally fills in the real account and routing numbers from the\nbanking partner before setting the account to ``approved``. We tell you the\nresult by sending your server an automatic notification — a\n``virtual_bank_account.approved`` webhook if it succeeds, or a\n``virtual_bank_account.rejected`` webhook if it is declined. That\nnotification is the only sign that the account is ready. **Until the account\nis ``approved``, it must not be used for any payments, payouts, deposits, or\nlinked to a wallet.**\n\n**Avoiding duplicates** — there are two safeguards:\n- You can include an ``idempotency_key`` — a unique value you choose. If the\n  same request reaches us twice by mistake, the account is only created\n  once. (Reusing the same key with different details is rejected.)\n- The same user cannot hold two active accounts of the same type on your\n  platform. A repeat attempt is rejected.",
         "operationId": "create_virtual_bank_account_v1_platform_virtual_bank_accounts_post",
+        "security": [
+          {
+            "_AuthenticatedBearer": []
+          }
+        ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/PlatformVirtualBankAccountCreate"
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "201": {
@@ -5369,12 +5245,86 @@
               }
             }
           }
-        },
+        }
+      },
+      "get": {
+        "tags": [
+          "bank accounts"
+        ],
+        "summary": "List Virtual Bank Accounts",
+        "description": "List the virtual bank accounts on your platform, newest first. Optionally filter by ``user_id`` to see one end user's accounts. Approved accounts include their account and routing numbers.",
+        "operationId": "list_virtual_bank_accounts_v1_platform_virtual_bank_accounts_get",
         "security": [
           {
             "_AuthenticatedBearer": []
           }
-        ]
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional end-user filter — only this user's accounts.",
+              "title": "User Id"
+            },
+            "description": "Optional end-user filter — only this user's accounts."
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/v1/platform/virtual-bank-accounts/{account_id}": {
@@ -5385,6 +5335,57 @@
         "summary": "Get One Virtual Bank Account",
         "description": "Get the current status of one virtual bank account, and — once it is approved — its account number and routing number. You can only see accounts that belong to your own platform.",
         "operationId": "get_virtual_bank_account_v1_platform_virtual_bank_accounts__account_id__get",
+        "security": [
+          {
+            "_AuthenticatedBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "account_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "The unique ID of the virtual bank account.",
+              "title": "Account Id"
+            },
+            "description": "The unique ID of the virtual bank account."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommonResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/platform/virtual-bank-accounts/{account_id}/refresh-balance": {
+      "post": {
+        "tags": [
+          "bank accounts"
+        ],
+        "summary": "Refresh Virtual Bank Account Balance",
+        "description": "Fetch the latest balance for a virtual bank account from the banking partner and return the updated account. The balance is reported by the partner, so a momentary delay on their side simply returns the last known balance — it never errors. Only meaningful once the account is approved.",
+        "operationId": "refresh_virtual_bank_account_balance_v1_platform_virtual_bank_accounts__account_id__refresh_balance_post",
         "security": [
           {
             "_AuthenticatedBearer": []
@@ -5507,6 +5508,33 @@
             }
           }
         }
+      }
+    },
+    "/v1/platform/phone-numbers": {
+      "get": {
+        "tags": [
+          "phone-numbers"
+        ],
+        "summary": "List All Phone Numbers",
+        "description": "List every phone number across all your users.\n\nEach row carries the owning user's id, email and name so a phone-numbers\ngrid can show the user beside the number. Numbers that were removed are\nincluded. The tenant is resolved from your access token.",
+        "operationId": "list_tenant_phone_numbers_endpoint_v1_platform_phone_numbers_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "_AuthenticatedBearer": []
+          }
+        ]
       }
     },
     "/v1/platform/phone-numbers/access-token": {
@@ -5790,6 +5818,166 @@
         }
       }
     },
+    "/v1/platform/phone-numbers/users/{user_id}/devices": {
+      "post": {
+        "tags": [
+          "phone-numbers"
+        ],
+        "summary": "Register a Device for Notifications",
+        "description": "Save a device's push token so a user gets notifications on it.\n\nA user can have several devices — register each one and they all receive\nnotifications. Sending the same token again is safe and simply refreshes it.",
+        "operationId": "register_user_device_v1_platform_phone_numbers_users__user_id__devices_post",
+        "security": [
+          {
+            "_AuthenticatedBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "User Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeviceTokenRegisterRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommonResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "phone-numbers"
+        ],
+        "summary": "List a User's Devices",
+        "description": "Get the devices currently registered to receive a user's notifications.",
+        "operationId": "list_user_devices_endpoint_v1_platform_phone_numbers_users__user_id__devices_get",
+        "security": [
+          {
+            "_AuthenticatedBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "User Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "phone-numbers"
+        ],
+        "summary": "Remove a Device",
+        "description": "Stop sending notifications to a device (for example, on logout).",
+        "operationId": "unregister_user_device_v1_platform_phone_numbers_users__user_id__devices_delete",
+        "security": [
+          {
+            "_AuthenticatedBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "User Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeviceTokenUnregisterRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommonResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/platform/phone-numbers/calls/{call_id}/status": {
       "get": {
         "tags": [
@@ -5960,14 +6148,14 @@
         }
       }
     },
-    "/v1/platform/sms/send-to-number": {
+    "/v1/platform/phone-numbers/sms/send-to-number": {
       "post": {
         "tags": [
           "sms"
         ],
         "summary": "Send an SMS",
         "description": "Send a text message (SMS) from one of your platform's own phone\nnumbers to any phone number you choose.",
-        "operationId": "send_sms_to_number_v1_platform_sms_send_to_number_post",
+        "operationId": "send_sms_to_number_v1_platform_phone_numbers_sms_send_to_number_post",
         "requestBody": {
           "content": {
             "application/json": {
@@ -6007,14 +6195,14 @@
         ]
       }
     },
-    "/v1/platform/sms/messages": {
+    "/v1/platform/phone-numbers/sms/messages": {
       "get": {
         "tags": [
           "sms"
         ],
         "summary": "List SMS Messages",
         "description": "Get the history of text messages (SMS) sent and received on your\nplatform.\n\nYou can narrow the list down using the filters — for example by user,\nby phone number, by direction (sent or received), or by status.",
-        "operationId": "list_phone_sms_messages_v1_platform_sms_messages_get",
+        "operationId": "list_phone_sms_messages_v1_platform_phone_numbers_sms_messages_get",
         "security": [
           {
             "_AuthenticatedBearer": []
@@ -6217,14 +6405,14 @@
         }
       }
     },
-    "/v1/platform/calls": {
+    "/v1/platform/phone-numbers/calls": {
       "get": {
         "tags": [
           "calls"
         ],
         "summary": "List Phone Calls",
         "description": "Get the history of phone calls made and received on your platform.\n\nYou can narrow the list down using the filters — for example by user,\nby phone number, by direction (made or received), or by call status.",
-        "operationId": "list_phone_calls_v1_platform_calls_get",
+        "operationId": "list_phone_calls_v1_platform_phone_numbers_calls_get",
         "security": [
           {
             "_AuthenticatedBearer": []
@@ -6558,6 +6746,36 @@
         ],
         "title": "AdminAdjustmentPinSet",
         "description": "Set or update the balance adjustment PIN for a platform."
+      },
+      "AdminBankRailCapabilityUpdate": {
+        "properties": {
+          "account_kind": {
+            "type": "string",
+            "title": "Account Kind",
+            "description": "``linked_bank_account`` or ``virtual_bank_account``."
+          },
+          "rail": {
+            "type": "string",
+            "title": "Rail",
+            "description": "Rail code to toggle (ach, rtp, wire, fednow).",
+            "examples": [
+              "ach"
+            ]
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "description": "True to enable the rail, false to turn it off."
+          }
+        },
+        "type": "object",
+        "required": [
+          "account_kind",
+          "rail",
+          "enabled"
+        ],
+        "title": "AdminBankRailCapabilityUpdate",
+        "description": "Turn a single payment rail on/off for one bank account (SUA)."
       },
       "AdminBusinessProfileUpdate": {
         "properties": {
@@ -7241,18 +7459,43 @@
       "AdminVirtualBankAccountApprove": {
         "properties": {
           "routing_number": {
-            "type": "string",
-            "maxLength": 40,
-            "minLength": 1,
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 40
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Routing Number",
-            "description": "ACH routing number issued by the banking partner."
+            "description": "ACH routing number. Omit for automatic provisioning; supply for a manual override."
           },
           "account_number": {
-            "type": "string",
-            "maxLength": 40,
-            "minLength": 1,
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 40
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Account Number",
-            "description": "Account number issued by the banking partner."
+            "description": "Account number. Omit for automatic provisioning; supply for a manual override."
+          },
+          "provider_reference": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider Reference",
+            "description": "Optional provider-side wallet/account reference, recorded on the account. For a manual override you may paste the wallet id here."
           },
           "rtp_routing_number": {
             "anyOf": [
@@ -7412,12 +7655,8 @@
           }
         },
         "type": "object",
-        "required": [
-          "routing_number",
-          "account_number"
-        ],
         "title": "AdminVirtualBankAccountApprove",
-        "description": "Request body for ``POST /admin/virtual-bank-accounts/{id}/approve``.\n\nThe SUA admin enters the routing / account numbers issued by the\nbanking partner directly in the approval popup. ``rtp_routing_number``\nand the bank-address fields are optional — pass them when the\npartner returns them."
+        "description": "Request body for ``POST /admin/virtual-bank-accounts/{id}/approve``.\n\nTwo modes:\n\n* **Automatic (default)** — omit ``routing_number`` / ``account_number``.\n  On approval the platform provisions the account with the banking\n  provider and reads the issued numbers from the provider response.\n* **Manual override** — supply ``routing_number`` + ``account_number``\n  (and optionally ``provider_reference``) to record numbers entered by\n  hand, e.g. for reconciliation or when automatic provisioning is\n  unavailable.\n\n``rtp_routing_number`` and the bank-address / account-holder fields are\nalways optional."
       },
       "AdminVirtualBankAccountReject": {
         "properties": {
@@ -7781,212 +8020,6 @@
         ],
         "title": "AnalyticsQuery",
         "description": "Query analytics metrics with filters and pagination."
-      },
-      "BeneficiaryBankAccountCreate": {
-        "properties": {
-          "beneficiaryId": {
-            "type": "string",
-            "format": "uuid",
-            "title": "Beneficiaryid",
-            "description": "UUID of the beneficiary that owns this bank account."
-          },
-          "accountNumber": {
-            "type": "string",
-            "maxLength": 34,
-            "minLength": 4,
-            "title": "Accountnumber"
-          },
-          "accountType": {
-            "type": "string",
-            "maxLength": 30,
-            "title": "Accounttype",
-            "description": "Provider account-type code (AHO=savings, CTE=current, NON=not needed)."
-          },
-          "bankName": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 120
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Bankname"
-          },
-          "ifsc": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 34
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Ifsc",
-            "description": "Regional routing identifier (IFSC / SWIFT-BIC / CLABE)."
-          },
-          "document": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 100
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Document",
-            "description": "Beneficiary tax / national-ID doc the destination bank requires (PAN / CPF / RFC etc)."
-          },
-          "country": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 2
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Country",
-            "description": "Destination country, ISO-2."
-          },
-          "currency": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 3,
-                "minLength": 3
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Currency",
-            "description": "Account currency, ISO-4217."
-          },
-          "payoutBranchId": {
-            "type": "integer",
-            "minimum": 1,
-            "title": "Payoutbranchid",
-            "description": "Numeric More-provider branch id from GET /branches."
-          },
-          "isDefault": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Isdefault",
-            "description": "Mark this bank as the beneficiary's default. First bank is auto-default."
-          }
-        },
-        "type": "object",
-        "required": [
-          "beneficiaryId",
-          "accountNumber",
-          "accountType",
-          "payoutBranchId"
-        ],
-        "title": "BeneficiaryBankAccountCreate",
-        "description": "Per-beneficiary bank registration body for\n``POST /v1/tenant/international/bank-accounts``.\n\nThe owning beneficiary is identified by ``beneficiaryId`` in the body\nrather than the URL path so the create call has the same shape as the\none used elsewhere (idempotent, easy to construct programmatically).\n\nMaps onto the shared ``PaymentMethod`` table internally; the customer\nnever sees ``method_type`` / ``rail_code`` because for a beneficiary's\nbank those are always ``bank`` / ``wire``."
-      },
-      "BeneficiaryBankAccountUpdate": {
-        "properties": {
-          "bankName": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 120
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Bankname"
-          },
-          "ifsc": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 34
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Ifsc"
-          },
-          "document": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 100
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Document"
-          },
-          "country": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 2
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Country"
-          },
-          "currency": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 3,
-                "minLength": 3
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Currency"
-          },
-          "payoutBranchId": {
-            "anyOf": [
-              {
-                "type": "integer",
-                "minimum": 1
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Payoutbranchid"
-          },
-          "isDefault": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Isdefault"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "title": "BeneficiaryBankAccountUpdate",
-        "description": "PATCH-style partial update for a beneficiary bank account."
       },
       "Body_admin_login_for_access_token_v1_admin_auth_token_post": {
         "properties": {
@@ -8491,6 +8524,112 @@
         ],
         "title": "CardAcquiringUpdate"
       },
+      "CardNicknameUpdate": {
+        "properties": {
+          "nickname": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Nickname",
+            "description": "New display nickname for the card.",
+            "examples": [
+              "Travel Visa"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "nickname"
+        ],
+        "title": "CardNicknameUpdate",
+        "description": "Patch payload for renaming a saved card."
+      },
+      "CardPaymentLinkCreate": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "User Id",
+            "description": "The end-user who will pay. Must be an ``end_user`` belonging to the calling tenant."
+          },
+          "amount": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,10}|(?=[\\d.]{1,13}0*$)\\d{0,10}\\.\\d{0,2}0*$)"
+              }
+            ],
+            "title": "Amount",
+            "description": "Amount to charge, in major units (e.g. ``12.50``)."
+          },
+          "currency": {
+            "type": "string",
+            "maxLength": 3,
+            "minLength": 3,
+            "title": "Currency",
+            "description": "ISO-4217 currency code. Defaults to ``USD``.",
+            "default": "USD"
+          },
+          "card_processing_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Card Processing Id",
+            "description": "Optional. Pins the charge to a specific approved card-processing merchant account (the ``id`` returned by ``GET /v1/platform/card-processing/users/{user_id}``). Omit to use the user's deterministically selected default merchant."
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "amount"
+        ],
+        "title": "CardPaymentLinkCreate",
+        "description": "Request body for ``POST /v1/platform/card/payment-link``.\n\nMints a one-time hosted card-payment page for the end user. The\n``amount`` is recorded on the resulting payment record and is the\nauthoritative figure charged — it is never re-read from the browser."
+      },
+      "CardPaymentPayCreate": {
+        "properties": {
+          "payment_token": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Payment Token",
+            "description": "One-time payment token returned by the card-capture library."
+          },
+          "billing": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CardVaultBilling"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional billing fields to improve AVS scoring."
+          },
+          "save_card": {
+            "type": "boolean",
+            "title": "Save Card",
+            "description": "When true, the card is also stored for future use; when false, the processor vault entry is discarded after the charge and no payment method is kept.",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "payment_token"
+        ],
+        "title": "CardPaymentPayCreate",
+        "description": "Request body for ``POST /v1/embed/payments/card/pay``.\n\nSent from inside the hosted iframe after the card-capture library\nreturns a one-time ``payment_token``. The amount is NOT carried here\n— it is fixed on the payment record created at mint time."
+      },
       "CardReloadRequest": {
         "properties": {
           "amount": {
@@ -8901,19 +9040,19 @@
         "title": "CardVaultLinkCreate",
         "description": "Exchange a one-time client-side ``payment_token`` for a vault entry."
       },
-      "CheckbookOnboardRequest": {
-        "properties": {
-          "method_type": {
-            "type": "string",
-            "maxLength": 30,
-            "title": "Method Type",
-            "description": "Onboarding method. v1 only accepts ``\"raw\"`` — the bank credentials already encrypted on the destination are decrypted and posted directly to Checkbook. Reserved for future Plaid / IAV variants.",
-            "default": "raw"
-          }
-        },
-        "type": "object",
-        "title": "CheckbookOnboardRequest",
-        "description": "Request body for the (removed, HTTP 410) checkbook-onboarding POST\nroute — ``POST .../payees/destinations/checkbook/...``.\n\nCurrently empty. The body exists so future onboarding flows (Plaid\nprocessor token, IAV, etc.) can be selected via a ``method_type``\nfield without breaking the URL contract. v1 only supports the raw\nrouting+account attachment, so we accept a no-op body."
+      "CatalogueType": {
+        "type": "string",
+        "enum": [
+          "countries",
+          "states",
+          "cities",
+          "currencies",
+          "document-types",
+          "account-types",
+          "business-types"
+        ],
+        "title": "CatalogueType",
+        "description": "Which reference list ``GET /catalogues`` returns (one per request)."
       },
       "ClientEnvironment": {
         "type": "string",
@@ -9136,6 +9275,35 @@
           "query_generated_time"
         ],
         "title": "CommonResponse[Union[PlatformUserVerificationRead, NoneType]]"
+      },
+      "CommonResponse_list_ProductCatalogItemRead__": {
+        "properties": {
+          "status_code": {
+            "type": "integer",
+            "title": "Status Code",
+            "description": "HTTP status code for the response."
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/ProductCatalogItemRead"
+            },
+            "type": "array",
+            "title": "Data",
+            "description": "Payload or error details."
+          },
+          "query_generated_time": {
+            "type": "integer",
+            "title": "Query Generated Time",
+            "description": "UTC timestamp (milliseconds since epoch) when response was generated."
+          }
+        },
+        "type": "object",
+        "required": [
+          "status_code",
+          "data",
+          "query_generated_time"
+        ],
+        "title": "CommonResponse[list[ProductCatalogItemRead]]"
       },
       "ComplianceCheckCreate": {
         "properties": {
@@ -9883,6 +10051,65 @@
         "title": "CryptoWithdrawalRejectCreate",
         "description": "Request body for ``POST /admin/crypto/withdrawals/{id}/reject``."
       },
+      "DeviceTokenRegisterRequest": {
+        "properties": {
+          "token": {
+            "type": "string",
+            "maxLength": 512,
+            "title": "Token",
+            "description": "Provider registration token."
+          },
+          "device_type": {
+            "$ref": "#/components/schemas/DeviceType"
+          },
+          "provider": {
+            "type": "string",
+            "maxLength": 32,
+            "title": "Provider",
+            "default": "fcm"
+          },
+          "device_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 128
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Device Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "token",
+          "device_type"
+        ],
+        "title": "DeviceTokenRegisterRequest",
+        "description": "Register (or refresh) a device's push-notification token."
+      },
+      "DeviceTokenUnregisterRequest": {
+        "properties": {
+          "token": {
+            "type": "string",
+            "maxLength": 512,
+            "title": "Token"
+          },
+          "provider": {
+            "type": "string",
+            "maxLength": 32,
+            "title": "Provider",
+            "default": "fcm"
+          }
+        },
+        "type": "object",
+        "required": [
+          "token"
+        ],
+        "title": "DeviceTokenUnregisterRequest",
+        "description": "Deactivate a device token (logout)."
+      },
       "DeviceType": {
         "type": "string",
         "enum": [
@@ -10080,7 +10307,7 @@
               }
             ],
             "title": "Redirect Uri",
-            "description": "OAuth redirect URI for Plaid Link. Defaults to the env-configured ``PLAID_REDIRECT_URI`` when omitted. Required for OAuth banks."
+            "description": "OAuth redirect URI for Plaid Link. When omitted, falls back to the tenant's configured ``plaid`` redirect URL, then the env-configured ``PLAID_REDIRECT_URI``. Required for OAuth banks."
           }
         },
         "type": "object",
@@ -10099,7 +10326,8 @@
             "type": "string",
             "enum": [
               "add_card",
-              "add_bank"
+              "add_bank",
+              "card_payment"
             ],
             "title": "Scope",
             "description": "Which embed surface the token authorises. Today the only supported scope is ``add_card``.",
@@ -10828,492 +11056,15 @@
         "type": "object",
         "title": "HTTPValidationError"
       },
-      "InternationalBeneficiaryCreate": {
-        "properties": {
-          "first_name": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 255
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "First Name"
-          },
-          "middle_name": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 255
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Middle Name"
-          },
-          "last_name": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 255
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Last Name"
-          },
-          "maiden_name": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 255
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Maiden Name"
-          },
-          "email": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 255
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Email"
-          },
-          "phone": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 50
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Phone"
-          },
-          "date_of_birth": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 20
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Date Of Birth"
-          },
-          "nationality": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 10
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Nationality"
-          },
-          "gender": {
-            "anyOf": [
-              {
-                "type": "string",
-                "enum": [
-                  "M",
-                  "F"
-                ]
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Gender",
-            "description": "Single-letter More gender code: ``M`` or ``F``."
-          },
-          "doc_number": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 100
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Doc Number"
-          },
-          "doc_type": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 50
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Doc Type"
-          },
-          "doc_issue_country": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 10
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Doc Issue Country"
-          },
-          "doc_issue_date": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 20
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Doc Issue Date"
-          },
-          "doc_due_date": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 20
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Doc Due Date"
-          },
-          "doc_issuer": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 255
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Doc Issuer"
-          },
-          "state": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 255
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "State"
-          },
-          "city": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 255
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "City"
-          },
-          "street": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 500
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Street"
-          },
-          "payment_method_id": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Payment Method Id"
-          }
-        },
-        "type": "object",
-        "title": "InternationalBeneficiaryCreate"
-      },
-      "InternationalBeneficiaryUpdate": {
-        "properties": {
-          "first_name": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 255
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "First Name"
-          },
-          "middle_name": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 255
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Middle Name"
-          },
-          "last_name": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 255
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Last Name"
-          },
-          "maiden_name": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 255
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Maiden Name"
-          },
-          "email": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 255
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Email"
-          },
-          "phone": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 50
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Phone"
-          },
-          "date_of_birth": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 20
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Date Of Birth"
-          },
-          "nationality": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 10
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Nationality"
-          },
-          "gender": {
-            "anyOf": [
-              {
-                "type": "string",
-                "enum": [
-                  "M",
-                  "F"
-                ]
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Gender"
-          },
-          "doc_number": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 100
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Doc Number"
-          },
-          "doc_type": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 50
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Doc Type"
-          },
-          "doc_issue_country": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 10
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Doc Issue Country"
-          },
-          "doc_issue_date": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 20
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Doc Issue Date"
-          },
-          "doc_due_date": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 20
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Doc Due Date"
-          },
-          "doc_issuer": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 255
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Doc Issuer"
-          },
-          "state": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 255
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "State"
-          },
-          "city": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 255
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "City"
-          },
-          "street": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 500
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Street"
-          },
-          "payment_method_id": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Payment Method Id"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "title": "InternationalBeneficiaryUpdate",
-        "description": "PATCH-style partial update — every field is optional. Fields omitted\nfrom the request body are left untouched. ``extra='forbid'`` keeps the\ncontract tight so customers can't smuggle provider-shaped fields."
-      },
       "InternationalPayoutCreate": {
         "properties": {
-          "beneficiaryId": {
+          "payeeId": {
             "type": "string",
             "format": "uuid",
-            "title": "Beneficiaryid",
-            "description": "ID of a Finogates-managed beneficiary (created via /tenant/international/beneficiaries)."
+            "title": "Payeeid",
+            "description": "ID of a Finogates-managed payee (created via the payees API)."
           },
-          "bankAccountId": {
+          "destinationId": {
             "anyOf": [
               {
                 "type": "string",
@@ -11323,8 +11074,14 @@
                 "type": "null"
               }
             ],
-            "title": "Bankaccountid",
-            "description": "ID of a bank account that belongs to ``beneficiaryId``. Optional — when omitted the server uses the beneficiary's default bank (``payment_method_id`` on the beneficiary). Required only when the beneficiary owns multiple banks and you want to override the default."
+            "title": "Destinationid",
+            "description": "ID of a bank destination that belongs to ``payeeId``. Optional — when omitted the server uses the payee's sole active bank destination. Required only when the payee owns multiple banks."
+          },
+          "walletId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Walletid",
+            "description": "ID of the wallet to debit for this payout. Required — there is no implicit default wallet. The wallet must belong to your platform and its currency must match ``sourceCurrency``."
           },
           "amount": {
             "anyOf": [
@@ -11338,7 +11095,7 @@
               }
             ],
             "title": "Amount",
-            "description": "Amount in ``sourceCurrency`` to debit from the tenant wallet."
+            "description": "Amount in ``sourceCurrency`` to debit from your wallet."
           },
           "sourceCurrency": {
             "type": "string",
@@ -11394,19 +11151,20 @@
               }
             ],
             "title": "Payoutbranchid",
-            "description": "Optional fallback for the destination branch id. The canonical place to store this is on the bank account record itself (``meta.payout_branch_id`` set when calling ``POST /v1/tenant/payment-methods``); supply it here only when the bank account predates that field — newer registrations have it stored and Finogates resolves the routing automatically."
+            "description": "Optional fallback for the destination branch id. The canonical place to store this is on the bank destination itself (``payout_branch_id`` set when adding the bank destination via ``POST .../payees/bank-accounts/{payee_id}``); supply it here only when the destination predates that field — newer registrations have it stored and Finogates resolves the routing automatically."
           }
         },
         "additionalProperties": false,
         "type": "object",
         "required": [
-          "beneficiaryId",
+          "payeeId",
+          "walletId",
           "amount",
           "sourceCurrency",
           "destinationCurrency"
         ],
         "title": "InternationalPayoutCreate",
-        "description": "Customer-facing request body for ``POST /v1/tenant/international/payouts``.\n\nThe customer pre-creates beneficiary + bank-account records via the\nFinogates resource APIs, then references them here by ID. Sender,\nfull beneficiary fields, and bank-info fields are resolved internally\nfrom those records and from the SUA-configured platform Sender Defaults."
+        "description": "Customer-facing request body for ``POST .../international/payouts``.\n\nThe customer pre-creates the payee and its bank destination via the\nFinogates resource APIs (``/payees`` and ``/payees/bank-accounts/{payee_id}``),\nthen references them here by ID. The sender, the recipient's full details,\nand bank-info fields are resolved internally from those records and from the\nplatform's configured Sender Defaults."
       },
       "InternationalSenderCreate": {
         "properties": {
@@ -13144,7 +12902,7 @@
           "payoutCurrency"
         ],
         "title": "MorePayoutRequest",
-        "description": "Request body for ``POST /tenant/international/payouts/process``.\n\n**Sender is server-managed.** API consumers never need to supply sender /\nbusiness-identity fields. Finogates resolves the sender block from the\nSUA-configured platform defaults (``Tenant.meta['uniteller_sender_defaults']``)\nand injects it into the outbound provider call. This is part of the\nFinogates orchestration contract — provider-specific mandatory fields are\nenriched server-side, never required from the customer.\n\nThe endpoint accepts two shapes:\n\n* **Canonical (preferred)** — ``product_id`` + ``payee_payment_method_id``.\n  Routes through ``ensure_tenant_product_entitled`` → ``select_provider``\n  → ``reserve_funds`` → ``ensure_payment_method_binding`` → provider call\n  → ``move_escrow_to_clearing`` / ``release_escrow``. Beneficiary and bank\n  info are loaded from the saved ``PaymentMethod`` (and optionally a\n  linked ``InternationalBeneficiary``).\n* **Legacy (deprecated)** — inline ``beneficiary`` + ``bankInfo``.\n  Bypasses the entitlement / ledger / binding pipeline. New integrations\n  MUST use the canonical shape; the legacy shape is retained only to\n  avoid breaking the integration that just shipped.\n\nExactly one of the two shapes must be present.\n\nInternal/advanced fields (not part of the public surface, retained for\nbackward compatibility):\n\n* ``sender_id`` — explicitly select a saved ``InternationalSender`` row\n  instead of falling back to the platform defaults. Tenant-managed by SUA;\n  most integrators leave this unset.\n* ``sender`` — inline override of the sender block. **Deprecated and\n  ignored by default**: server-side enrichment runs whenever the\n  enrichment dispatcher returns a populated block, so this field is\n  effectively only honored when the platform has no defaults configured."
+        "description": "Request body for ``POST /tenant/international/payouts/process``.\n\n**Sender is server-managed.** API consumers never need to supply sender /\nbusiness-identity fields. Finogates resolves the sender block from the\nSUA-configured platform defaults (``Tenant.meta['uniteller_sender_defaults']``)\nand injects it into the outbound provider call. This is part of the\nFinogates orchestration contract — provider-specific mandatory fields are\nenriched server-side, never required from the customer.\n\nThe endpoint accepts two shapes:\n\n* **Canonical (preferred)** — ``product_id`` + ``payee_payment_method_id``.\n  Routes through ``ensure_tenant_product_entitled`` → ``select_provider``\n  → ``reserve_funds`` → ``ensure_payment_method_binding`` → provider call\n  → ``move_escrow_to_clearing`` / ``release_escrow``. Recipient and bank\n  info are loaded from the saved ``PaymentMethod``.\n* **Legacy (deprecated)** — inline ``beneficiary`` + ``bankInfo``.\n  Bypasses the entitlement / ledger / binding pipeline. New integrations\n  MUST use the canonical shape; the legacy shape is retained only to\n  avoid breaking the integration that just shipped.\n\nExactly one of the two shapes must be present.\n\nInternal/advanced fields (not part of the public surface, retained for\nbackward compatibility):\n\n* ``sender_id`` — explicitly select a saved ``InternationalSender`` row\n  instead of falling back to the platform defaults. Tenant-managed by SUA;\n  most integrators leave this unset.\n* ``sender`` — inline override of the sender block. **Deprecated and\n  ignored by default**: server-side enrichment runs whenever the\n  enrichment dispatcher returns a populated block, so this field is\n  effectively only honored when the platform has no defaults configured."
       },
       "MoreRateCalculatorRequest": {
         "properties": {
@@ -13671,14 +13429,15 @@
           "account_type": {
             "anyOf": [
               {
-                "type": "string"
+                "type": "string",
+                "maxLength": 30
               },
               {
                 "type": "null"
               }
             ],
             "title": "Account Type",
-            "description": "US-only: either \"checking\" or \"savings\"."
+            "description": "Account type — \"checking\"/\"savings\" for US ACH, or the provider code for UniTeller."
           },
           "swift_bic": {
             "anyOf": [
@@ -13745,7 +13504,7 @@
             "title": "Purpose Of Payment",
             "description": "Optional: a short description of why the money is being sent (some corridors require it)."
           },
-          "beneficiary_type": {
+          "recipient_type": {
             "anyOf": [
               {
                 "type": "string"
@@ -13754,8 +13513,46 @@
                 "type": "null"
               }
             ],
-            "title": "Beneficiary Type",
+            "title": "Recipient Type",
             "description": "Optional: either \"individual\" or \"business\"."
+          },
+          "bank_branch": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 50
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bank Branch",
+            "description": "UniTeller branch / routing code (IFSC, SWIFT/BIC, or CLABE)."
+          },
+          "bank_document": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bank Document",
+            "description": "Recipient bank document (e.g. CPF / CNPJ / RFC), where the corridor needs it."
+          },
+          "payout_branch_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Payout Branch Id",
+            "description": "UniTeller numeric payout branch id used to route the payout."
           }
         },
         "type": "object",
@@ -13764,11 +13561,185 @@
       },
       "PayeeCreate": {
         "properties": {
-          "display_name": {
+          "first_name": {
             "type": "string",
             "maxLength": 255,
             "minLength": 1,
-            "title": "Display Name"
+            "title": "First Name"
+          },
+          "middle_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Middle Name"
+          },
+          "last_name": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Last Name"
+          },
+          "maiden_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Maiden Name"
+          },
+          "date_of_birth": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 20
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Date Of Birth"
+          },
+          "nationality": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 10
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nationality"
+          },
+          "gender": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gender"
+          },
+          "doc_number": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Doc Number"
+          },
+          "doc_type": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 50
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Doc Type"
+          },
+          "doc_issue_country": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 10
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Doc Issue Country"
+          },
+          "doc_issue_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 20
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Doc Issue Date"
+          },
+          "doc_due_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 20
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Doc Due Date"
+          },
+          "doc_issuer": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Doc Issuer"
+          },
+          "state": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "State"
+          },
+          "city": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "City"
+          },
+          "street": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Street"
           },
           "email": {
             "anyOf": [
@@ -13802,30 +13773,211 @@
         },
         "type": "object",
         "required": [
-          "display_name"
+          "first_name",
+          "last_name"
         ],
         "title": "PayeeCreate",
         "description": "Request body for POST /tenant/payees.",
         "example": {
-          "display_name": "Acme Supplier LLC",
           "email": "payments@acme-supplier.com",
+          "first_name": "Acme",
+          "last_name": "Supplier",
           "phone": "+14155550123"
         }
       },
       "PayeeUpdate": {
         "properties": {
-          "display_name": {
+          "first_name": {
             "anyOf": [
               {
                 "type": "string",
-                "maxLength": 255,
-                "minLength": 1
+                "maxLength": 255
               },
               {
                 "type": "null"
               }
             ],
-            "title": "Display Name"
+            "title": "First Name"
+          },
+          "middle_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Middle Name"
+          },
+          "last_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Name"
+          },
+          "maiden_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Maiden Name"
+          },
+          "date_of_birth": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 20
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Date Of Birth"
+          },
+          "nationality": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 10
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nationality"
+          },
+          "gender": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gender"
+          },
+          "doc_number": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Doc Number"
+          },
+          "doc_type": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 50
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Doc Type"
+          },
+          "doc_issue_country": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 10
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Doc Issue Country"
+          },
+          "doc_issue_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 20
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Doc Issue Date"
+          },
+          "doc_due_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 20
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Doc Due Date"
+          },
+          "doc_issuer": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Doc Issuer"
+          },
+          "state": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "State"
+          },
+          "city": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "City"
+          },
+          "street": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Street"
           },
           "email": {
             "anyOf": [
@@ -14366,9 +14518,6 @@
       },
       "PaymentIntentCreate": {
         "properties": {
-          "wallet_type": {
-            "$ref": "#/components/schemas/PaymentWalletType"
-          },
           "user_id": {
             "anyOf": [
               {
@@ -14398,28 +14547,6 @@
             ],
             "title": "Product Id"
           },
-          "destination_wallet_type": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/PaymentWalletType"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "destination_user_id": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Destination User Id"
-          },
           "destination_wallet_id": {
             "anyOf": [
               {
@@ -14431,6 +14558,18 @@
               }
             ],
             "title": "Destination Wallet Id"
+          },
+          "destination_payee_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Destination Payee Id"
           },
           "payment_method_id": {
             "anyOf": [
@@ -14454,7 +14593,9 @@
                 "type": "null"
               }
             ],
-            "title": "Payee Payment Method Id"
+            "title": "Payee Payment Method Id",
+            "description": "Deprecated legacy payee target — use ``payee_destination_id`` instead. Still accepted for backward compatibility.",
+            "deprecated": true
           },
           "payee_id": {
             "anyOf": [
@@ -14503,6 +14644,11 @@
             "title": "Hold",
             "default": false
           },
+          "notify_recipient": {
+            "type": "boolean",
+            "title": "Notify Recipient",
+            "default": false
+          },
           "idempotency_key": {
             "type": "string",
             "maxLength": 120,
@@ -14517,13 +14663,12 @@
         },
         "type": "object",
         "required": [
-          "wallet_type",
           "wallet_id",
           "amount",
           "idempotency_key"
         ],
         "title": "PaymentIntentCreate",
-        "description": "Payment intent creation payload.\n\nWallet v2.1: ``wallet_id`` is **required** and pins the source wallet\nby UUID (master or user). The server cross-checks ``wallet_type`` and\n``currency`` against the supplied wallet. ``user_id`` is optional and\ntreated as an additional safety check when sent. For transfer\nintents, ``destination_wallet_id`` is also required."
+        "description": "Payment intent creation payload.\n\nWallet v2.1: ``wallet_id`` is **required** and pins the source wallet\nby UUID (master or user). The server cross-checks ``currency`` against\nthe supplied wallet and resolves the owner from it. ``user_id`` is\noptional and treated as an additional safety check when sent. For\ntransfer intents, ``destination_wallet_id`` (or ``destination_payee_id``)\nis also required."
       },
       "PaymentIntentReviewRequest": {
         "properties": {
@@ -14581,9 +14726,6 @@
       },
       "PaymentIntentSubmit": {
         "properties": {
-          "wallet_type": {
-            "$ref": "#/components/schemas/PaymentWalletType"
-          },
           "user_id": {
             "anyOf": [
               {
@@ -14613,28 +14755,6 @@
             ],
             "title": "Product Id"
           },
-          "destination_wallet_type": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/PaymentWalletType"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "destination_user_id": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Destination User Id"
-          },
           "destination_wallet_id": {
             "anyOf": [
               {
@@ -14646,6 +14766,18 @@
               }
             ],
             "title": "Destination Wallet Id"
+          },
+          "destination_payee_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Destination Payee Id"
           },
           "payment_method_id": {
             "anyOf": [
@@ -14669,7 +14801,9 @@
                 "type": "null"
               }
             ],
-            "title": "Payee Payment Method Id"
+            "title": "Payee Payment Method Id",
+            "description": "Deprecated legacy payee target — use ``payee_destination_id`` instead. Still accepted for backward compatibility.",
+            "deprecated": true
           },
           "payee_id": {
             "anyOf": [
@@ -14718,6 +14852,11 @@
             "title": "Hold",
             "default": false
           },
+          "notify_recipient": {
+            "type": "boolean",
+            "title": "Notify Recipient",
+            "default": false
+          },
           "idempotency_key": {
             "type": "string",
             "maxLength": 120,
@@ -14744,7 +14883,6 @@
         },
         "type": "object",
         "required": [
-          "wallet_type",
           "wallet_id",
           "amount",
           "idempotency_key"
@@ -15177,14 +15315,210 @@
         "enum": [0, 1, 2, 3, 4],
         "title": "PaymentMethodStatus"
       },
-      "PaymentWalletType": {
-        "type": "string",
-        "enum": [
-          "master_wallet",
-          "user_wallet"
+      "PaymentWalletPayoutCreate": {
+        "properties": {
+          "wallet_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Wallet Id",
+            "description": "Source wallet UUID — the tenant's master wallet or one of the user's wallets. Server validates tenant ownership and ``currency`` and resolves the owner from it.",
+            "examples": [
+              "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+            ]
+          },
+          "user_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "User Id",
+            "description": "Optional safety cross-check — when sent, must match the owner of ``wallet_id``.",
+            "examples": [
+              "b3a9b622-cc63-4d3c-aad6-2d8e29e6f9d4"
+            ]
+          },
+          "amount": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "title": "Amount",
+            "description": "Amount in major currency units (e.g. dollars).",
+            "examples": [100.5]
+          },
+          "currency": {
+            "type": "string",
+            "maxLength": 3,
+            "minLength": 3,
+            "title": "Currency",
+            "description": "ISO 4217 currency code.",
+            "default": "USD",
+            "examples": [
+              "USD"
+            ]
+          },
+          "idempotency_key": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Idempotency Key",
+            "description": "Unique key to ensure idempotent payment creation.",
+            "examples": [
+              "pay_req_20260604_abc123"
+            ]
+          },
+          "metadata": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Metadata",
+            "description": "Arbitrary key-value metadata to attach to the payment.",
+            "examples": [
+              {
+                "order_id": "ORD-12345"
+              }
+            ]
+          },
+          "product_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Product Id",
+            "description": "UUID of the payout product (rail + provider route).",
+            "examples": [
+              "d4e5f6a7-b8c9-0123-4567-890abcdef012"
+            ]
+          },
+          "payee_destination_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Payee Destination Id",
+            "description": "UUID of the payee's destination (recommended). The canonical field for ACH-push and digital-check auto-deposit. Either this or ``payee_payment_method_id`` is required.",
+            "examples": [
+              "c8d9e0f1-a2b3-4567-89ab-cdef01234567"
+            ]
+          },
+          "payee_payment_method_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Payee Payment Method Id",
+            "description": "**Deprecated** legacy payee target — use ``payee_destination_id`` instead. Still accepted: either this or ``payee_destination_id`` is required — send one, not both.",
+            "deprecated": true,
+            "examples": [
+              "f6a7b8c9-d0e1-2345-6789-0abcdef01234"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "wallet_id",
+          "amount",
+          "idempotency_key",
+          "product_id"
         ],
-        "title": "PaymentWalletType",
-        "description": "Wallet routing discriminator on payment-initiating endpoints.\n\n``master_wallet`` resolves the tenant's master wallet via\n``tenants.master_user_id``. ``user_wallet`` resolves to the user's\nprimary wallet — caller MUST also pass ``user_id``."
+        "title": "PaymentWalletPayoutCreate",
+        "description": "Pay out from a wallet to a payee's bank account (``intent_type=payout``)."
+      },
+      "PaymentWalletToWalletCreate": {
+        "properties": {
+          "wallet_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Wallet Id",
+            "description": "Source wallet UUID — the tenant's master wallet or one of the user's wallets. Server validates tenant ownership and ``currency`` and resolves the owner from it.",
+            "examples": [
+              "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+            ]
+          },
+          "user_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "User Id",
+            "description": "Optional safety cross-check — when sent, must match the owner of ``wallet_id``.",
+            "examples": [
+              "b3a9b622-cc63-4d3c-aad6-2d8e29e6f9d4"
+            ]
+          },
+          "amount": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "title": "Amount",
+            "description": "Amount in major currency units (e.g. dollars).",
+            "examples": [100.5]
+          },
+          "currency": {
+            "type": "string",
+            "maxLength": 3,
+            "minLength": 3,
+            "title": "Currency",
+            "description": "ISO 4217 currency code.",
+            "default": "USD",
+            "examples": [
+              "USD"
+            ]
+          },
+          "idempotency_key": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Idempotency Key",
+            "description": "Unique key to ensure idempotent payment creation.",
+            "examples": [
+              "pay_req_20260604_abc123"
+            ]
+          },
+          "metadata": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Metadata",
+            "description": "Arbitrary key-value metadata to attach to the payment.",
+            "examples": [
+              {
+                "order_id": "ORD-12345"
+              }
+            ]
+          },
+          "destination_wallet_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Destination Wallet Id",
+            "description": "Destination wallet UUID to credit. Server validates tenant ownership and ``currency`` and resolves the owner from it.",
+            "examples": [
+              "c3d4e5f6-a7b8-9012-3456-7890abcdef01"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "wallet_id",
+          "amount",
+          "idempotency_key",
+          "destination_wallet_id"
+        ],
+        "title": "PaymentWalletToWalletCreate",
+        "description": "Move funds between two wallets on your platform (``intent_type=transfer``)."
       },
       "PayoutCountryCreate": {
         "properties": {
@@ -15879,144 +16213,29 @@
         "title": "PlatformBankAccountCreate",
         "description": "Add a bank account as a payment method."
       },
-      "PlatformInternationalBankAccountCreate": {
+      "PlatformCardProcessingCreate": {
         "properties": {
           "user_id": {
             "type": "string",
             "format": "uuid",
             "title": "User Id",
-            "description": "Owner user UUID.",
-            "examples": [
-              "b3a9b622-cc63-4d3c-aad6-2d8e29e6f9d4"
-            ]
+            "description": "Public ``id`` of the user the application is for."
           },
-          "account_holder_name": {
+          "kyb_id": {
             "type": "string",
-            "maxLength": 120,
-            "title": "Account Holder Name",
-            "description": "Name on the recipient's bank account.",
-            "examples": [
-              "Jane Doe"
-            ]
-          },
-          "bank_account_number": {
-            "type": "string",
-            "maxLength": 34,
-            "minLength": 4,
-            "title": "Bank Account Number",
-            "description": "Recipient account number or IBAN.",
-            "examples": [
-              "DE89370400440532013000"
-            ]
-          },
-          "swift_bic": {
-            "type": "string",
-            "maxLength": 11,
-            "minLength": 8,
-            "title": "Swift Bic",
-            "description": "SWIFT/BIC code of the recipient's bank.",
-            "examples": [
-              "DEUTDEFF"
-            ]
-          },
-          "bank_country": {
-            "type": "string",
-            "maxLength": 2,
-            "minLength": 2,
-            "title": "Bank Country",
-            "description": "ISO-3166 alpha-2 country code of the recipient's bank.",
-            "examples": [
-              "DE"
-            ]
-          },
-          "bank_name": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 120
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Bank Name",
-            "description": "Recipient bank name.",
-            "examples": [
-              "Deutsche Bank"
-            ]
-          },
-          "currency": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 3,
-                "minLength": 3
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Currency",
-            "description": "ISO-4217 currency the account is paid out in.",
-            "examples": [
-              "EUR"
-            ]
-          },
-          "iban": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 34,
-                "minLength": 15
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Iban",
-            "description": "IBAN, when distinct from bank_account_number."
-          },
-          "payout_branch_id": {
-            "anyOf": [
-              {
-                "type": "integer",
-                "minimum": 1
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Payout Branch Id",
-            "description": "Numeric collection-branch ID (from GET /v1/platform/international/branches)."
-          },
-          "account_type": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 30
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Account Type",
-            "description": "Account type (e.g. ``checking``, ``savings``).",
-            "examples": [
-              "checking"
-            ]
+            "format": "uuid",
+            "title": "Kyb Id",
+            "description": "Public ``id`` of the ``compliance_checks`` row with ``check_type='kyb'`` to apply against. The row must be approved, not deleted, and belong to the target user."
           }
         },
         "additionalProperties": false,
         "type": "object",
         "required": [
           "user_id",
-          "account_holder_name",
-          "bank_account_number",
-          "swift_bic",
-          "bank_country"
+          "kyb_id"
         ],
-        "title": "PlatformInternationalBankAccountCreate",
-        "description": "Register a foreign (SWIFT/IBAN) bank account for international payouts.\n\nProduces a ``PaymentMethod`` on the ``wire`` rail that can be used as\n``bankAccountId`` on ``POST /v1/platform/international/process-payouts`` or\nlinked as a beneficiary's default bank (``payment_method_id``). Unlike the\ndomestic ``POST /v1/platform/bank/add-bank-manually`` endpoint, no 9-digit\nACH routing number is required — the recipient bank is identified by its\nSWIFT/BIC code."
+        "title": "PlatformCardProcessingCreate",
+        "description": "Platform-realm card-processing application request body.\n\nUnlike :class:`CardAcquiringCreate`, the target ``user_id`` travels in\nthe request body (not the path), and the compliance-check reference is\nthe shorter public field name ``kyb_id``."
       },
       "PlatformKycSyncRead": {
         "properties": {
@@ -16083,217 +16302,6 @@
         ],
         "title": "PlatformKycSyncRead",
         "description": "The current state of a user's identity (KYC) check after a refresh."
-      },
-      "PlatformPaymentCreate": {
-        "properties": {
-          "wallet_type": {
-            "$ref": "#/components/schemas/PaymentWalletType",
-            "description": "Which wallet acts in this payment. ``master_wallet`` uses the tenant's master wallet; ``user_wallet`` uses one of the user's wallets. Server cross-checks this against ``wallet_id``.",
-            "examples": [
-              "user_wallet"
-            ]
-          },
-          "user_id": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "User Id",
-            "description": "UUID of the end user. Optional safety cross-check — when sent, the server validates it matches the owner of ``wallet_id``.",
-            "examples": [
-              "b3a9b622-cc63-4d3c-aad6-2d8e29e6f9d4"
-            ]
-          },
-          "wallet_id": {
-            "type": "string",
-            "format": "uuid",
-            "title": "Wallet Id",
-            "description": "Required wallet UUID — accepts either the tenant's master wallet UUID or any of the user's wallet UUIDs. Server validates tenant ownership, ``wallet_type``, and ``currency``.",
-            "examples": [
-              "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
-            ]
-          },
-          "product_id": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Product Id",
-            "description": "UUID of the product (rail+provider route).  Required for funding, payout, and relay intents.",
-            "examples": [
-              "d4e5f6a7-b8c9-0123-4567-890abcdef012"
-            ]
-          },
-          "destination_wallet_type": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/PaymentWalletType"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Required for transfer intents. Picks the destination wallet (``master_wallet`` or ``user_wallet``).",
-            "examples": [
-              "user_wallet"
-            ]
-          },
-          "destination_user_id": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Destination User Id",
-            "description": "UUID of the destination user. Required when ``destination_wallet_type='user_wallet'``.",
-            "examples": [
-              "c4b5a6d7-e8f9-0123-4567-890abcdef012"
-            ]
-          },
-          "destination_wallet_id": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Destination Wallet Id",
-            "description": "Required for transfer intents (and must be ``None`` for any other intent type). Holds the destination wallet UUID; server validates tenant ownership, ``destination_wallet_type``, and ``currency``.",
-            "examples": [
-              "c3d4e5f6-a7b8-9012-3456-7890abcdef01"
-            ]
-          },
-          "payment_method_id": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Payment Method Id",
-            "description": "UUID of the payer's payment method.  Required for funding and relay intents.",
-            "examples": [
-              "e5f6a7b8-c9d0-1234-5678-90abcdef0123"
-            ]
-          },
-          "payee_payment_method_id": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Payee Payment Method Id",
-            "description": "UUID of the payee's payment method (legacy field).  For payout and relay intents either ``payee_payment_method_id`` OR ``payee_destination_id`` is required — the modern flows (including Checkbook auto-deposit) use ``payee_destination_id``.",
-            "examples": [
-              "f6a7b8c9-d0e1-2345-6789-0abcdef01234"
-            ]
-          },
-          "payee_destination_id": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Payee Destination Id",
-            "description": "UUID of the payee's destination (modern field).  Required for payout and relay intents that use a ``PayeeDestination`` (bank or email) — the canonical model for ACH-push, Checkbook auto-deposit, and email-tokenized payouts.  Either this OR ``payee_payment_method_id`` must be supplied.",
-            "examples": [
-              "c8d9e0f1-a2b3-4567-89ab-cdef01234567"
-            ]
-          },
-          "amount": {
-            "type": "number",
-            "exclusiveMinimum": 0,
-            "title": "Amount",
-            "description": "Payment amount in major currency units (e.g. dollars).",
-            "examples": [100.5]
-          },
-          "currency": {
-            "type": "string",
-            "maxLength": 3,
-            "minLength": 3,
-            "title": "Currency",
-            "description": "ISO 4217 currency code.",
-            "default": "USD",
-            "examples": [
-              "USD"
-            ]
-          },
-          "intent_type": {
-            "type": "string",
-            "maxLength": 50,
-            "title": "Intent Type",
-            "description": "Type of payment intent.  One of ``funding``, ``payout``, ``transfer``, or ``relay``.",
-            "default": "payout",
-            "examples": [
-              "payout"
-            ]
-          },
-          "hold": {
-            "type": "boolean",
-            "title": "Hold",
-            "description": "If ``true``, funds are held in escrow (transfer only).",
-            "default": false,
-            "examples": [false]
-          },
-          "idempotency_key": {
-            "type": "string",
-            "maxLength": 120,
-            "minLength": 1,
-            "title": "Idempotency Key",
-            "description": "Unique key to ensure idempotent payment creation.",
-            "examples": [
-              "pay_req_20260401_abc123"
-            ]
-          },
-          "metadata": {
-            "additionalProperties": true,
-            "type": "object",
-            "title": "Metadata",
-            "description": "Arbitrary key-value metadata to attach to the payment.",
-            "examples": [
-              {
-                "order_id": "ORD-12345"
-              }
-            ]
-          }
-        },
-        "type": "object",
-        "required": [
-          "wallet_type",
-          "wallet_id",
-          "amount",
-          "idempotency_key"
-        ],
-        "title": "PlatformPaymentCreate",
-        "description": "Create a new payment on the platform.\n\nMaps to creating a payment intent internally.  Only public UUIDs are\naccepted — no internal IDs are ever exposed.\n\nWallet v2.1: ``wallet_id`` is **required** and pins the source\nwallet by UUID (master or user). The server cross-checks\n``wallet_type`` and ``currency`` against the supplied wallet.\n``user_id`` is optional and treated as an additional safety check\nwhen sent. For transfer intents ``destination_wallet_id`` is also\nrequired."
       },
       "PlatformPreviewRequest": {
         "properties": {
@@ -16428,6 +16436,17 @@
               }
             ],
             "title": "Kyc Status"
+          },
+          "kyb_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kyb Status"
           },
           "kyb_counts": {
             "additionalProperties": {
@@ -16686,6 +16705,17 @@
               }
             ],
             "title": "Inquiry Id"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message"
           }
         },
         "type": "object",
@@ -16715,16 +16745,8 @@
           },
           "account_type": {
             "$ref": "#/components/schemas/VirtualBankAccountType",
-            "description": "Account product to open.",
-            "default": "PAYWINT_BUSINESS"
-          },
-          "currency": {
-            "type": "string",
-            "maxLength": 3,
-            "minLength": 3,
-            "title": "Currency",
-            "description": "ISO 4217 currency code.",
-            "default": "USD"
+            "description": "Account product to open (BUSINESS / SAVINGS / CHECKING).",
+            "default": "BUSINESS"
           },
           "idempotency_key": {
             "anyOf": [
@@ -17182,6 +17204,91 @@
         ],
         "title": "ProdKycRedeemRequest",
         "description": "Payload posted to the production-host redeem endpoint."
+      },
+      "ProductCatalogItemRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id",
+            "description": "Product UUID."
+          },
+          "code": {
+            "type": "string",
+            "title": "Code",
+            "description": "Stable product code."
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Human-friendly product name."
+          },
+          "rail_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rail Code",
+            "description": "Rail code the product belongs to."
+          },
+          "rail_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rail Name",
+            "description": "Rail display name."
+          },
+          "kyc_required": {
+            "type": "boolean",
+            "title": "Kyc Required",
+            "default": false
+          },
+          "kyb_required": {
+            "type": "boolean",
+            "title": "Kyb Required",
+            "default": false
+          },
+          "mkyc_required": {
+            "type": "boolean",
+            "title": "Mkyc Required",
+            "default": false
+          },
+          "activated": {
+            "type": "boolean",
+            "title": "Activated",
+            "description": "True when this platform has the product enabled."
+          },
+          "platform_product_status": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Platform Product Status",
+            "description": "This platform's enablement status for the product, if any."
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "code",
+          "name",
+          "activated"
+        ],
+        "title": "ProductCatalogItemRead",
+        "description": "A single platform-visible product in the onboarding catalog."
       },
       "ProductCreate": {
         "properties": {
@@ -19137,10 +19244,12 @@
       "VirtualBankAccountType": {
         "type": "string",
         "enum": [
-          "PAYWINT_BUSINESS"
+          "BUSINESS",
+          "SAVINGS",
+          "CHECKING"
         ],
         "title": "VirtualBankAccountType",
-        "description": "Account product for virtual bank accounts.\n\nPAYWINT_BUSINESS is the only supported type today; KYC + KYB are\nboth mandatory and the account stays gated until both pass."
+        "description": "Account product for virtual bank accounts.\n\nProvider-neutral classification of the issued account. KYC + KYB are\nboth mandatory and the account stays gated until both pass. The value\nis a Finogate-side label — a Checkbook Enhanced Wallet receives ACH/RTP\naccount + routing numbers regardless of this type."
       },
       "WalletCreate": {
         "properties": {
@@ -19486,6 +19595,35 @@
         ],
         "title": "WebhookInboundLogSettingsUpdate",
         "description": "Update payload for the retention setting."
+      },
+      "app__api__routes__providers__more_admin__CatalogueType": {
+        "type": "string",
+        "enum": [
+          "countries",
+          "states",
+          "cities",
+          "currencies",
+          "events",
+          "document-types",
+          "account-types",
+          "business-types"
+        ],
+        "title": "CatalogueType",
+        "description": "Which reference list ``GET /catalogues`` returns (one per request)."
+      },
+      "app__api__routes__providers__more_tenant__CatalogueType": {
+        "type": "string",
+        "enum": [
+          "countries",
+          "states",
+          "cities",
+          "currencies",
+          "document-types",
+          "account-types",
+          "business-types"
+        ],
+        "title": "CatalogueType",
+        "description": "Which reference list ``GET /catalogues`` returns (one per request)."
       },
       "KybBusinessAddress": {
         "additionalProperties": true,
@@ -19859,6 +19997,9 @@
     },
     {
       "name": "international"
+    },
+    {
+      "name": "onboarding"
     },
     {
       "name": "pending-applications"
