@@ -94,6 +94,7 @@
             "expanded": false,
             "pages": [
               "api-reference/card-processing/list-cards",
+              "api-reference/card-processing/get-one-card-details",
               "api-reference/card-processing/add-card",
               "api-reference/card-processing/remove-card",
               "api-reference/card-processing/create-card-processing-application",
@@ -125,8 +126,6 @@
               "api-reference/international/payers",
               "api-reference/international/payer-rules",
               "api-reference/international/branches",
-              "api-reference/international/list-senders",
-              "api-reference/international/register-a-sender",
               "api-reference/international/get-default-sender-profile",
               "api-reference/international/rates",
               "api-reference/international/rate-calculator",
@@ -214,7 +213,8 @@
             "expanded": false,
             "pages": [
               "api-reference/sms/send-sms-to-number",
-              "api-reference/sms/list-phone-sms-messages"
+              "api-reference/sms/list-phone-sms-messages",
+              "api-reference/sms/list-sms-conversations"
             ]
           },
           {

@@ -693,7 +693,7 @@
             "in": "query",
             "required": true,
             "schema": {
-              "$ref": "#/components/schemas/CatalogueType",
+              "$ref": "#/components/schemas/app__api__routes__providers__more_platform__CatalogueType",
               "description": "Which reference list to return. Pick exactly one:\n- `countries` — destination countries you can send payouts to.\n- `states` — states or regions within a country (needs `country_id`).\n- `cities` — cities within a state or region (needs `country_id` and `state_id`).\n- `currencies` — currencies you can send payouts in.\n- `document-types` — ID document types the recipient may use (varies by destination country).\n- `account-types` — bank account types you can pay into, such as checking or savings (varies by destination country).\n- `business-types` — allowed sender and business types, such as business-to-customer, business-to-business, or payroll.\nOnly one list is returned per request."
             },
             "description": "Which reference list to return. Pick exactly one:\n- `countries` — destination countries you can send payouts to.\n- `states` — states or regions within a country (needs `country_id`).\n- `cities` — cities within a state or region (needs `country_id` and `state_id`).\n- `currencies` — currencies you can send payouts in.\n- `document-types` — ID document types the recipient may use (varies by destination country).\n- `account-types` — bank account types you can pay into, such as checking or savings (varies by destination country).\n- `business-types` — allowed sender and business types, such as business-to-customer, business-to-business, or payroll.\nOnly one list is returned per request."
@@ -1397,78 +1397,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CommonResponse"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "_AuthenticatedBearer": []
-          }
-        ]
-      }
-    },
-    "/v1/platform/international/senders": {
-      "get": {
-        "tags": [
-          "international"
-        ],
-        "summary": "List Senders",
-        "description": "List sender identities you have registered for international payouts.",
-        "operationId": "platform_list_senders_v1_platform_international_senders_get",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CommonResponse"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "_AuthenticatedBearer": []
-          }
-        ]
-      },
-      "post": {
-        "tags": [
-          "international"
-        ],
-        "summary": "Register a Sender",
-        "description": "Register a sender identity (the legal entity / individual the funds\nare sent from). Use this when you need to override the platform default\nsender on specific payouts.",
-        "operationId": "platform_create_sender_v1_platform_international_senders_post",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/InternationalSenderCreate"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "201": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CommonResponse"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
                 }
               }
             }
@@ -3395,7 +3323,7 @@
           "payments"
         ],
         "summary": "Wallet → Wallet (internal transfer)",
-        "description": "Move money between two wallets on your platform. A `transfer` payment —\nno external rail or provider.\n\nPick the destination with `destination_wallet_id` (the server resolves\nthe owning user from the wallet).",
+        "description": "Move money from one wallet to another on your platform. A `transfer`\npayment — no external rail or provider.\n\nAddress the destination one of two ways (send exactly one):\n\n- `destination_wallet_id` — a wallet UUID you already know. The server\n  resolves the owning user from the wallet.\n- `destination_payee_id` — a **payee addressed by email**. Funds route to\n  the matching user's wallet, or to a held inbound-only wallet (a ghost\n  recipient is provisioned) until that person is added — see\n  `recipient_status` in the response (`existing` vs `pending_claim`).",
         "operationId": "create_wallet_to_wallet_payment_v1_platform_payments_wallet_to_wallet_post",
         "requestBody": {
           "content": {
@@ -3633,6 +3561,28 @@
               "title": "User Id"
             },
             "description": "The unique ID of the user the bank account is being added for."
+          },
+          {
+            "name": "parent_origin",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 255
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional. The bare origin of the page that will embed the link in an iframe (e.g. ``https://app.example.com`` — scheme + host + optional port, no path). When provided, the page sends the outcome back to that exact window via a browser message so your app can react in place. Omit it when opening the link as a full page or popup.",
+              "examples": [
+                "https://app.example.com"
+              ],
+              "title": "Parent Origin"
+            },
+            "description": "Optional. The bare origin of the page that will embed the link in an iframe (e.g. ``https://app.example.com`` — scheme + host + optional port, no path). When provided, the page sends the outcome back to that exact window via a browser message so your app can react in place. Omit it when opening the link as a full page or popup."
           }
         ],
         "responses": {
@@ -3777,6 +3727,75 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/platform/card/cards/{user_id}/{payment_method_id}": {
+      "get": {
+        "tags": [
+          "card processing"
+        ],
+        "summary": "Get One Card's Details",
+        "description": "Get the masked details of a single saved **card** for a user.\n\nPass the user's ID and the card's payment-method ID. Only card information is\nreturned (last 4 digits, brand such as Visa, expiry, cardholder name); bank\naccount details are never included.\n\nIf the ID does not belong to a card owned by this user, you get a ``404``.",
+        "operationId": "get_card_v1_platform_card_cards__user_id___payment_method_id__get",
+        "security": [
+          {
+            "_AuthenticatedBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "The unique ID of the user the card belongs to.",
+              "examples": [
+                "b3a9b622-cc63-4d3c-aad6-2d8e29e6f9d4"
+              ],
+              "title": "User Id"
+            },
+            "description": "The unique ID of the user the card belongs to."
+          },
+          {
+            "name": "payment_method_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "The unique ID of the saved card you want the details of.",
+              "examples": [
+                "632cc69a-ef84-4026-80fb-4ea563bf3da0"
+              ],
+              "title": "Payment Method Id"
+            },
+            "description": "The unique ID of the saved card you want the details of."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommonResponse"
                 }
               }
             }
@@ -5207,7 +5226,7 @@
           "bank accounts"
         ],
         "summary": "Apply for Virtual Bank Account",
-        "description": "Apply for a virtual bank account (a \"Virtual Account\") for one of your users. A\nvirtual bank account gives the user their own account number and routing\nnumber for receiving money.\n\n**Before this works** — the request is turned down unless all of these are\ntrue:\n- Your platform has the virtual bank account product (``virtual_account``)\n  switched on. You ask for it during the normal sign-up process, and\n  Finogate's team must approve that request first.\n- The user has passed identity verification (an approved KYC record).\n- The user has passed business verification (at least one approved KYB\n  record).\n\n**What happens next** — the account starts in the ``initiated`` state.\nFinogate's team reviews every application by hand, marks it ``applied`` once\nchecked, and finally fills in the real account and routing numbers from the\nbanking partner before setting the account to ``approved``. We tell you the\nresult by sending your server an automatic notification — a\n``virtual_bank_account.approved`` webhook if it succeeds, or a\n``virtual_bank_account.rejected`` webhook if it is declined. That\nnotification is the only sign that the account is ready. **Until the account\nis ``approved``, it must not be used for any payments, payouts, deposits, or\nlinked to a wallet.**\n\n**Avoiding duplicates** — there are two safeguards:\n- You can include an ``idempotency_key`` — a unique value you choose. If the\n  same request reaches us twice by mistake, the account is only created\n  once. (Reusing the same key with different details is rejected.)\n- The same user cannot hold two active accounts of the same type on your\n  platform. A repeat attempt is rejected.",
+        "description": "Apply for a virtual bank account (a \"Virtual Account\") for one of your users. A\nvirtual bank account gives the user their own account number and routing\nnumber for receiving money.\n\n**Before this works** — the request is turned down unless all of these are\ntrue:\n- Your platform has the virtual bank account product (``virtual_account``)\n  switched on. You ask for it during the normal sign-up process, and\n  Finogate's team must approve that request first.\n- Your platform has completed its own identity and business verification\n  (an approved platform-level KYC and KYB).\n- The user has passed identity verification (an approved KYC record).\n- The user has passed business verification (at least one approved KYB\n  record).\n\n**What happens next** — the account starts in the ``initiated`` state.\nFinogate's team reviews every application by hand, marks it ``applied`` once\nchecked, and finally fills in the real account and routing numbers from the\nbanking partner before setting the account to ``approved``. We tell you the\nresult by sending your server an automatic notification — a\n``virtual_bank_account.approved`` webhook if it succeeds, or a\n``virtual_bank_account.rejected`` webhook if it is declined. That\nnotification is the only sign that the account is ready. **Until the account\nis ``approved``, it must not be used for any payments, payouts, deposits, or\nlinked to a wallet.**\n\n**Avoiding duplicates** — there are two safeguards:\n- You can include an ``idempotency_key`` — a unique value you choose. If the\n  same request reaches us twice by mistake, the account is only created\n  once. (Reusing the same key with different details is rejected.)\n- The same user cannot hold two active accounts of the same type on your\n  platform. A repeat attempt is rejected.",
         "operationId": "create_virtual_bank_account_v1_platform_virtual_bank_accounts_post",
         "security": [
           {
@@ -6379,6 +6398,94 @@
               "title": "Offset"
             },
             "description": "How many messages to skip before this page starts."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/platform/phone-numbers/sms/messages/conversations": {
+      "get": {
+        "tags": [
+          "sms"
+        ],
+        "summary": "List SMS Conversations",
+        "description": "Get the conversation threads for one of your phone numbers.\n\nReturns one entry per other party that the number has texted with,\neach carrying the most recent message — useful for showing an inbox\nwith a preview of the last message in each thread.\n\nScoped to ``user_id``: only that user's own messages on the number are\nshown, so a reassigned number never leaks another user's threads. Works\neven after the number is deleted — the user keeps seeing past conversations.",
+        "operationId": "list_phone_sms_conversations_v1_platform_phone_numbers_sms_messages_conversations_get",
+        "security": [
+          {
+            "_AuthenticatedBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "number",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The phone number whose conversation threads to list.",
+              "title": "Number"
+            },
+            "description": "The phone number whose conversation threads to list."
+          },
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The user whose messages on the number are listed (works even if the number was later deleted or reassigned).",
+              "title": "User Id"
+            },
+            "description": "The user whose messages on the number are listed (works even if the number was later deleted or reassigned)."
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "description": "How many conversations to return per page (1 to 200).",
+              "default": 50,
+              "title": "Limit"
+            },
+            "description": "How many conversations to return per page (1 to 200)."
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "How many conversations to skip before this page starts.",
+              "default": 0,
+              "title": "Offset"
+            },
+            "description": "How many conversations to skip before this page starts."
           }
         ],
         "responses": {
@@ -10307,7 +10414,7 @@
               }
             ],
             "title": "Redirect Uri",
-            "description": "OAuth redirect URI for Plaid Link. When omitted, falls back to the tenant's configured ``plaid`` redirect URL, then the env-configured ``PLAID_REDIRECT_URI``. Required for OAuth banks."
+            "description": "Optional OAuth redirect URI override for Plaid Link. When omitted (the normal case), this hosted add-bank page's own URL is used, so OAuth banks return here to resume linking. Only that single URL — this hosted page — needs registering in the Plaid dashboard; the platform's own ``plaid`` redirect URL is the post-completion destination instead, not the OAuth redirect."
           }
         },
         "type": "object",
@@ -15501,24 +15608,53 @@
             ]
           },
           "destination_wallet_id": {
-            "type": "string",
-            "format": "uuid",
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Destination Wallet Id",
-            "description": "Destination wallet UUID to credit. Server validates tenant ownership and ``currency`` and resolves the owner from it.",
+            "description": "Destination wallet UUID to credit. Server validates tenant ownership and ``currency`` and resolves the owner from it. Mutually exclusive with ``destination_payee_id`` — send one.",
             "examples": [
               "c3d4e5f6-a7b8-9012-3456-7890abcdef01"
             ]
+          },
+          "destination_payee_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Destination Payee Id",
+            "description": "UUID of the payee to send to. The payee must have an email; funds route to the matching user's wallet, or a held inbound-only wallet until that person is added. Mutually exclusive with ``destination_wallet_id`` — send one.",
+            "examples": [
+              "c8d9e0f1-a2b3-4567-89ab-cdef01234567"
+            ]
+          },
+          "notify_recipient": {
+            "type": "boolean",
+            "title": "Notify Recipient",
+            "description": "Payee transfers only. Records a preference to notify the recipient that funds arrived. Outbound notification delivery is not yet active.",
+            "default": false,
+            "examples": [false]
           }
         },
         "type": "object",
         "required": [
           "wallet_id",
           "amount",
-          "idempotency_key",
-          "destination_wallet_id"
+          "idempotency_key"
         ],
         "title": "PaymentWalletToWalletCreate",
-        "description": "Move funds between two wallets on your platform (``intent_type=transfer``)."
+        "description": "Move funds to another wallet on your platform (``intent_type=transfer``).\n\nAddress the destination one of two ways — send exactly one:\n\n- ``destination_wallet_id`` — a wallet UUID you already know.\n- ``destination_payee_id`` — a payee (addressed by email). Funds route\n  to the matching user's wallet, or to a held inbound-only wallet (a\n  ghost recipient is provisioned) until that person is added — see\n  ``recipient_status`` in the response."
       },
       "PayoutCountryCreate": {
         "properties": {
@@ -18581,6 +18717,55 @@
         "type": "object",
         "title": "TenantProviderConfigUpdate"
       },
+      "TenantRateLimitUpdate": {
+        "properties": {
+          "mode": {
+            "type": "string",
+            "enum": [
+              "sandbox",
+              "production"
+            ],
+            "title": "Mode"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "default": true
+          },
+          "max_requests": {
+            "type": "integer",
+            "maximum": 1000000,
+            "minimum": 1,
+            "title": "Max Requests"
+          },
+          "window_seconds": {
+            "type": "integer",
+            "maximum": 86400,
+            "minimum": 1,
+            "title": "Window Seconds"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "mode",
+          "max_requests",
+          "window_seconds"
+        ],
+        "title": "TenantRateLimitUpdate",
+        "description": "Admin update payload for one mode of a platform's rate limit."
+      },
       "TenantSmsSettingsUpsert": {
         "properties": {
           "from_number": {
@@ -19611,7 +19796,7 @@
         "title": "CatalogueType",
         "description": "Which reference list ``GET /catalogues`` returns (one per request)."
       },
-      "app__api__routes__providers__more_tenant__CatalogueType": {
+      "app__api__routes__providers__more_platform__CatalogueType": {
         "type": "string",
         "enum": [
           "countries",
