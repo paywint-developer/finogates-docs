@@ -122,14 +122,10 @@
             "expanded": false,
             "pages": [
               "api-reference/international/list-reference-data",
-              "api-reference/international/list-international-payout-products",
               "api-reference/international/payers",
               "api-reference/international/payer-rules",
               "api-reference/international/branches",
-              "api-reference/international/get-default-sender-profile",
               "api-reference/international/rates",
-              "api-reference/international/rate-calculator",
-              "api-reference/international/balance",
               "api-reference/international/create-an-international-payout",
               "api-reference/international/platform-retry-payout",
               "api-reference/international/platform-payout-status"
