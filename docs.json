@@ -39,7 +39,8 @@
               "api-reference/users/list-users",
               "api-reference/users/get-user",
               "api-reference/users/activate-or-deactivate-user",
-              "api-reference/users/deactivate-user"
+              "api-reference/users/deactivate-user",
+              "api-reference/users/update-user-details"
             ]
           },
           {
@@ -56,7 +57,14 @@
               "api-reference/payees/revoke-destination",
               "api-reference/payees/set-up-a-bank-for-ach-payouts-removed",
               "api-reference/payees/get-ach-push-status",
-              "api-reference/payees/disable-ach-push"
+              "api-reference/payees/disable-ach-push",
+              "api-reference/payees/update-payee-bank-account",
+              "api-reference/payees/reveal-payee-bank-account",
+              "api-reference/payees/create-payee-address",
+              "api-reference/payees/list-payee-addresses",
+              "api-reference/payees/get-payee-address",
+              "api-reference/payees/update-payee-address",
+              "api-reference/payees/delete-payee-address"
             ]
           },
           {
@@ -72,7 +80,19 @@
               "api-reference/verification/list-user-kyb-records",
               "api-reference/verification/start-user-kyc",
               "api-reference/verification/sync-user-kyc",
-              "api-reference/verification/create-user-kyb-record"
+              "api-reference/verification/create-user-kyb-record",
+              "api-reference/verification/list-document-requests",
+              "api-reference/verification/get-check-document-requests",
+              "api-reference/verification/submit-document-request-response"
+            ]
+          },
+          {
+            "group": "Screening",
+            "expanded": false,
+            "pages": [
+              "api-reference/screening/create-screening-check",
+              "api-reference/screening/list-screening-checks",
+              "api-reference/screening/get-screening-check"
             ]
           },
           {
@@ -86,7 +106,8 @@
               "api-reference/bank-accounts/apply-for-virtual-bank-account",
               "api-reference/bank-accounts/list-virtual-bank-accounts",
               "api-reference/bank-accounts/refresh-virtual-bank-account-balance",
-              "api-reference/bank-accounts/get-virtual-bank-account"
+              "api-reference/bank-accounts/get-virtual-bank-account",
+              "api-reference/bank-accounts/list-all-bank-accounts"
             ]
           },
           {
@@ -99,7 +120,45 @@
               "api-reference/card-processing/remove-card",
               "api-reference/card-processing/create-card-processing-application",
               "api-reference/card-processing/get-card-payment-link",
-              "api-reference/card-processing/get-card-processing-record-s"
+              "api-reference/card-processing/get-card-processing-record-s",
+              "api-reference/card-processing/list-all-cards",
+              "api-reference/card-processing/verify-card",
+              "api-reference/card-processing/verify-saved-card",
+              "api-reference/card-processing/get-card-processing-by-kyb",
+              "api-reference/card-processing/get-card-processing-mid-config",
+              "api-reference/card-processing/get-card-processing-application",
+              "api-reference/card-processing/get-card-processing-merchant-info",
+              "api-reference/card-processing/submit-card-processing-merchant-info"
+            ]
+          },
+          {
+            "group": "Merchant Onboarding",
+            "expanded": false,
+            "pages": [
+              "api-reference/merchant-onboarding/onboard-merchant",
+              "api-reference/merchant-onboarding/update-merchant-onboarding"
+            ]
+          },
+          {
+            "group": "Card Transfers",
+            "expanded": false,
+            "pages": [
+              "api-reference/card-transfers/get-aft-status",
+              "api-reference/card-transfers/enable-aft",
+              "api-reference/card-transfers/get-oct-status",
+              "api-reference/card-transfers/enable-oct",
+              "api-reference/card-transfers/enroll-card-aft",
+              "api-reference/card-transfers/get-aft-enrollment-status",
+              "api-reference/card-transfers/enroll-card-oct",
+              "api-reference/card-transfers/get-oct-enrollment-status",
+              "api-reference/card-transfers/disable-card-enrollment",
+              "api-reference/card-transfers/card-to-account-transfer",
+              "api-reference/card-transfers/account-to-card-transfer",
+              "api-reference/card-transfers/list-card-transfers",
+              "api-reference/card-transfers/get-card-transfer",
+              "api-reference/card-transfers/connect-card",
+              "api-reference/card-transfers/connect-card-embedded",
+              "api-reference/card-transfers/connect-card-callback"
             ]
           },
           {
@@ -128,7 +187,8 @@
               "api-reference/international/rates",
               "api-reference/international/create-an-international-payout",
               "api-reference/international/platform-retry-payout",
-              "api-reference/international/platform-payout-status"
+              "api-reference/international/platform-payout-status",
+              "api-reference/international/send-an-international-payout-full-payload"
             ]
           },
           {
@@ -153,7 +213,10 @@
               "api-reference/wallets/rename-or-promote-wallet",
               "api-reference/wallets/close-wallet",
               "api-reference/wallets/get-wallet",
-              "api-reference/wallets/get-wallet-activity"
+              "api-reference/wallets/get-wallet-activity",
+              "api-reference/wallets/create-wallet-hold",
+              "api-reference/wallets/list-wallet-holds",
+              "api-reference/wallets/release-wallet-hold"
             ]
           },
           {
@@ -163,7 +226,32 @@
               "api-reference/payments/submit-payment",
               "api-reference/payments/wallet-to-wallet-internal-transfer",
               "api-reference/payments/list-payments",
-              "api-reference/payments/get-payment"
+              "api-reference/payments/get-payment",
+              "api-reference/payments/get-charge-attempt",
+              "api-reference/payments/card-to-merchant-payment"
+            ]
+          },
+          {
+            "group": "Document Mailing",
+            "expanded": false,
+            "pages": [
+              "api-reference/document-mailing/ship-document",
+              "api-reference/document-mailing/list-shipped-documents",
+              "api-reference/document-mailing/ship-document-full-payload",
+              "api-reference/document-mailing/list-document-mailing-methods",
+              "api-reference/document-mailing/get-shipped-document",
+              "api-reference/document-mailing/track-shipped-document",
+              "api-reference/document-mailing/refresh-shipped-document-tracking",
+              "api-reference/document-mailing/void-shipped-document"
+            ]
+          },
+          {
+            "group": "Fees",
+            "expanded": false,
+            "pages": [
+              "api-reference/fees/list-fee-catalog",
+              "api-reference/fees/get-fee-catalog-entry",
+              "api-reference/fees/quote-fee"
             ]
           },
           {
@@ -172,7 +260,8 @@
             "pages": [
               "api-reference/catalog/list-products",
               "api-reference/catalog/get-product",
-              "api-reference/catalog/list-product-catalog"
+              "api-reference/catalog/list-product-catalog",
+              "api-reference/catalog/list-payment-categories"
             ]
           },
           {
@@ -201,7 +290,13 @@
               "api-reference/phone-numbers/issue-voice-access-token-for-user",
               "api-reference/phone-numbers/get-call-status",
               "api-reference/phone-numbers/update-phone-number-status",
-              "api-reference/phone-numbers/delete-phone-number"
+              "api-reference/phone-numbers/delete-phone-number",
+              "api-reference/phone-numbers/update-device-notifications",
+              "api-reference/phone-numbers/list-messaging-services",
+              "api-reference/phone-numbers/list-phone-number-messaging-services",
+              "api-reference/phone-numbers/link-messaging-service",
+              "api-reference/phone-numbers/request-messaging-service-removal",
+              "api-reference/phone-numbers/update-messaging-service"
             ]
           },
           {
@@ -210,7 +305,8 @@
             "pages": [
               "api-reference/sms/send-sms-to-number",
               "api-reference/sms/list-phone-sms-messages",
-              "api-reference/sms/list-sms-conversations"
+              "api-reference/sms/list-sms-conversations",
+              "api-reference/sms/list-sms-thread"
             ]
           },
           {
@@ -232,6 +328,15 @@
             "expanded": false,
             "pages": [
               "api-reference/embed-tokens/mint-embed-token"
+            ]
+          },
+          {
+            "group": "File Scanning",
+            "expanded": false,
+            "pages": [
+              "api-reference/file-scans/submit-files-for-scanning",
+              "api-reference/file-scans/list-submitted-files",
+              "api-reference/file-scans/get-submitted-file"
             ]
           }
         ]
