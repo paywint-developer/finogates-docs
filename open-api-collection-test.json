@@ -1406,11 +1406,78 @@
         "operationId": "get_fee_catalog_v1_platform_fees_catalog_get",
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "Your platform's full effective fee schedule, one row per line.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ListResponse"
+                },
+                "example": {
+                  "status_code": 200,
+                  "data": [
+                    {
+                      "fee_code": "ach.push",
+                      "label": "ACH Push",
+                      "category": "ACH",
+                      "domain": "payout",
+                      "structure": "flat_plus_percent",
+                      "allowed_structures": [
+                        "flat",
+                        "percent",
+                        "flat_plus_percent",
+                        "tiered"
+                      ],
+                      "bearer": "payer",
+                      "bearer_selectable": true,
+                      "is_metered": false,
+                      "is_dormant": false,
+                      "supports_caps": true,
+                      "amount_based": true,
+                      "actions": {
+                        "flat_fee": 0.25,
+                        "percent_fee": 0.5
+                      },
+                      "caps": {
+                        "min_fee": 0.25,
+                        "max_fee": 5
+                      },
+                      "source": "override",
+                      "policy_id": "7a1c9e2b-4d6f-4a8b-9c1e-2d5f3a6b7c8d"
+                    },
+                    {
+                      "fee_code": "card.acquiring",
+                      "label": "Card Acquiring",
+                      "category": "Card",
+                      "domain": "funding",
+                      "structure": "component",
+                      "allowed_structures": [
+                        "component"
+                      ],
+                      "bearer": "payer",
+                      "bearer_selectable": false,
+                      "is_metered": false,
+                      "is_dormant": false,
+                      "supports_caps": true,
+                      "amount_based": true,
+                      "actions": {
+                        "processing_fee": {
+                          "percent_fee": 2.9,
+                          "flat_fee": 0.3,
+                          "bearer": "payer"
+                        },
+                        "delivery_fee": {
+                          "flat_fee": 0,
+                          "bearer": "payee"
+                        }
+                      },
+                      "caps": {
+
+                      },
+                      "source": "default"
+                    }
+                  ],
+                  "row_count": 2,
+                  "query_generated_time": 1712847600000
                 }
               }
             }
@@ -1454,11 +1521,44 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "One fee line's effective value for your platform.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CommonResponse"
+                },
+                "example": {
+                  "status_code": 200,
+                  "data": {
+                    "fee_code": "ach.push",
+                    "label": "ACH Push",
+                    "category": "ACH",
+                    "domain": "payout",
+                    "structure": "flat_plus_percent",
+                    "allowed_structures": [
+                      "flat",
+                      "percent",
+                      "flat_plus_percent",
+                      "tiered"
+                    ],
+                    "bearer": "payer",
+                    "bearer_selectable": true,
+                    "is_metered": false,
+                    "is_dormant": false,
+                    "supports_caps": true,
+                    "amount_based": true,
+                    "actions": {
+                      "flat_fee": 0.25,
+                      "percent_fee": 0.5
+                    },
+                    "caps": {
+                      "min_fee": 0.25,
+                      "max_fee": 5
+                    },
+                    "source": "override",
+                    "policy_id": "7a1c9e2b-4d6f-4a8b-9c1e-2d5f3a6b7c8d"
+                  },
+                  "query_generated_time": 1712847600000
                 }
               }
             }
@@ -1496,11 +1596,41 @@
         },
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "The resolved fee for the amount, with the payer / payee breakdown.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CommonResponse"
+                },
+                "example": {
+                  "status_code": 200,
+                  "data": {
+                    "processing_fee_amount": 3.2,
+                    "processing_fee_amount_minor": 320,
+                    "delivery_fee_amount": 0,
+                    "delivery_fee_amount_minor": 0,
+                    "payer_fee_amount": 3.2,
+                    "payer_fee_amount_minor": 320,
+                    "payee_fee_amount": 0,
+                    "payee_fee_amount_minor": 0,
+                    "payer_total_amount": 103.2,
+                    "payer_total_amount_minor": 10320,
+                    "payee_net_amount": 100,
+                    "payee_net_amount_minor": 10000,
+                    "fee_amount": 3.2,
+                    "fee_amount_minor": 320,
+                    "currency": "USD",
+                    "policy_id": "7a1c9e2b-4d6f-4a8b-9c1e-2d5f3a6b7c8d",
+                    "rule_id": "8b2d0f3c-5e7a-4b9c-8d2f-3e6a4b7c8d9e",
+                    "breakdown": {
+                      "structure": "component",
+                      "percent_fee": 2.9,
+                      "flat_fee": 0.3
+                    },
+                    "fee_code": "card.acquiring",
+                    "scope_level": "global"
+                  },
+                  "query_generated_time": 1712847600000
                 }
               }
             }
@@ -1533,11 +1663,40 @@
         "operationId": "list_product_catalog_v1_platform_onboarding_products_catalog_get",
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "Every product your platform can request, with its enablement status.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CommonResponse_list_ProductCatalogItemRead__"
+                },
+                "example": {
+                  "status_code": 200,
+                  "data": [
+                    {
+                      "id": "d4e5f6a7-b8c9-0d1e-2f3a-4b5c6d7e8f9a",
+                      "code": "ach_debit",
+                      "name": "ACH Debit",
+                      "rail_code": "ACH",
+                      "rail_name": "ACH Transfer",
+                      "kyc_required": true,
+                      "kyb_required": true,
+                      "mkyc_required": false,
+                      "activated": true,
+                      "platform_product_status": 2
+                    },
+                    {
+                      "id": "e5f6a7b8-c9d0-1e2f-3a4b-5c6d7e8f9a0b",
+                      "code": "card_issuing",
+                      "name": "Card Issuing",
+                      "rail_code": "CARD",
+                      "rail_name": "Card",
+                      "kyc_required": true,
+                      "kyb_required": true,
+                      "mkyc_required": false,
+                      "activated": false
+                    }
+                  ],
+                  "query_generated_time": 1712847600000
                 }
               }
             }
@@ -3147,7 +3306,14 @@
                     "name": "John Doe",
                     "email": "john.doe@example.com",
                     "is_active": true,
-                    "created_at": "2025-06-10T18:10:42.000Z"
+                    "created_at": "2025-06-10T18:10:42.000Z",
+                    "mailing_line_1": "500 W 2nd St",
+                    "mailing_line_2": "Suite 1900",
+                    "mailing_city": "Austin",
+                    "mailing_state": "TX",
+                    "mailing_zip_code": "78701",
+                    "mailing_country": "US",
+                    "mailing_phone": "+15125550123"
                   },
                   "query_generated_time": 1712847600000
                 }
@@ -3371,6 +3537,88 @@
         }
       }
     },
+    "/v1/platform/users/{user_id}/mailing-address": {
+      "patch": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Set a User's Mailing Address",
+        "description": "Set or replace a user's mailing address.\n\nThis is the address printed on the shipper/FROM block of a mailed-document\n(USPS/FedEx) shipping label. Once every field is present — including\n`mailing_phone`, which FedEx requires — a document you mail for this user\nprints their address as the sender instead of your platform's default\ncollection address.\n\nThis is a **full replace**, not a merge: send every field you want to keep on\neach call. A field you leave out is cleared. Send an all-null body (or `{}`) to\nremove the address entirely, after which the label falls back to the default\ncollection address.",
+        "operationId": "update_user_mailing_address_v1_platform_users__user_id__mailing_address_patch",
+        "security": [
+          {
+            "_AuthenticatedBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "The unique ID of the user whose mailing address you want to set.",
+              "examples": [
+                "b3a9b622-cc63-4d3c-aad6-2d8e29e6f9d4"
+              ],
+              "title": "User Id"
+            },
+            "description": "The unique ID of the user whose mailing address you want to set."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlatformUserMailingAddressUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The user with its updated mailing address.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommonResponse_PlatformUserRead_"
+                },
+                "example": {
+                  "status_code": 200,
+                  "data": {
+                    "user_id": "b3a9b622-cc63-4d3c-aad6-2d8e29e6f9d4",
+                    "name": "John Doe",
+                    "email": "john.doe@example.com",
+                    "is_active": true,
+                    "created_at": "2025-06-10T18:10:42.000Z",
+                    "mailing_line_1": "500 W 2nd St",
+                    "mailing_line_2": "Suite 1900",
+                    "mailing_city": "Austin",
+                    "mailing_state": "TX",
+                    "mailing_zip_code": "78701",
+                    "mailing_country": "US",
+                    "mailing_phone": "+15125550123"
+                  },
+                  "query_generated_time": 1712847600000
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/platform/wallets": {
       "post": {
         "tags": [
@@ -3396,11 +3644,28 @@
         },
         "responses": {
           "201": {
-            "description": "Successful Response",
+            "description": "The newly created wallet.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CommonResponse"
+                },
+                "example": {
+                  "status_code": 201,
+                  "data": {
+                    "wallet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                    "user_id": "b3a9b622-cc63-4d3c-aad6-2d8e29e6f9d4",
+                    "name": "Spending USD",
+                    "is_primary": true,
+                    "currency": "USD",
+                    "status": "active",
+                    "is_frozen": false,
+                    "available": "1000.00",
+                    "current": "1200.00",
+                    "as_of": "2026-06-02T10:30:00Z",
+                    "created_at": "2026-04-01T10:30:00Z"
+                  },
+                  "query_generated_time": 1712847600000
                 }
               }
             }
@@ -3456,11 +3721,46 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "A page of every wallet your platform owns — master plus each user's.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ListResponse"
+                },
+                "example": {
+                  "status_code": 200,
+                  "data": [
+                    {
+                      "wallet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "user_id": "b3a9b622-cc63-4d3c-aad6-2d8e29e6f9d4",
+                      "name": "Spending USD",
+                      "is_primary": true,
+                      "currency": "USD",
+                      "status": "active",
+                      "is_frozen": false,
+                      "available": "1000.00",
+                      "current": "1200.00",
+                      "as_of": "2026-06-02T10:30:00Z",
+                      "created_at": "2026-04-01T10:30:00Z"
+                    },
+                    {
+                      "wallet_id": "c3d4e5f6-a7b8-9012-cdef-234567890abc",
+                      "name": "Master USD",
+                      "is_primary": true,
+                      "currency": "USD",
+                      "status": "active",
+                      "is_frozen": false,
+                      "available": "58230.00",
+                      "current": "58230.00",
+                      "as_of": "2026-06-02T10:30:00Z",
+                      "created_at": "2026-01-05T09:00:00Z"
+                    }
+                  ],
+                  "row_count": 2,
+                  "query_generated_time": 1712847600000,
+                  "limit": 50,
+                  "current_page": 1,
+                  "total_page_number": 1
                 }
               }
             }
@@ -3509,11 +3809,27 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "Your platform's master wallet for the currency.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CommonResponse"
+                },
+                "example": {
+                  "status_code": 200,
+                  "data": {
+                    "wallet_id": "c3d4e5f6-a7b8-9012-cdef-234567890abc",
+                    "name": "Master USD",
+                    "is_primary": true,
+                    "currency": "USD",
+                    "status": "active",
+                    "is_frozen": false,
+                    "available": "58230.00",
+                    "current": "58230.00",
+                    "as_of": "2026-06-02T10:30:00Z",
+                    "created_at": "2026-01-05T09:00:00Z"
+                  },
+                  "query_generated_time": 1712847600000
                 }
               }
             }
@@ -3563,11 +3879,31 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "Every wallet owned by the user, across currencies.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ListResponse"
+                },
+                "example": {
+                  "status_code": 200,
+                  "data": [
+                    {
+                      "wallet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "user_id": "b3a9b622-cc63-4d3c-aad6-2d8e29e6f9d4",
+                      "name": "Spending USD",
+                      "is_primary": true,
+                      "currency": "USD",
+                      "status": "active",
+                      "is_frozen": false,
+                      "available": "1000.00",
+                      "current": "1200.00",
+                      "as_of": "2026-06-02T10:30:00Z",
+                      "created_at": "2026-04-01T10:30:00Z"
+                    }
+                  ],
+                  "row_count": 1,
+                  "query_generated_time": 1712847600000
                 }
               }
             }
@@ -3614,11 +3950,28 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "The wallet.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CommonResponse"
+                },
+                "example": {
+                  "status_code": 200,
+                  "data": {
+                    "wallet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                    "user_id": "b3a9b622-cc63-4d3c-aad6-2d8e29e6f9d4",
+                    "name": "Spending USD",
+                    "is_primary": true,
+                    "currency": "USD",
+                    "status": "active",
+                    "is_frozen": false,
+                    "available": "1000.00",
+                    "current": "1200.00",
+                    "as_of": "2026-06-02T10:30:00Z",
+                    "created_at": "2026-04-01T10:30:00Z"
+                  },
+                  "query_generated_time": 1712847600000
                 }
               }
             }
@@ -3665,11 +4018,47 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "The wallet's balance breakdown and recent activity.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CommonResponse"
+                },
+                "example": {
+                  "status_code": 200,
+                  "data": {
+                    "balances": {
+                      "available": 1000,
+                      "outbound_pending": 0,
+                      "inbound_pending": 200,
+                      "current": 1200
+                    },
+                    "rows": [
+                      {
+                        "intent_id": "d4e5f6a7-b8c9-0123-4567-89abcdef0123",
+                        "journey": "Bank to Wallet Settled",
+                        "status": "succeeded",
+                        "created_at": "2026-06-01T14:05:00Z",
+                        "amount": 500,
+                        "amount_sign": 1,
+                        "available_balance_at_creation": 500,
+                        "last_event_at": "2026-06-01T14:07:12Z",
+                        "currency": "USD"
+                      },
+                      {
+                        "intent_id": "e5f6a7b8-c9d0-1234-5678-9abcdef01234",
+                        "journey": "Wallet to Bank Settled",
+                        "status": "succeeded",
+                        "created_at": "2026-05-28T09:12:00Z",
+                        "amount": 120,
+                        "amount_sign": -1,
+                        "available_balance_at_creation": 620,
+                        "last_event_at": "2026-05-28T09:15:40Z",
+                        "currency": "USD"
+                      }
+                    ]
+                  },
+                  "query_generated_time": 1712847600000
                 }
               }
             }
@@ -3716,11 +4105,29 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "Inbound transfers to the wallet that are awaiting approval.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CommonResponse"
+                },
+                "example": {
+                  "status_code": 200,
+                  "data": {
+                    "wallet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                    "currency": "USD",
+                    "total": "200.00",
+                    "items": [
+                      {
+                        "intent_id": "a7b8c9d0-1234-5678-9abc-def012345678",
+                        "amount": "200.00",
+                        "currency": "USD",
+                        "source_wallet_id": "b8c9d0e1-2345-6789-abcd-ef0123456789",
+                        "created_at": "2026-06-02T08:00:00Z"
+                      }
+                    ]
+                  },
+                  "query_generated_time": 1712847600000
                 }
               }
             }
@@ -3777,11 +4184,28 @@
         },
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "The wallet with its updated name / primary flag.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CommonResponse"
+                },
+                "example": {
+                  "status_code": 200,
+                  "data": {
+                    "wallet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                    "user_id": "b3a9b622-cc63-4d3c-aad6-2d8e29e6f9d4",
+                    "name": "Spending USD",
+                    "is_primary": true,
+                    "currency": "USD",
+                    "status": "active",
+                    "is_frozen": false,
+                    "available": "1000.00",
+                    "current": "1200.00",
+                    "as_of": "2026-06-02T10:30:00Z",
+                    "created_at": "2026-04-01T10:30:00Z"
+                  },
+                  "query_generated_time": 1712847600000
                 }
               }
             }
@@ -3826,11 +4250,28 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "The wallet, now closed.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CommonResponse"
+                },
+                "example": {
+                  "status_code": 200,
+                  "data": {
+                    "wallet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                    "user_id": "b3a9b622-cc63-4d3c-aad6-2d8e29e6f9d4",
+                    "name": "Spending USD",
+                    "is_primary": false,
+                    "currency": "USD",
+                    "status": "closed",
+                    "is_frozen": false,
+                    "available": "1000.00",
+                    "current": "1200.00",
+                    "as_of": "2026-06-02T10:30:00Z",
+                    "created_at": "2026-04-01T10:30:00Z"
+                  },
+                  "query_generated_time": 1712847600000
                 }
               }
             }
@@ -3894,11 +4335,28 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "The user's primary wallet for the requested currency.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CommonResponse"
+                },
+                "example": {
+                  "status_code": 200,
+                  "data": {
+                    "wallet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                    "user_id": "b3a9b622-cc63-4d3c-aad6-2d8e29e6f9d4",
+                    "name": "Spending USD",
+                    "is_primary": true,
+                    "currency": "USD",
+                    "status": "active",
+                    "is_frozen": false,
+                    "available": "1000.00",
+                    "current": "1200.00",
+                    "as_of": "2026-06-02T10:30:00Z",
+                    "created_at": "2026-04-01T10:30:00Z"
+                  },
+                  "query_generated_time": 1712847600000
                 }
               }
             }
@@ -3962,11 +4420,47 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "The primary wallet's balance breakdown and recent activity.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CommonResponse"
+                },
+                "example": {
+                  "status_code": 200,
+                  "data": {
+                    "balances": {
+                      "available": 1000,
+                      "outbound_pending": 0,
+                      "inbound_pending": 200,
+                      "current": 1200
+                    },
+                    "rows": [
+                      {
+                        "intent_id": "d4e5f6a7-b8c9-0123-4567-89abcdef0123",
+                        "journey": "Bank to Wallet Settled",
+                        "status": "succeeded",
+                        "created_at": "2026-06-01T14:05:00Z",
+                        "amount": 500,
+                        "amount_sign": 1,
+                        "available_balance_at_creation": 500,
+                        "last_event_at": "2026-06-01T14:07:12Z",
+                        "currency": "USD"
+                      },
+                      {
+                        "intent_id": "e5f6a7b8-c9d0-1234-5678-9abcdef01234",
+                        "journey": "Wallet to Bank Settled",
+                        "status": "succeeded",
+                        "created_at": "2026-05-28T09:12:00Z",
+                        "amount": 120,
+                        "amount_sign": -1,
+                        "available_balance_at_creation": 620,
+                        "last_event_at": "2026-05-28T09:15:40Z",
+                        "currency": "USD"
+                      }
+                    ]
+                  },
+                  "query_generated_time": 1712847600000
                 }
               }
             }
@@ -4026,11 +4520,24 @@
         },
         "responses": {
           "201": {
-            "description": "Successful Response",
+            "description": "Wallet balances after the freeze, plus the amount moved.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CommonResponse"
+                },
+                "example": {
+                  "status_code": 201,
+                  "data": {
+                    "wallet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                    "currency": "USD",
+                    "amount": "250.00",
+                    "available": "750.00",
+                    "held": "250.00",
+                    "current": "1000.00",
+                    "reference": "order-6841"
+                  },
+                  "query_generated_time": 1712847600000
                 }
               }
             }
@@ -4092,11 +4599,27 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "The wallet's freeze / spend / unfreeze history, newest first.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ListResponse"
+                },
+                "example": {
+                  "status_code": 200,
+                  "data": [
+                    {
+                      "id": "f1e2d3c4-b5a6-7890-1234-567890abcdef",
+                      "direction": "debit",
+                      "amount": "250.00",
+                      "kind": "place_hold",
+                      "reference": "order-6841",
+                      "reason": "Awaiting delivery confirmation",
+                      "created_at": "2026-06-02T10:30:00Z"
+                    }
+                  ],
+                  "row_count": 1,
+                  "query_generated_time": 1712847600000
                 }
               }
             }
@@ -4156,11 +4679,24 @@
         },
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "Wallet balances after the release, plus the amount moved.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CommonResponse"
+                },
+                "example": {
+                  "status_code": 200,
+                  "data": {
+                    "wallet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                    "currency": "USD",
+                    "amount": "250.00",
+                    "available": "1000.00",
+                    "held": "0.00",
+                    "current": "1000.00",
+                    "reference": "order-6841"
+                  },
+                  "query_generated_time": 1712847600000
                 }
               }
             }
@@ -4496,8 +5032,8 @@
         "tags": [
           "document mailing"
         ],
-        "summary": "Ship a Document to a Saved Payee",
-        "description": "Mail a document **you supply** to a payee you registered earlier. Name the recipient with `payee_id` and we look the address up, so you do not re-send it on every shipment; `address_id` picks between several. Not a payment: no wallet is named or debited. Your own document backs the face value and only the shipping fee is billed, on your monthly invoice.",
+        "summary": "Mail a Document to a Saved Payee",
+        "description": "Mail a document **you supply** to a payee you registered earlier. Name the recipient with `payee_id` and we look the address up, so you do not re-send it on every mailing; `address_id` picks between several. Not a payment: no wallet is named or debited. Your own document backs the face value and only the mailing fee is billed, on your monthly invoice.\n\nThis is a `multipart/form-data` request: `document` (and optional `attachments`) are file parts, and `payload` is this JSON, encoded as a string, alongside them.\n\nSample `payload`:\n```json\n{\n  \"user_id\": \"b3a9b622-cc63-4d3c-aad6-2d8e29e6f9d4\",\n  \"payee_id\": \"c4b5a6d7-e8f9-0123-4567-890abcdef012\",\n  \"address_id\": \"d5c6b7e8-f9a0-1234-5678-9abcdef01234\",\n  \"mail_type\": \"usps_ground_advantage\",\n  \"currency\": \"USD\",\n  \"description\": \"Q3 invoice packet\",\n  \"invoice_number\": \"INV-10432\",\n  \"idempotency_key\": \"doc-mail-2026-08-24-001\"\n}\n```",
         "operationId": "create_document_shipping_v1_platform_payments_document_mailing_post",
         "security": [
           {
@@ -4516,11 +5052,56 @@
         },
         "responses": {
           "201": {
-            "description": "Successful Response",
+            "description": "The mailed document, straight after create.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CommonResponse"
+                  "$ref": "#/components/schemas/CommonResponse_DocumentShippingRead_"
+                },
+                "example": {
+                  "status_code": 201,
+                  "data": {
+                    "document_shipping_id": "9b1e6c2a-4f3d-4a8b-9c7e-2d5f1a6b3c4d",
+                    "payment_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                    "status": "pending",
+                    "mail_type": "usps_ground_advantage",
+                    "amount": 0,
+                    "fee_amount": 12.35,
+                    "total_amount": 12.35,
+                    "currency": "USD",
+                    "recipient": {
+                      "name": "Dana Reed",
+                      "phone": "+13035550188",
+                      "line_1": "456 Oak Ave",
+                      "line_2": "Suite 200",
+                      "city": "Denver",
+                      "state": "CO",
+                      "zip": "80202",
+                      "country": "US"
+                    },
+                    "description": "Q3 invoice packet",
+                    "invoice_number": "INV-10432",
+                    "intent_status": "pending_review",
+                    "created_at": "2026-08-24T14:30:00Z",
+                    "updated_at": "2026-08-24T14:30:00Z",
+                    "attachments": [
+                      {
+                        "id": "7c4d2e1a-8b3f-4d6c-9a1e-5f2b3c4d5e6f",
+                        "file_name": "remittance_advice.pdf",
+                        "page_count": 2,
+                        "byte_size": 184320,
+                        "ordinal": 0
+                      }
+                    ],
+                    "attachment_page_count": 2,
+                    "attachment_fee": 0.5,
+                    "document_page_count": 10,
+                    "document_fee": 4.9,
+                    "shipping_fee": 6.95,
+                    "carrier_cost": 5.2,
+                    "markup": 1.75
+                  },
+                  "query_generated_time": 1712847600000
                 }
               }
             }
@@ -4541,8 +5122,8 @@
         "tags": [
           "document mailing"
         ],
-        "summary": "List Shipped Documents",
-        "description": "Documents you supplied that we print and ship, newest first.",
+        "summary": "List Mailed Documents",
+        "description": "Documents you supplied that we print and mail, newest first.",
         "operationId": "list_document_shipping_v1_platform_payments_document_mailing_get",
         "security": [
           {
@@ -4576,11 +5157,74 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "A page of mailed documents, newest first.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ListResponse"
+                  "$ref": "#/components/schemas/ListResponse_list_DocumentShippingRead__"
+                },
+                "example": {
+                  "status_code": 200,
+                  "data": [
+                    {
+                      "document_shipping_id": "9b1e6c2a-4f3d-4a8b-9c7e-2d5f1a6b3c4d",
+                      "payment_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "status": "mailed",
+                      "mail_type": "usps_ground_advantage",
+                      "amount": 0,
+                      "fee_amount": 12.35,
+                      "total_amount": 12.35,
+                      "currency": "USD",
+                      "recipient": {
+                        "name": "Dana Reed",
+                        "phone": "+13035550188",
+                        "line_1": "456 Oak Ave",
+                        "line_2": "Suite 200",
+                        "city": "Denver",
+                        "state": "CO",
+                        "zip": "80202",
+                        "country": "US"
+                      },
+                      "description": "Q3 invoice packet",
+                      "invoice_number": "INV-10432",
+                      "intent_status": "succeeded",
+                      "created_at": "2026-08-24T14:30:00Z",
+                      "updated_at": "2026-08-26T17:45:00Z",
+                      "attachments": [
+                        {
+                          "id": "7c4d2e1a-8b3f-4d6c-9a1e-5f2b3c4d5e6f",
+                          "file_name": "remittance_advice.pdf",
+                          "page_count": 2,
+                          "byte_size": 184320,
+                          "ordinal": 0
+                        }
+                      ],
+                      "attachment_page_count": 2,
+                      "attachment_fee": 0.5,
+                      "document_page_count": 10,
+                      "document_fee": 4.9,
+                      "shipping_fee": 6.95,
+                      "carrier_cost": 5.2,
+                      "markup": 1.75,
+                      "tracking": {
+                        "trackable": true,
+                        "tracking_number": "9400100000000000000000",
+                        "carrier": "usps",
+                        "carrier_label": "USPS",
+                        "service": "USPS Ground Advantage",
+                        "status": "delivered",
+                        "status_label": "Delivered",
+                        "shipped_at": "2026-08-24T15:02:00Z",
+                        "estimated_delivery_at": "2026-08-27T00:00:00Z",
+                        "delivered_at": "2026-08-26T17:45:00Z",
+                        "delivered_to": "J.SMITH",
+                        "synced_at": "2026-08-26T18:02:00Z",
+                        "carrier_tracking_url": "https://tools.usps.com/go/TrackConfirmAction?tLabels=9400100000000000000000"
+                      }
+                    }
+                  ],
+                  "row_count": 1,
+                  "query_generated_time": 1712847600000
                 }
               }
             }
@@ -4603,8 +5247,8 @@
         "tags": [
           "document mailing"
         ],
-        "summary": "Ship a Document (full payload)",
-        "description": "Mail a document **you supply** with the recipient sent inline - everything in one call, nothing registered beforehand. The counterpart to `POST /document-mailing` for a one-off recipient you do not keep.\n\nThis shape has no `payee_id` to anchor ownership on. Send `sender` to type a one-off sender identity — that address prints on the label instead of the facility address. Omit it and the owner (and shipping label) default to your platform's own admin/master account. Do not send `user_id`; it is resolved automatically either way.",
+        "summary": "Mail a Document (full payload)",
+        "description": "Mail a document **you supply** with the recipient sent inline - everything in one call, nothing registered beforehand. The counterpart to `POST /document-mailing` for a one-off recipient you do not keep.\n\nThis shape has no `payee_id` to anchor ownership on. Send `sender` to type a one-off sender identity — that address prints on the label instead of the facility address. Omit it and the owner (and mailing label) default to your platform's own admin/master account. Do not send `user_id`; it is resolved automatically either way.\n\nThis is a `multipart/form-data` request: `document` (and optional `attachments`) are file parts, and `payload` is this JSON, encoded as a string, alongside them.\n\nSample `payload`:\n```json\n{\n  \"sender\": {\n    \"name\": \"Jane Roe\",\n    \"email\": \"jane@example.com\",\n    \"phone\": \"+12125550123\",\n    \"line_1\": \"123 Main St\",\n    \"city\": \"Austin\",\n    \"state\": \"TX\",\n    \"zip\": \"78701\",\n    \"country\": \"US\"\n  },\n  \"recipient\": {\n    \"name\": \"Dana Reed\",\n    \"line_1\": \"456 Oak Ave\",\n    \"city\": \"Denver\",\n    \"state\": \"CO\",\n    \"zip\": \"80202\",\n    \"country\": \"US\"\n  },\n  \"mail_type\": \"usps_ground_advantage\",\n  \"currency\": \"USD\",\n  \"description\": \"Signed lease agreement\",\n  \"idempotency_key\": \"doc-mail-2026-08-24-002\"\n}\n```\n\n`sender` is optional — omit it entirely to mail as your platform's own admin/master account instead of a typed one-off sender.",
         "operationId": "create_document_shipping_global_v1_platform_payments_document_mailing_global_post",
         "requestBody": {
           "content": {
@@ -4618,11 +5262,56 @@
         },
         "responses": {
           "201": {
-            "description": "Successful Response",
+            "description": "The mailed document, straight after create.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CommonResponse"
+                  "$ref": "#/components/schemas/CommonResponse_DocumentShippingRead_"
+                },
+                "example": {
+                  "status_code": 201,
+                  "data": {
+                    "document_shipping_id": "9b1e6c2a-4f3d-4a8b-9c7e-2d5f1a6b3c4d",
+                    "payment_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                    "status": "pending",
+                    "mail_type": "usps_ground_advantage",
+                    "amount": 0,
+                    "fee_amount": 12.35,
+                    "total_amount": 12.35,
+                    "currency": "USD",
+                    "recipient": {
+                      "name": "Dana Reed",
+                      "phone": "+13035550188",
+                      "line_1": "456 Oak Ave",
+                      "line_2": "Suite 200",
+                      "city": "Denver",
+                      "state": "CO",
+                      "zip": "80202",
+                      "country": "US"
+                    },
+                    "description": "Q3 invoice packet",
+                    "invoice_number": "INV-10432",
+                    "intent_status": "pending_review",
+                    "created_at": "2026-08-24T14:30:00Z",
+                    "updated_at": "2026-08-24T14:30:00Z",
+                    "attachments": [
+                      {
+                        "id": "7c4d2e1a-8b3f-4d6c-9a1e-5f2b3c4d5e6f",
+                        "file_name": "remittance_advice.pdf",
+                        "page_count": 2,
+                        "byte_size": 184320,
+                        "ordinal": 0
+                      }
+                    ],
+                    "attachment_page_count": 2,
+                    "attachment_fee": 0.5,
+                    "document_page_count": 10,
+                    "document_fee": 4.9,
+                    "shipping_fee": 6.95,
+                    "carrier_cost": 5.2,
+                    "markup": 1.75
+                  },
+                  "query_generated_time": 1712847600000
                 }
               }
             }
@@ -4651,7 +5340,7 @@
           "document mailing"
         ],
         "summary": "List Document Mailing Services",
-        "description": "The carrier services available for a document **you supply**: we print the PDF, attach a label and hand it to USPS or FedEx. No wallet is debited — only the shipping fee is billed, on your monthly invoice.\n\nRating needs the destination, so `zip` is required. `fee` is what you will be billed; `carrier_cost` and `markup_fee` are what it is made of. Send the document as `document` when you create it.",
+        "description": "The carrier services available for a document **you supply**: we print the PDF, attach a label and hand it to USPS or FedEx. No wallet is debited — only the mailing fee is billed, on your monthly invoice.\n\nRating needs the destination, so `zip` is required. `fee` is what you will be billed; `carrier_cost` and `markup_fee` are what it is made of. Send the document as `document` when you create it.",
         "operationId": "list_document_shipping_methods_v1_platform_payments_document_mailing_methods_get",
         "security": [
           {
@@ -4697,15 +5386,59 @@
               "title": "Pages"
             },
             "description": "Total attachment pages you plan to send. Rates the heavier envelope so the quote matches what you will be billed. An estimate — the rate at create time is authoritative. Capped at the same 50-page limit create enforces."
+          },
+          {
+            "name": "document_pages",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 50,
+              "minimum": 1,
+              "description": "Pages in the document itself. Every shipment has one, so this defaults to 1. Billed per page just like attachments — an estimate for the quote, not a create-time limit.",
+              "default": 1,
+              "title": "Document Pages"
+            },
+            "description": "Pages in the document itself. Every shipment has one, so this defaults to 1. Billed per page just like attachments — an estimate for the quote, not a create-time limit."
           }
         ],
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "The mailing services offered to you, priced for this destination.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CommonResponse"
+                  "$ref": "#/components/schemas/CommonResponse_list_DocumentShippingMethodQuote__"
+                },
+                "example": {
+                  "status_code": 200,
+                  "data": [
+                    {
+                      "key": "usps_ground_advantage",
+                      "label": "USPS Ground Advantage",
+                      "fee": 6.95,
+                      "fee_percentage": 0,
+                      "carrier_cost": 5.2,
+                      "markup_fee": 1.75,
+                      "estimated_days": "2-5",
+                      "requires_document": true,
+                      "attachment_fee_per_page": 0.25,
+                      "attachment_fee": 0.75
+                    },
+                    {
+                      "key": "usps_priority",
+                      "label": "USPS Priority Mail",
+                      "fee": 11.4,
+                      "fee_percentage": 0,
+                      "carrier_cost": 9.15,
+                      "markup_fee": 2.25,
+                      "estimated_days": "1-3",
+                      "requires_document": true,
+                      "attachment_fee_per_page": 0.25,
+                      "attachment_fee": 0.75
+                    }
+                  ],
+                  "query_generated_time": 1712847600000
                 }
               }
             }
@@ -4728,8 +5461,8 @@
         "tags": [
           "document mailing"
         ],
-        "summary": "Get a Shipped Document",
-        "description": "One shipped document by its payment id.",
+        "summary": "Get a Mailed Document",
+        "description": "One mailed document by its payment id.",
         "operationId": "get_document_shipping_v1_platform_payments_document_mailing__payment_id__get",
         "security": [
           {
@@ -4750,11 +5483,71 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "One mailed document.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CommonResponse"
+                  "$ref": "#/components/schemas/CommonResponse_DocumentShippingRead_"
+                },
+                "example": {
+                  "status_code": 200,
+                  "data": {
+                    "document_shipping_id": "9b1e6c2a-4f3d-4a8b-9c7e-2d5f1a6b3c4d",
+                    "payment_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                    "status": "mailed",
+                    "mail_type": "usps_ground_advantage",
+                    "amount": 0,
+                    "fee_amount": 12.35,
+                    "total_amount": 12.35,
+                    "currency": "USD",
+                    "recipient": {
+                      "name": "Dana Reed",
+                      "phone": "+13035550188",
+                      "line_1": "456 Oak Ave",
+                      "line_2": "Suite 200",
+                      "city": "Denver",
+                      "state": "CO",
+                      "zip": "80202",
+                      "country": "US"
+                    },
+                    "description": "Q3 invoice packet",
+                    "invoice_number": "INV-10432",
+                    "intent_status": "succeeded",
+                    "created_at": "2026-08-24T14:30:00Z",
+                    "updated_at": "2026-08-26T17:45:00Z",
+                    "attachments": [
+                      {
+                        "id": "7c4d2e1a-8b3f-4d6c-9a1e-5f2b3c4d5e6f",
+                        "file_name": "remittance_advice.pdf",
+                        "page_count": 2,
+                        "byte_size": 184320,
+                        "ordinal": 0
+                      }
+                    ],
+                    "attachment_page_count": 2,
+                    "attachment_fee": 0.5,
+                    "document_page_count": 10,
+                    "document_fee": 4.9,
+                    "shipping_fee": 6.95,
+                    "carrier_cost": 5.2,
+                    "markup": 1.75,
+                    "tracking": {
+                      "trackable": true,
+                      "tracking_number": "9400100000000000000000",
+                      "carrier": "usps",
+                      "carrier_label": "USPS",
+                      "service": "USPS Ground Advantage",
+                      "status": "delivered",
+                      "status_label": "Delivered",
+                      "shipped_at": "2026-08-24T15:02:00Z",
+                      "estimated_delivery_at": "2026-08-27T00:00:00Z",
+                      "delivered_at": "2026-08-26T17:45:00Z",
+                      "delivered_to": "J.SMITH",
+                      "synced_at": "2026-08-26T18:02:00Z",
+                      "carrier_tracking_url": "https://tools.usps.com/go/TrackConfirmAction?tLabels=9400100000000000000000"
+                    }
+                  },
+                  "query_generated_time": 1712847600000
                 }
               }
             }
@@ -4777,8 +5570,8 @@
         "tags": [
           "document mailing"
         ],
-        "summary": "Track a Shipped Document",
-        "description": "Where a shipped document is, and everywhere it has been.\n\nReturns the current delivery stage plus the carrier's full scan history,\noldest first. Reads what we already hold rather than calling the carrier, so\nit is cheap to poll while a page is open; use the refresh endpoint to force a\nlive read.\n\nScan times come in two forms. `occurred_at` is UTC and is what to sort by.\n`occurred_at_local` is the wall-clock reading at the place the parcel was\nscanned, with `utc_offset_minutes` giving the zone — display those, or a\nparcel scanned at 21:14 in Memphis will read as 02:14 the next day.\n\nAn empty `events` list is normal for the first several hours after a label is\nbought and does not mean tracking has failed. Check `trackable` to tell that\napart from a service that has no barcode at all, such as a letter.",
+        "summary": "Track a Mailed Document",
+        "description": "Where a mailed document is, and everywhere it has been.\n\nReturns the current delivery stage plus the carrier's full scan history,\noldest first. Reads what we already hold rather than calling the carrier, so\nit is cheap to poll while a page is open; use the refresh endpoint to force a\nlive read.\n\nScan times come in two forms. `occurred_at` is UTC and is what to sort by.\n`occurred_at_local` is the wall-clock reading at the place the parcel was\nscanned, with `utc_offset_minutes` giving the zone — display those, or a\nparcel scanned at 21:14 in Memphis will read as 02:14 the next day.\n\nAn empty `events` list is normal for the first several hours after a label is\nbought and does not mean tracking has failed. Check `trackable` to tell that\napart from a service that has no barcode at all, such as a letter.",
         "operationId": "get_document_shipping_tracking_v1_platform_payments_document_mailing__payment_id__tracking_get",
         "security": [
           {
@@ -4801,11 +5594,68 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "Where the mailed document is, with its full scan history.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CommonResponse"
+                  "$ref": "#/components/schemas/CommonResponse_DocumentShippingTrackingRead_"
+                },
+                "example": {
+                  "status_code": 200,
+                  "data": {
+                    "trackable": true,
+                    "tracking_number": "9400100000000000000000",
+                    "carrier": "usps",
+                    "carrier_label": "USPS",
+                    "service": "USPS Ground Advantage",
+                    "status": "delivered",
+                    "status_label": "Delivered",
+                    "shipped_at": "2026-08-24T15:02:00Z",
+                    "estimated_delivery_at": "2026-08-27T00:00:00Z",
+                    "delivered_at": "2026-08-26T17:45:00Z",
+                    "delivered_to": "J.SMITH",
+                    "synced_at": "2026-08-26T18:02:00Z",
+                    "carrier_tracking_url": "https://tools.usps.com/go/TrackConfirmAction?tLabels=9400100000000000000000",
+                    "events": [
+                      {
+                        "status": "label_created",
+                        "status_label": "Label created",
+                        "description": "Shipping label created, item awaiting pickup",
+                        "occurred_at": "2026-08-24T15:02:00Z",
+                        "occurred_at_local": "2026-08-24T10:02:00",
+                        "utc_offset_minutes": -300,
+                        "city": "Austin",
+                        "state": "TX",
+                        "postal_code": "78701",
+                        "country": "US"
+                      },
+                      {
+                        "status": "in_transit",
+                        "status_label": "In transit",
+                        "description": "Departed shipping facility",
+                        "occurred_at": "2026-08-25T02:40:00Z",
+                        "occurred_at_local": "2026-08-24T21:40:00",
+                        "utc_offset_minutes": -300,
+                        "city": "Dallas",
+                        "state": "TX",
+                        "postal_code": "75201",
+                        "country": "US"
+                      },
+                      {
+                        "status": "delivered",
+                        "status_label": "Delivered",
+                        "description": "Delivered, in/at mailbox",
+                        "occurred_at": "2026-08-26T17:45:00Z",
+                        "occurred_at_local": "2026-08-26T11:45:00",
+                        "utc_offset_minutes": -360,
+                        "city": "Denver",
+                        "state": "CO",
+                        "postal_code": "80202",
+                        "country": "US"
+                      }
+                    ]
+                  },
+                  "query_generated_time": 1712847600000
                 }
               }
             }
@@ -4828,8 +5678,8 @@
         "tags": [
           "document mailing"
         ],
-        "summary": "Refresh a Shipped Document's Tracking",
-        "description": "Ask the carrier where a shipped document is right now, then return the updated\ntracking payload.\n\nRate-limited per shipment rather than per caller, so ten people watching the\nsame document cost one carrier call between them. A call made inside that\nwindow is **not** an error: you get the tracking we already hold, with\n`synced_at` unchanged so you can see how fresh it is. The same applies when\nthe carrier cannot be reached — the stored history is still returned rather\nthan an error, because stale tracking with an honest timestamp beats none.\n\nResponse shape is identical to the tracking endpoint. Poll that one instead if\nyou only need to read; this endpoint spends a carrier call.",
+        "summary": "Refresh a Mailed Document's Tracking",
+        "description": "Ask the carrier where a mailed document is right now, then return the updated\ntracking payload.\n\nRate-limited per mailing rather than per caller, so ten people watching the\nsame document cost one carrier call between them. A call made inside that\nwindow is **not** an error: you get the tracking we already hold, with\n`synced_at` unchanged so you can see how fresh it is. The same applies when\nthe carrier cannot be reached — the stored history is still returned rather\nthan an error, because stale tracking with an honest timestamp beats none.\n\nResponse shape is identical to the tracking endpoint. Poll that one instead if\nyou only need to read; this endpoint spends a carrier call.",
         "operationId": "refresh_document_shipping_tracking_v1_platform_payments_document_mailing__payment_id__tracking_refresh_post",
         "security": [
           {
@@ -4852,11 +5702,68 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "The mailed document's tracking after a live carrier read.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CommonResponse"
+                  "$ref": "#/components/schemas/CommonResponse_DocumentShippingTrackingRead_"
+                },
+                "example": {
+                  "status_code": 200,
+                  "data": {
+                    "trackable": true,
+                    "tracking_number": "9400100000000000000000",
+                    "carrier": "usps",
+                    "carrier_label": "USPS",
+                    "service": "USPS Ground Advantage",
+                    "status": "delivered",
+                    "status_label": "Delivered",
+                    "shipped_at": "2026-08-24T15:02:00Z",
+                    "estimated_delivery_at": "2026-08-27T00:00:00Z",
+                    "delivered_at": "2026-08-26T17:45:00Z",
+                    "delivered_to": "J.SMITH",
+                    "synced_at": "2026-08-26T18:02:00Z",
+                    "carrier_tracking_url": "https://tools.usps.com/go/TrackConfirmAction?tLabels=9400100000000000000000",
+                    "events": [
+                      {
+                        "status": "label_created",
+                        "status_label": "Label created",
+                        "description": "Shipping label created, item awaiting pickup",
+                        "occurred_at": "2026-08-24T15:02:00Z",
+                        "occurred_at_local": "2026-08-24T10:02:00",
+                        "utc_offset_minutes": -300,
+                        "city": "Austin",
+                        "state": "TX",
+                        "postal_code": "78701",
+                        "country": "US"
+                      },
+                      {
+                        "status": "in_transit",
+                        "status_label": "In transit",
+                        "description": "Departed shipping facility",
+                        "occurred_at": "2026-08-25T02:40:00Z",
+                        "occurred_at_local": "2026-08-24T21:40:00",
+                        "utc_offset_minutes": -300,
+                        "city": "Dallas",
+                        "state": "TX",
+                        "postal_code": "75201",
+                        "country": "US"
+                      },
+                      {
+                        "status": "delivered",
+                        "status_label": "Delivered",
+                        "description": "Delivered, in/at mailbox",
+                        "occurred_at": "2026-08-26T17:45:00Z",
+                        "occurred_at_local": "2026-08-26T11:45:00",
+                        "utc_offset_minutes": -360,
+                        "city": "Denver",
+                        "state": "CO",
+                        "postal_code": "80202",
+                        "country": "US"
+                      }
+                    ]
+                  },
+                  "query_generated_time": 1712847600000
                 }
               }
             }
@@ -4879,8 +5786,8 @@
         "tags": [
           "document mailing"
         ],
-        "summary": "Void a Shipped Document",
-        "description": "Void an outstanding (not-yet-labelled) shipped document: cancels the intent.\nNo wallet is involved, so there is nothing to refund. Invalid once a carrier\nlabel has been bought (the document is already with the carrier) or the\nshipment has cleared.",
+        "summary": "Void a Mailed Document",
+        "description": "Void an outstanding (not-yet-labelled) mailed document: cancels the intent.\nNo wallet is involved, so there is nothing to refund. Invalid once a carrier\nlabel has been bought (the document is already with the carrier) or the\nmailing has cleared.",
         "operationId": "void_document_shipping_v1_platform_payments_document_mailing__payment_id__void_post",
         "security": [
           {
@@ -4903,11 +5810,56 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "The voided mailed document.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CommonResponse"
+                  "$ref": "#/components/schemas/CommonResponse_DocumentShippingRead_"
+                },
+                "example": {
+                  "status_code": 200,
+                  "data": {
+                    "document_shipping_id": "9b1e6c2a-4f3d-4a8b-9c7e-2d5f1a6b3c4d",
+                    "payment_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                    "status": "rejected",
+                    "mail_type": "usps_ground_advantage",
+                    "amount": 0,
+                    "fee_amount": 12.35,
+                    "total_amount": 12.35,
+                    "currency": "USD",
+                    "recipient": {
+                      "name": "Dana Reed",
+                      "phone": "+13035550188",
+                      "line_1": "456 Oak Ave",
+                      "line_2": "Suite 200",
+                      "city": "Denver",
+                      "state": "CO",
+                      "zip": "80202",
+                      "country": "US"
+                    },
+                    "description": "Q3 invoice packet",
+                    "invoice_number": "INV-10432",
+                    "intent_status": "rejected",
+                    "created_at": "2026-08-24T14:30:00Z",
+                    "updated_at": "2026-08-24T14:35:00Z",
+                    "attachments": [
+                      {
+                        "id": "7c4d2e1a-8b3f-4d6c-9a1e-5f2b3c4d5e6f",
+                        "file_name": "remittance_advice.pdf",
+                        "page_count": 2,
+                        "byte_size": 184320,
+                        "ordinal": 0
+                      }
+                    ],
+                    "attachment_page_count": 2,
+                    "attachment_fee": 0.5,
+                    "document_page_count": 10,
+                    "document_fee": 4.9,
+                    "shipping_fee": 6.95,
+                    "carrier_cost": 5.2,
+                    "markup": 1.75
+                  },
+                  "query_generated_time": 1712847600000
                 }
               }
             }
@@ -7747,6 +8699,27 @@
               "title": "User Id"
             },
             "description": "Optional. The unique ID of the user who owns this payee. Omit to look the payee up by its ID within your tenant."
+          },
+          {
+            "name": "country",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional. Filter to the address for one destination country (ISO 3166-1 alpha-2, e.g. MX). A payee holds at most one address per country, so this returns at most one row.",
+              "examples": [
+                "MX"
+              ],
+              "title": "Country"
+            },
+            "description": "Optional. Filter to the address for one destination country (ISO 3166-1 alpha-2, e.g. MX). A payee holds at most one address per country, so this returns at most one row."
           }
         ],
         "responses": {
@@ -8067,11 +9040,42 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "A page of the products your platform can use.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ListResponse"
+                },
+                "example": {
+                  "status_code": 200,
+                  "data": [
+                    {
+                      "id": "d4e5f6a7-b8c9-0d1e-2f3a-4b5c6d7e8f9a",
+                      "code": "ACH_DEBIT",
+                      "name": "ACH Debit",
+                      "currency": "USD",
+                      "status": "enabled",
+                      "rail": {
+                        "id": "c7e1f2a0-3b4d-4e5f-8a9b-0c1d2e3f4a5b",
+                        "code": "ACH",
+                        "name": "ACH Transfer"
+                      },
+                      "limits": {
+                        "daily_max": 100000,
+                        "per_txn_max": 50000
+                      },
+                      "enabled_at": "2026-04-01T10:30:00Z",
+                      "kyc_required": true,
+                      "kyb_required": false,
+                      "mkyc_required": false,
+                      "items": []
+                    }
+                  ],
+                  "row_count": 1,
+                  "query_generated_time": 1712847600000,
+                  "limit": 50,
+                  "current_page": 1,
+                  "total_page_number": 1
                 }
               }
             }
@@ -8121,11 +9125,39 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "The product's full details.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CommonResponse"
+                },
+                "example": {
+                  "status_code": 200,
+                  "data": {
+                    "id": "d4e5f6a7-b8c9-0d1e-2f3a-4b5c6d7e8f9a",
+                    "code": "ACH_DEBIT",
+                    "name": "ACH Debit",
+                    "currency": "USD",
+                    "status": "enabled",
+                    "rail": {
+                      "id": "c7e1f2a0-3b4d-4e5f-8a9b-0c1d2e3f4a5b",
+                      "code": "ACH",
+                      "name": "ACH Transfer"
+                    },
+                    "limits": {
+                      "daily_max": 100000,
+                      "per_txn_max": 50000
+                    },
+                    "enabled_at": "2026-04-01T10:30:00Z",
+                    "kyc_required": true,
+                    "kyb_required": false,
+                    "mkyc_required": false,
+                    "items": [],
+                    "metadata": {
+                      "description": "Standard ACH debit transfers"
+                    }
+                  },
+                  "query_generated_time": 1712847600000
                 }
               }
             }
@@ -8153,11 +9185,29 @@
         "operationId": "list_payment_categories_v1_platform_catalog_payment_categories_get",
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "The payment categories switched on for your platform.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CommonResponse"
+                },
+                "example": {
+                  "status_code": 200,
+                  "data": [
+                    {
+                      "code": 1001,
+                      "value": "Payroll"
+                    },
+                    {
+                      "code": 1002,
+                      "value": "Vendor payment"
+                    },
+                    {
+                      "code": 1003,
+                      "value": "Refund"
+                    }
+                  ],
+                  "query_generated_time": 1712847600000
                 }
               }
             }
@@ -8180,11 +9230,46 @@
         "operationId": "list_webhook_event_types_v1_platform_webhooks_event_types_get",
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "The events you can subscribe to, grouped by topic.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CommonResponse"
+                },
+                "example": {
+                  "status_code": 200,
+                  "data": {
+                    "payment": [
+                      "payment_intent.succeeded",
+                      "payment_intent.failed",
+                      "payment_intent.settled",
+                      "payment_intent.refunded"
+                    ],
+                    "user": [
+                      "user.created",
+                      "user.activated",
+                      "user.deleted"
+                    ],
+                    "wallet": [
+                      "wallet.created",
+                      "wallet.funded",
+                      "wallet.frozen"
+                    ],
+                    "payee": [
+                      "payee.created",
+                      "payee.updated",
+                      "payee.archived"
+                    ],
+                    "card": [
+                      "card.requested",
+                      "card.issued",
+                      "card.reloaded"
+                    ],
+                    "document_mailing": [
+                      "document_mailing.tracking_updated"
+                    ]
+                  },
+                  "query_generated_time": 1712847600000
                 }
               }
             }
@@ -8222,11 +9307,29 @@
         },
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "Your webhook after this update. `secret` is present only on first setup.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CommonResponse"
+                },
+                "example": {
+                  "status_code": 200,
+                  "data": {
+                    "webhook": {
+                      "id": "c4f2e8a1-3b7d-4e9f-a1c2-6d8e3f7a9b0c",
+                      "url": "https://example.com/webhooks",
+                      "events": [
+                        "payment_intent.succeeded",
+                        "payment_intent.failed",
+                        "payout.settled"
+                      ],
+                      "is_active": true,
+                      "created_at": "2026-04-01T10:30:00Z"
+                    },
+                    "secret": "whsec_9f2b7c1a4d6e8091a2b3c4d5e6f70819"
+                  },
+                  "query_generated_time": 1712847600000
                 }
               }
             }
@@ -8307,11 +9410,32 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "A page of your platform's webhooks.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ListResponse"
+                },
+                "example": {
+                  "status_code": 200,
+                  "data": [
+                    {
+                      "id": "c4f2e8a1-3b7d-4e9f-a1c2-6d8e3f7a9b0c",
+                      "url": "https://example.com/webhooks",
+                      "events": [
+                        "payment_intent.succeeded",
+                        "payment_intent.failed",
+                        "payout.settled"
+                      ],
+                      "is_active": true,
+                      "created_at": "2026-04-01T10:30:00Z"
+                    }
+                  ],
+                  "row_count": 1,
+                  "query_generated_time": 1712847600000,
+                  "limit": 50,
+                  "current_page": 1,
+                  "total_page_number": 1
                 }
               }
             }
@@ -8361,11 +9485,18 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "Confirmation the webhook is switched off.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CommonResponse"
+                },
+                "example": {
+                  "status_code": 200,
+                  "data": {
+                    "message": "Webhook endpoint deleted"
+                  },
+                  "query_generated_time": 1712847600000
                 }
               }
             }
@@ -8403,11 +9534,18 @@
         },
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "How many failed deliveries were queued to resend.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CommonResponse"
+                },
+                "example": {
+                  "status_code": 202,
+                  "data": {
+                    "replayed_count": 3
+                  },
+                  "query_generated_time": 1712847600000
                 }
               }
             }
@@ -9019,11 +10157,38 @@
         },
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "Per-file acceptance outcomes. Accepted files are `pending` with an `id`.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CommonResponse_FileScanUploadResponse_"
+                },
+                "example": {
+                  "status_code": 201,
+                  "data": {
+                    "accepted_count": 2,
+                    "rejected_count": 1,
+                    "files": [
+                      {
+                        "file_name": "signed-contract.pdf",
+                        "accepted": true,
+                        "id": "7c4d2e1a-8b3f-4d6c-9a1e-5f2b3c4d5e6f",
+                        "status": "pending"
+                      },
+                      {
+                        "file_name": "id-scan.jpg",
+                        "accepted": true,
+                        "id": "8d5e3f2b-9c4a-4e7d-8b2f-6a3c4d5e6f70",
+                        "status": "pending"
+                      },
+                      {
+                        "file_name": "promo-clip.mp4",
+                        "accepted": false,
+                        "error": "file exceeds the 25 MB per-file limit"
+                      }
+                    ]
+                  },
+                  "query_generated_time": 1712847600000
                 }
               }
             }
@@ -9113,11 +10278,28 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "A page of files you have submitted, newest first. Never carries a link.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ListResponse_list_FileScanRead__"
+                },
+                "example": {
+                  "status_code": 200,
+                  "data": [
+                    {
+                      "id": "8d5e3f2b-9c4a-4e7d-8b2f-6a3c4d5e6f70",
+                      "status": "pending",
+                      "file_name": "id-scan.jpg",
+                      "content_type": "image/jpeg",
+                      "declared_content_type": "image/jpeg",
+                      "size_bytes": 91840,
+                      "category": "contracts",
+                      "created_at": "2026-06-02T10:31:00Z"
+                    }
+                  ],
+                  "row_count": 1,
+                  "query_generated_time": 1712847600000
                 }
               }
             }
@@ -9182,11 +10364,28 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "One file, with a short-lived `download_url` only when the verdict is `clean`.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CommonResponse_FileScanRead_"
+                },
+                "example": {
+                  "status_code": 200,
+                  "data": {
+                    "id": "7c4d2e1a-8b3f-4d6c-9a1e-5f2b3c4d5e6f",
+                    "status": "clean",
+                    "file_name": "signed-contract.pdf",
+                    "content_type": "application/pdf",
+                    "declared_content_type": "application/pdf",
+                    "size_bytes": 248193,
+                    "category": "contracts",
+                    "created_at": "2026-06-02T10:30:00Z",
+                    "scanned_at": "2026-06-02T10:30:12Z",
+                    "download_url": "https://scan-downloads.example.com/7c4d2e1a-8b3f-4d6c-9a1e-5f2b3c4d5e6f?token=short-lived-signature",
+                    "expires_in": 900
+                  },
+                  "query_generated_time": 1712847600000
                 }
               }
             }
@@ -10913,11 +12112,39 @@
         },
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "A page of matching records. Row shape follows `model_key` — a `users` search is shown here.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ListResponse"
+                },
+                "example": {
+                  "status_code": 200,
+                  "data": [
+                    {
+                      "id": "b3a9b622-cc63-4d3c-aad6-2d8e29e6f9d4",
+                      "name": "John Doe",
+                      "email": "john.doe@example.com",
+                      "is_active": true,
+                      "kyc_status": "approved",
+                      "kyb_status": "not_started",
+                      "created_at": "2026-05-01T09:00:00Z"
+                    },
+                    {
+                      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "name": "Jane Smith",
+                      "email": "jane.smith@example.com",
+                      "is_active": true,
+                      "kyc_status": "pending",
+                      "kyb_status": "not_started",
+                      "created_at": "2026-04-28T14:20:00Z"
+                    }
+                  ],
+                  "row_count": 2,
+                  "query_generated_time": 1712847600000,
+                  "limit": 50,
+                  "current_page": 1,
+                  "total_page_number": 1
                 }
               }
             }
@@ -15598,6 +16825,17 @@
             ],
             "title": "Fail Payment When 3Ds Not Checked"
           },
+          "auth_only_on_check_failure": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Auth Only On Check Failure"
+          },
           "cvv": {
             "items": {
               "$ref": "#/components/schemas/CardCheckRuleConfigItem"
@@ -16042,37 +17280,6 @@
       },
       "CardPaymentControlsUpdate": {
         "properties": {
-          "three_ds_min_amount": {
-            "anyOf": [
-              {
-                "type": "number",
-                "minimum": 0
-              },
-              {
-                "type": "string",
-                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Three Ds Min Amount",
-            "description": "This card's payer-authentication threshold in major units. 0 authenticates every charge on it. Null follows the platform."
-          },
-          "max_per_day": {
-            "anyOf": [
-              {
-                "type": "integer",
-                "maximum": 1000,
-                "minimum": 0
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Max Per Day",
-            "description": "How many payments this card may make per UTC day. 0 means no cap on this card. Null follows the platform."
-          },
           "sale_auto_approve": {
             "anyOf": [
               {
@@ -16084,6 +17291,18 @@
             ],
             "title": "Sale Auto Approve",
             "description": "Whether repeat payments on this card charge without an operator. Null follows the platform."
+          },
+          "zero_auth": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Zero Auth",
+            "description": "Whether this card's first payment may be a direct sale when it was measured clean as it was added, instead of taking an authorization hold. Null follows the platform. On its own it grants nothing: the card must still have authenticated for that payment and returned a clean address answer."
           },
           "reason": {
             "anyOf": [
@@ -16100,7 +17319,7 @@
         },
         "type": "object",
         "title": "CardPaymentControlsUpdate",
-        "description": "Set or clear this card's overrides.\n\nThree states per field, and all three are needed:\n\n* **omitted** — leave this control alone. Lets the console save one block at\n  a time without the other two riding along in the payload and being\n  rewritten to whatever the page happened to be showing.\n* **a value** — override the platform for this card.\n* **``null``** — drop the override and follow the platform again.\n\nThe distinction between omitted and ``null`` is read from\n``model_fields_set``, which is why every field defaults to ``None`` rather\nthan to a sentinel: an explicit null and a missing key are different\ninstructions and Pydantic keeps them apart for us."
+        "description": "Set or clear this card's overrides.\n\nThree states per field, and all three are needed:\n\n* **omitted** — leave this control alone. Lets the console save one block at\n  a time without the others riding along in the payload and being rewritten\n  to whatever the page happened to be showing.\n* **a value** — override the platform for this card.\n* **``null``** — drop the override and follow the platform again.\n\nThe distinction between omitted and ``null`` is read from\n``model_fields_set``, which is why every field defaults to ``None`` rather\nthan to a sentinel: an explicit null and a missing key are different\ninstructions and Pydantic keeps them apart for us."
       },
       "CardPaymentLinkCreate": {
         "properties": {
@@ -16480,7 +17699,7 @@
           "is_sale_enabled": {
             "type": "boolean",
             "title": "Is Sale Enabled",
-            "description": "True switches the card to direct sale (no hold; charged once on approval). False switches it to authorize + capture, until the next completed charge promotes it back."
+            "description": "True switches the card to direct sale (no hold; charged once on approval). False switches it to authorize + capture, until the next completed charge promotes it back. On a card with ``sale_blocked`` true, ``true`` instead LIFTS the bar and leaves the card on authorize + capture — the card then re-earns direct sale from a charge an operator captures, and a rejected charge earns nothing. Send ``true`` again on the now-unbarred card to switch direct sale on outright."
           }
         },
         "type": "object",
@@ -16488,7 +17707,34 @@
           "is_sale_enabled"
         ],
         "title": "CardSaleEnabledUpdate",
-        "description": "Admin switch of a card's charge mode (SUA).\n\nA one-payment override rather than a setting: the next charge that completes\non the card switches it back to direct sale automatically."
+        "description": "Admin switch of a card's charge mode (SUA).\n\nA one-payment override rather than a setting: the next charge that completes\non the card switches it back to direct sale automatically.\n\nThe exception is a card barred by a failed check (``sale_blocked``). There,\n``true`` is spent lifting the bar and the card stays on authorize + capture —\nsee the field description."
+      },
+      "CardStrictChecksUpdate": {
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "description": "On: every card payment must pass 3-D Secure and the address check, whatever the amount, and the payer-authentication threshold no longer applies. Off: the threshold decides. What happens to a payment that does not pass is a separate setting — whether such a charge is held for an operator or failed outright."
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "enabled"
+        ],
+        "title": "CardStrictChecksUpdate",
+        "description": "Admin update payload for a platform's strict-checks switch."
       },
       "CardThreeDsThresholdUpdate": {
         "properties": {
@@ -16525,6 +17771,42 @@
         ],
         "title": "CardThreeDsThresholdUpdate",
         "description": "Admin update payload for the card-to-merchant 3DS threshold."
+      },
+      "CardTransactionLimitUpdate": {
+        "properties": {
+          "max_amount": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0
+              },
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              }
+            ],
+            "title": "Max Amount",
+            "description": "The largest amount one card-to-merchant charge may be. Major units, and currency-agnostic — no FX rate is fetched, so the number is compared against the request amount in whatever currency it arrives in. 0 means no ceiling."
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "max_amount"
+        ],
+        "title": "CardTransactionLimitUpdate",
+        "description": "Admin update payload for the per-charge amount ceiling."
       },
       "CardTransferCreate": {
         "properties": {
@@ -17030,6 +18312,33 @@
         "title": "CardVerifyTokenCreate",
         "description": "Request body for ``POST /v1/platform/card/verify-token/{payment_method_id}``.\n\nMints a short-lived ``verify_card`` embed token so a user can complete\ncardholder-present verification (CVV/AVS + 3DS) of a saved card inside a\nFinogate-hosted iframe."
       },
+      "CardZeroAuthUpdate": {
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "description": "On: a card on this platform that was measured clean when it was added takes its first payment as a direct sale. Off: it takes an authorization hold like every other first payment, and no card on this platform can opt back in. On its own this grants nothing — the card must still have authenticated for that payment and returned a clean address answer."
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "enabled"
+        ],
+        "title": "CardZeroAuthUpdate",
+        "description": "Admin update payload for a platform's zero-auth switch."
+      },
       "CatalogueType": {
         "type": "string",
         "enum": [
@@ -17332,6 +18641,56 @@
           "query_generated_time"
         ],
         "title": "CommonResponse[ChargeAttemptRead]"
+      },
+      "CommonResponse_DocumentShippingRead_": {
+        "properties": {
+          "status_code": {
+            "type": "integer",
+            "title": "Status Code",
+            "description": "HTTP status code for the response."
+          },
+          "data": {
+            "$ref": "#/components/schemas/DocumentShippingRead",
+            "description": "Payload or error details."
+          },
+          "query_generated_time": {
+            "type": "integer",
+            "title": "Query Generated Time",
+            "description": "UTC timestamp (milliseconds since epoch) when response was generated."
+          }
+        },
+        "type": "object",
+        "required": [
+          "status_code",
+          "data",
+          "query_generated_time"
+        ],
+        "title": "CommonResponse[DocumentShippingRead]"
+      },
+      "CommonResponse_DocumentShippingTrackingRead_": {
+        "properties": {
+          "status_code": {
+            "type": "integer",
+            "title": "Status Code",
+            "description": "HTTP status code for the response."
+          },
+          "data": {
+            "$ref": "#/components/schemas/DocumentShippingTrackingRead",
+            "description": "Payload or error details."
+          },
+          "query_generated_time": {
+            "type": "integer",
+            "title": "Query Generated Time",
+            "description": "UTC timestamp (milliseconds since epoch) when response was generated."
+          }
+        },
+        "type": "object",
+        "required": [
+          "status_code",
+          "data",
+          "query_generated_time"
+        ],
+        "title": "CommonResponse[DocumentShippingTrackingRead]"
       },
       "CommonResponse_FileScanRead_": {
         "properties": {
@@ -17954,6 +19313,35 @@
           "query_generated_time"
         ],
         "title": "CommonResponse[Union[PlatformUserVerificationRead, NoneType]]"
+      },
+      "CommonResponse_list_DocumentShippingMethodQuote__": {
+        "properties": {
+          "status_code": {
+            "type": "integer",
+            "title": "Status Code",
+            "description": "HTTP status code for the response."
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/DocumentShippingMethodQuote"
+            },
+            "type": "array",
+            "title": "Data",
+            "description": "Payload or error details."
+          },
+          "query_generated_time": {
+            "type": "integer",
+            "title": "Query Generated Time",
+            "description": "UTC timestamp (milliseconds since epoch) when response was generated."
+          }
+        },
+        "type": "object",
+        "required": [
+          "status_code",
+          "data",
+          "query_generated_time"
+        ],
+        "title": "CommonResponse[list[DocumentShippingMethodQuote]]"
       },
       "CommonResponse_list_ProductCatalogItemRead__": {
         "properties": {
@@ -18812,6 +20200,229 @@
         ],
         "title": "DeviceType"
       },
+      "DocumentMailingAttachmentRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id",
+            "examples": [
+              "7c4d2e1a-8b3f-4d6c-9a1e-5f2b3c4d5e6f"
+            ]
+          },
+          "file_name": {
+            "type": "string",
+            "title": "File Name",
+            "examples": [
+              "remittance_advice.pdf"
+            ]
+          },
+          "page_count": {
+            "type": "integer",
+            "title": "Page Count",
+            "default": 1,
+            "examples": [2]
+          },
+          "byte_size": {
+            "type": "integer",
+            "title": "Byte Size",
+            "default": 0,
+            "examples": [184320]
+          },
+          "ordinal": {
+            "type": "integer",
+            "title": "Ordinal",
+            "default": 0,
+            "examples": [0]
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "file_name"
+        ],
+        "title": "DocumentMailingAttachmentRead",
+        "description": "One PDF mailed alongside the check."
+      },
+      "DocumentMailingTrackingEventRead": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Normalised delivery stage for this scan: label_created, picked_up, in_transit, out_for_delivery, delivered, exception, returning, or unknown. Carrier event codes vary by carrier and change without notice; this field does not.",
+            "examples": [
+              "out_for_delivery"
+            ]
+          },
+          "status_label": {
+            "type": "string",
+            "title": "Status Label",
+            "description": "Display form of `status`, ready to render.",
+            "examples": [
+              "Out for delivery"
+            ]
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description",
+            "description": "The carrier's own wording for this scan, passed through unchanged.",
+            "examples": [
+              "On FedEx vehicle for delivery"
+            ]
+          },
+          "occurred_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Occurred At",
+            "description": "When the scan happened, in UTC. Use this to sort."
+          },
+          "occurred_at_local": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Occurred At Local",
+            "description": "The same moment as a wall-clock reading at the place it was scanned, with no timezone attached. This is what to display: a parcel scanned at 21:14 in Memphis should read 21:14, not the UTC equivalent. Pair it with `utc_offset_minutes` to label the zone."
+          },
+          "utc_offset_minutes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Utc Offset Minutes",
+            "description": "Minutes east of UTC at the scan location (-300 for US Central Daylight Time). Null when the carrier did not state an offset, in which case show `occurred_at_local` without a timezone label rather than assuming one.",
+            "examples": [-300]
+          },
+          "city": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "City"
+          },
+          "state": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "State"
+          },
+          "postal_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Postal Code"
+          },
+          "country": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Country"
+          },
+          "exception_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exception Code",
+            "description": "The carrier's code for a failed delivery attempt.",
+            "examples": [
+              "A1"
+            ]
+          },
+          "exception_description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exception Description",
+            "description": "The carrier's own reason for a failed attempt. Show it verbatim — it is what the recipient will be told if they contact the carrier.",
+            "examples": [
+              "Customer not available or business closed"
+            ]
+          },
+          "carrier_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Carrier Code",
+            "description": "The carrier's raw event code. Operator surfaces only; null elsewhere.",
+            "examples": [
+              "OD"
+            ]
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source",
+            "description": "Which signal recorded this scan — `webhook` or `poll`. Operator surfaces only; null elsewhere.",
+            "examples": [
+              "webhook"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "status_label",
+          "occurred_at"
+        ],
+        "title": "DocumentMailingTrackingEventRead",
+        "description": "One carrier scan — a single line on the timeline."
+      },
       "DocumentRequestCancel": {
         "properties": {
           "reason": {
@@ -18952,6 +20563,96 @@
         "title": "DocumentShippingMethodItem",
         "description": "One shippable service and whether it is offered."
       },
+      "DocumentShippingMethodQuote": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key",
+            "description": "Carrier service key — send this as `mail_type` on create.",
+            "examples": [
+              "usps_ground_advantage"
+            ]
+          },
+          "label": {
+            "type": "string",
+            "title": "Label",
+            "description": "Display name for this service.",
+            "examples": [
+              "USPS Ground Advantage"
+            ]
+          },
+          "fee": {
+            "type": "number",
+            "title": "Fee",
+            "description": "What you will be billed for this document, in major currency units.",
+            "examples": [8.45]
+          },
+          "fee_percentage": {
+            "type": "number",
+            "title": "Fee Percentage",
+            "description": "Percentage-based surcharge applied on top of `fee`, if any.",
+            "default": 0,
+            "examples": [0]
+          },
+          "carrier_cost": {
+            "type": "number",
+            "title": "Carrier Cost",
+            "description": "The carrier's own rate, before markup.",
+            "examples": [6.2]
+          },
+          "markup_fee": {
+            "type": "number",
+            "title": "Markup Fee",
+            "description": "Finogate's markup on top of `carrier_cost`.",
+            "examples": [2.25]
+          },
+          "estimated_days": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Estimated Days",
+            "description": "Carrier's estimated transit time in days, as a range (e.g. `1-3`).",
+            "examples": [
+              "1-3"
+            ]
+          },
+          "requires_document": {
+            "type": "boolean",
+            "title": "Requires Document",
+            "description": "Whether this service requires the document PDF at create time.",
+            "default": true
+          },
+          "attachment_fee_per_page": {
+            "type": "number",
+            "title": "Attachment Fee Per Page",
+            "description": "Per-page rate for extra attachments. Do not multiply by page count to get a total — see `attachment_fee`.",
+            "examples": [0.25]
+          },
+          "attachment_fee": {
+            "type": "number",
+            "title": "Attachment Fee",
+            "description": "The real total attachment fee for the page count you requested.",
+            "examples": [0.75]
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "fee",
+          "carrier_cost",
+          "markup_fee",
+          "attachment_fee_per_page",
+          "attachment_fee"
+        ],
+        "title": "DocumentShippingMethodQuote",
+        "description": "One in-house mailing service, priced against a specific destination.\n\nWhat ``GET /document-mailing/methods`` returns per item — distinct from\n:class:`DocumentShippingMethodItem`, which is the admin enable/disable\nconfig shape and carries no pricing."
+      },
       "DocumentShippingMethodsUpdate": {
         "properties": {
           "methods": {
@@ -19064,6 +20765,707 @@
         ],
         "title": "DocumentShippingPickupLocationUpdate",
         "description": "SUA request body to set the global document-shipping pickup/origin address."
+      },
+      "DocumentShippingRead": {
+        "properties": {
+          "document_shipping_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Document Shipping Id",
+            "examples": [
+              "9b1e6c2a-4f3d-4a8b-9c7e-2d5f1a6b3c4d"
+            ]
+          },
+          "payment_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Payment Id",
+            "examples": [
+              "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "examples": [
+              "mailed"
+            ]
+          },
+          "mail_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mail Type",
+            "examples": [
+              "usps_ground_advantage"
+            ]
+          },
+          "amount": {
+            "type": "number",
+            "title": "Amount",
+            "examples": [0]
+          },
+          "fee_amount": {
+            "type": "number",
+            "title": "Fee Amount",
+            "default": 0,
+            "examples": [8.45]
+          },
+          "total_amount": {
+            "type": "number",
+            "title": "Total Amount",
+            "examples": [8.45]
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency",
+            "examples": [
+              "USD"
+            ]
+          },
+          "recipient": {
+            "$ref": "#/components/schemas/DocumentShippingRecipient"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description",
+            "examples": [
+              "Q3 invoice packet"
+            ]
+          },
+          "invoice_number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Invoice Number",
+            "examples": [
+              "INV-10432"
+            ]
+          },
+          "intent_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Intent Status",
+            "examples": [
+              "succeeded"
+            ]
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At"
+          },
+          "attachments": {
+            "items": {
+              "$ref": "#/components/schemas/DocumentMailingAttachmentRead"
+            },
+            "type": "array",
+            "title": "Attachments"
+          },
+          "attachment_page_count": {
+            "type": "integer",
+            "title": "Attachment Page Count",
+            "default": 0,
+            "examples": [3]
+          },
+          "attachment_fee": {
+            "type": "number",
+            "title": "Attachment Fee",
+            "default": 0,
+            "examples": [0.75]
+          },
+          "document_page_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Document Page Count",
+            "examples": [10]
+          },
+          "document_fee": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Document Fee",
+            "examples": [4.9]
+          },
+          "shipping_fee": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Shipping Fee",
+            "examples": [6.2]
+          },
+          "carrier_cost": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Carrier Cost",
+            "examples": [4.5]
+          },
+          "markup": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Markup",
+            "examples": [1.7]
+          },
+          "tracking": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DocumentShippingTrackingSummary"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "document_shipping_id",
+          "payment_id",
+          "status",
+          "amount",
+          "total_amount",
+          "currency",
+          "recipient"
+        ],
+        "title": "DocumentShippingRead",
+        "description": "A document-shipping's current state (sidecar detail over the payment intent)."
+      },
+      "DocumentShippingRecipient": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Name",
+            "examples": [
+              "Jane Smith"
+            ]
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 40
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phone",
+            "examples": [
+              "+12125550123"
+            ]
+          },
+          "line_1": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Line 1",
+            "examples": [
+              "123 Main St"
+            ]
+          },
+          "line_2": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Line 2",
+            "examples": [
+              "Apt 4B"
+            ]
+          },
+          "city": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "City",
+            "examples": [
+              "Austin"
+            ]
+          },
+          "state": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "State",
+            "examples": [
+              "TX"
+            ]
+          },
+          "zip": {
+            "type": "string",
+            "maxLength": 20,
+            "minLength": 1,
+            "title": "Zip",
+            "examples": [
+              "78701"
+            ]
+          },
+          "country": {
+            "type": "string",
+            "maxLength": 2,
+            "minLength": 2,
+            "title": "Country",
+            "default": "US",
+            "examples": [
+              "US"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "line_1",
+          "city",
+          "state",
+          "zip"
+        ],
+        "title": "DocumentShippingRecipient",
+        "description": "The postal address the physical check is mailed to."
+      },
+      "DocumentShippingTrackingRead": {
+        "properties": {
+          "trackable": {
+            "type": "boolean",
+            "title": "Trackable",
+            "description": "Whether this shipping service produces a tracking barcode at all. False for letter services, which carry a postage indicia instead — there is no number to follow and there never will be, so absent tracking on one of those is not a fault."
+          },
+          "tracking_number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tracking Number"
+          },
+          "carrier": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Carrier",
+            "description": "Carrier key.",
+            "examples": [
+              "fedex"
+            ]
+          },
+          "carrier_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Carrier Label",
+            "description": "Carrier name, for display.",
+            "examples": [
+              "FedEx"
+            ]
+          },
+          "service": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Service",
+            "description": "The shipping service bought.",
+            "examples": [
+              "FedEx Standard Overnight"
+            ]
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status",
+            "description": "Current delivery stage, taken from the most recent scan — not the furthest stage reached. A parcel that hit an exception after going out for delivery reads `exception`, because that is what is true now. Null when no scans have been recorded yet.",
+            "examples": [
+              "out_for_delivery"
+            ]
+          },
+          "status_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status Label",
+            "description": "Display form of `status`.",
+            "examples": [
+              "Out for delivery"
+            ]
+          },
+          "shipped_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Shipped At",
+            "description": "When the shipping label was purchased."
+          },
+          "estimated_delivery_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Estimated Delivery At",
+            "description": "The carrier's own delivery estimate, not a commitment from us. Present it as the carrier's estimate wherever it is shown."
+          },
+          "delivered_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delivered At",
+            "description": "When the carrier confirmed delivery. Delivery means the envelope reached the address — not that its contents were acted on."
+          },
+          "delivered_to": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delivered To",
+            "description": "Who the carrier recorded as accepting the parcel. Null until delivered, and on services that capture no signature — most of them — so its absence is never evidence of a problem.",
+            "examples": [
+              "J.SMITH"
+            ]
+          },
+          "synced_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Synced At",
+            "description": "When we last successfully read this shipment's status from the carrier. Show it, so how fresh the page is stays visible rather than assumed."
+          },
+          "carrier_tracking_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Carrier Tracking Url",
+            "description": "The carrier's own tracking page for this shipment."
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/DocumentMailingTrackingEventRead"
+            },
+            "type": "array",
+            "title": "Events",
+            "description": "Every scan we hold, oldest first. Empty while a label exists but the carrier has not scanned the parcel yet — which is normal for the first several hours and is not the same as tracking being unavailable."
+          }
+        },
+        "type": "object",
+        "required": [
+          "trackable"
+        ],
+        "title": "DocumentShippingTrackingRead",
+        "description": "A shipment's full journey: where it is now, and everywhere it has been."
+      },
+      "DocumentShippingTrackingSummary": {
+        "properties": {
+          "trackable": {
+            "type": "boolean",
+            "title": "Trackable",
+            "description": "Whether this shipping service produces a tracking barcode at all. False for letter services, which carry a postage indicia instead — there is no number to follow and there never will be, so absent tracking on one of those is not a fault."
+          },
+          "tracking_number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tracking Number"
+          },
+          "carrier": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Carrier",
+            "description": "Carrier key.",
+            "examples": [
+              "fedex"
+            ]
+          },
+          "carrier_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Carrier Label",
+            "description": "Carrier name, for display.",
+            "examples": [
+              "FedEx"
+            ]
+          },
+          "service": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Service",
+            "description": "The shipping service bought.",
+            "examples": [
+              "FedEx Standard Overnight"
+            ]
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status",
+            "description": "Current delivery stage, taken from the most recent scan — not the furthest stage reached. A parcel that hit an exception after going out for delivery reads `exception`, because that is what is true now. Null when no scans have been recorded yet.",
+            "examples": [
+              "out_for_delivery"
+            ]
+          },
+          "status_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status Label",
+            "description": "Display form of `status`.",
+            "examples": [
+              "Out for delivery"
+            ]
+          },
+          "shipped_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Shipped At",
+            "description": "When the shipping label was purchased."
+          },
+          "estimated_delivery_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Estimated Delivery At",
+            "description": "The carrier's own delivery estimate, not a commitment from us. Present it as the carrier's estimate wherever it is shown."
+          },
+          "delivered_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delivered At",
+            "description": "When the carrier confirmed delivery. Delivery means the envelope reached the address — not that its contents were acted on."
+          },
+          "delivered_to": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delivered To",
+            "description": "Who the carrier recorded as accepting the parcel. Null until delivered, and on services that capture no signature — most of them — so its absence is never evidence of a problem.",
+            "examples": [
+              "J.SMITH"
+            ]
+          },
+          "synced_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Synced At",
+            "description": "When we last successfully read this shipment's status from the carrier. Show it, so how fresh the page is stays visible rather than assumed."
+          },
+          "carrier_tracking_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Carrier Tracking Url",
+            "description": "The carrier's own tracking page for this shipment."
+          }
+        },
+        "type": "object",
+        "required": [
+          "trackable"
+        ],
+        "title": "DocumentShippingTrackingSummary",
+        "description": "Where a shipment is, without the scan list.\n\nNested into shipment detail and list responses so a caller rendering a\nstatus column never has to fetch the full timeline per row."
       },
       "EmailAttachment": {
         "properties": {
@@ -22271,6 +24673,79 @@
         ],
         "title": "KycRecordRead"
       },
+      "LedgerAlertAccountUpdate": {
+        "properties": {
+          "alert_low_balance_threshold_minor": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alert Low Balance Threshold Minor"
+          },
+          "clear_threshold": {
+            "type": "boolean",
+            "title": "Clear Threshold",
+            "description": "Remove the threshold entirely. Null cannot express this on a partial update, so it gets its own flag.",
+            "default": false
+          },
+          "drift_tolerance_minor": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Drift Tolerance Minor"
+          },
+          "reset_baseline": {
+            "type": "boolean",
+            "title": "Reset Baseline",
+            "description": "Accept the CURRENT drift as the new known residual. Use after correcting a discrepancy, so the digest stops reporting a gap that has been dealt with.",
+            "default": false
+          }
+        },
+        "type": "object",
+        "title": "LedgerAlertAccountUpdate",
+        "description": "Partial update of one account's alerting configuration.\n\nEvery field is optional so the panel can save one control at a time. Setting\n``alert_low_balance_threshold_minor`` to null clears it, which switches\nlow-balance alerting off for that account (and the digest says so, rather\nthan going quietly inactive)."
+      },
+      "LedgerAlertSettingsUpdate": {
+        "properties": {
+          "enabled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enabled"
+          },
+          "channel_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Channel Id"
+          }
+        },
+        "type": "object",
+        "title": "LedgerAlertSettingsUpdate",
+        "description": "Partial update — omitted fields are left alone."
+      },
       "ListResponse": {
         "properties": {
           "status_code": {
@@ -22354,6 +24829,93 @@
         ],
         "title": "ListResponse",
         "description": "Standard response wrapper for list responses.\n\nDeclare ``ListResponse[list[SomeModel]]`` to render the real ``data``\narray schema in OpenAPI/Swagger; a bare ``ListResponse`` leaves ``data``\nuntyped."
+      },
+      "ListResponse_list_DocumentShippingRead__": {
+        "properties": {
+          "status_code": {
+            "type": "integer",
+            "title": "Status Code",
+            "description": "HTTP status code for the response."
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/DocumentShippingRead"
+            },
+            "type": "array",
+            "title": "Data",
+            "description": "Payload or error details."
+          },
+          "query_generated_time": {
+            "type": "integer",
+            "title": "Query Generated Time",
+            "description": "UTC timestamp (milliseconds since epoch) when response was generated."
+          },
+          "row_count": {
+            "type": "integer",
+            "minimum": 0,
+            "title": "Row Count",
+            "description": "Total rows matching the request filters (not just this page)."
+          },
+          "limit": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Limit",
+            "description": "Page size used for this response. Null for cursor-paginated endpoints."
+          },
+          "current_page": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Page",
+            "description": "1-indexed page number for this response. Null for cursor-paginated endpoints."
+          },
+          "total_page_number": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Page Number",
+            "description": "Total number of pages given the current limit. Null for cursor-paginated endpoints."
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor",
+            "description": "Cursor for the next page, if available."
+          }
+        },
+        "type": "object",
+        "required": [
+          "status_code",
+          "data",
+          "query_generated_time",
+          "row_count"
+        ],
+        "title": "ListResponse[list[DocumentShippingRead]]"
       },
       "ListResponse_list_FileScanRead__": {
         "properties": {
@@ -32076,6 +34638,101 @@
         "title": "PlatformUserDetailsUpdate",
         "description": "Update a user's name on the platform.\n\nEvery field is optional; send only what you want to change. Only the name is\ntouched — email, status, wallets, and the individual/business type are left\nuntouched (the type is fixed at creation). For an individual, update\n`first_name`/`last_name`; for a business, update `business_name`. If the user\nhas already passed identity verification, a changed name must match the\nverified name on file (case-insensitive) or the request is rejected."
       },
+      "PlatformUserMailingAddressUpdate": {
+        "properties": {
+          "mailing_line_1": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mailing Line 1"
+          },
+          "mailing_line_2": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mailing Line 2"
+          },
+          "mailing_city": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mailing City"
+          },
+          "mailing_state": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mailing State"
+          },
+          "mailing_zip_code": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 20
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mailing Zip Code"
+          },
+          "mailing_country": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2,
+                "minLength": 2
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mailing Country",
+            "description": "ISO 3166-1 alpha-2 country code, e.g. `US`."
+          },
+          "mailing_phone": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 40
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mailing Phone",
+            "description": "Required for the address to be usable on a FedEx label — FedEx rejects a shipment with no shipper phone."
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "PlatformUserMailingAddressUpdate",
+        "description": "Set or replace a user's mailing address.\n\nThis is the address printed on the shipper/FROM block of a mailed-document\n(USPS/FedEx) shipping label, used in place of your platform's default\ncollection address once every field here — including `mailing_phone`, which\nFedEx requires — is present.\n\nA full replace, not a merge: send every field you want kept on each call.\nSend an all-null body to clear the address (the label then falls back to the\ndefault collection address)."
+      },
       "PlatformUserRead": {
         "properties": {
           "user_id": {
@@ -32198,6 +34855,85 @@
             ],
             "title": "Kyb Status",
             "description": "This user's own KYB status — a ``ComplianceCheckStatus`` code (1=pending, 2=in_review, 3=approved, 4=rejected). For the tenant's master user this is the platform's governing (onboarding-linked) KYB; for an end user it is their individual business verification. Null if no KYB check exists yet."
+          },
+          "mailing_line_1": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mailing Line 1",
+            "description": "Sender mailing address printed on the shipper/FROM block of a mailed-document (USPS/FedEx) shipping label. Used in place of your platform's default collection address once every `mailing_*` field below — including `mailing_phone` — is set. Manage it with `PATCH /v1/platform/users/{user_id}/mailing-address`."
+          },
+          "mailing_line_2": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mailing Line 2"
+          },
+          "mailing_city": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mailing City"
+          },
+          "mailing_state": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mailing State"
+          },
+          "mailing_zip_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mailing Zip Code"
+          },
+          "mailing_country": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mailing Country",
+            "description": "ISO 3166-1 alpha-2 country code, e.g. `US`."
+          },
+          "mailing_phone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mailing Phone"
           }
         },
         "type": "object",
