@@ -40,7 +40,8 @@
               "api-reference/users/get-user",
               "api-reference/users/activate-or-deactivate-user",
               "api-reference/users/deactivate-user",
-              "api-reference/users/update-user-details"
+              "api-reference/users/update-user-details",
+              "api-reference/users/set-user-mailing-address"
             ]
           },
           {
