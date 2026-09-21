@@ -1,0 +1,4 @@
+# Endpoints that are live but intentionally not in the public docs.
+# One "METHOD /path" per line; * wildcards allowed. Lines starting with # are comments.
+# Example:
+# GET /v1/platform/accounting/*

@@ -1,0 +1,11 @@
+# Mintlify
+node_modules/
+.mintlify/
+
+# Claude Code: keep the shared skill, drop per-developer state
+.claude/*
+!.claude/skills/
+.claude/settings.local.json
+
+# api_docs_audit.py working files if written inside the repo
+plan*.json

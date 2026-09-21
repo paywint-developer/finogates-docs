@@ -108,7 +108,8 @@
               "api-reference/bank-accounts/list-virtual-bank-accounts",
               "api-reference/bank-accounts/refresh-virtual-bank-account-balance",
               "api-reference/bank-accounts/get-virtual-bank-account",
-              "api-reference/bank-accounts/list-all-bank-accounts"
+              "api-reference/bank-accounts/list-all-bank-accounts",
+              "api-reference/bank-accounts/get-bank-account-relink-link"
             ]
           },
           {
@@ -224,11 +225,23 @@
             "group": "Payments",
             "expanded": false,
             "pages": [
-              "api-reference/payments/submit-payment",
-              "api-reference/payments/wallet-to-wallet-internal-transfer",
+              "api-reference/payments/request-payment-payload",
+              "api-reference/payments/get-payment-request",
+              "api-reference/payments/create-payment-from-request",
               "api-reference/payments/list-payments",
               "api-reference/payments/get-payment",
-              "api-reference/payments/get-charge-attempt",
+              "api-reference/payments/cancel-payment",
+              "api-reference/payments/get-payment-delivery-windows",
+              "api-reference/payments/get-banking-calendar",
+              "api-reference/payments/get-charge-attempt"
+            ]
+          },
+          {
+            "group": "Payments (Legacy)",
+            "expanded": false,
+            "pages": [
+              "api-reference/payments/submit-payment",
+              "api-reference/payments/wallet-to-wallet-internal-transfer",
               "api-reference/payments/card-to-merchant-payment"
             ]
           },
