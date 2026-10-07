@@ -1,0 +1,89 @@
+---
+title: 'Card Transfers Overview'
+description: 'Move money between a user''s card and their wallet.'
+---
+
+Card transfers move money in both directions between a user's card and their own wallet:
+
+- **Card to account** (`card_to_account`): pull money from the user's card into their wallet.
+- **Account to card** (`account_to_card`): push money from the user's wallet to their card.
+
+<Note>
+Card transfers are available in the **Sandbox environment** only. In production these endpoints answer `403` with code `sandbox_only`.
+</Note>
+
+## How it works
+
+<Steps>
+  <Step title="Enable the directions you need">
+    Call [Enable a Card Transfer Direction](/api-reference/card-transfers/enable-card-transfer) once per direction, with `product` set to `card_to_account` or `account_to_card`. In sandbox the request is approved at once. Check both directions with [Card Transfer Direction Status](/api-reference/card-transfers/get-card-transfer-status).
+  </Step>
+  <Step title="Add the user's card">
+    Call [Add a Card](/api-reference/card-transfers/add-transfer-card) with the user's `user_id` and card details. The response carries the `card_id`. The card starts as `pending_approval` and can already be used: Finogate approves it together with its first transfer. Read cards back with [Get a Card](/api-reference/card-transfers/get-transfer-card) and [List Cards](/api-reference/card-transfers/list-transfer-cards).
+  </Step>
+  <Step title="Request a payment payload">
+    Call [Request a Payment Payload](/api-reference/payments/request-payment-payload) with `account` as the user's wallet. Use `card` → `account` for money in and `account` → `card` for money out. The response carries a `reference` and the fee.
+  </Step>
+  <Step title="Create the payment">
+    Call [Create a Payment from a Request](/api-reference/payments/create-payment-from-request) with the `reference`, the `user_id`, the `card_id` and the user's `wallet_id`. Both the card and the wallet must belong to that user.
+  </Step>
+  <Step title="Track it to settlement">
+    The payment waits as `pending_review` until Finogate approves it, then moves to `processing` and settles on its own. Read it with [Get Payment](/api-reference/payments/get-payment), or follow the webhooks.
+  </Step>
+</Steps>
+
+## Example: card to account
+
+**1. Request the payload**
+
+```json POST /v1/platform/payments/request-payload
+{
+  "source_type": "card",
+  "destination_type": "account",
+  "amount": "25.00",
+  "currency": "USD",
+  "idempotency_key": "6f1c2a9e-3d4b-4c8a-9f21-0b7e5d3a1c44"
+}
+```
+
+**2. Create the payment**
+
+```json POST /v1/platform/payments/create-transaction
+{
+  "reference": "<reference from step 1>",
+  "user_id": "<user_id>",
+  "card_id": "<card_id>",
+  "wallet_id": "<the user's wallet_id>",
+  "idempotency_key": "0d9b7e64-1f3a-4b2c-8e5d-7a6c9f0b2e13"
+}
+```
+
+For account to card, swap the types: `"source_type": "account"` and `"destination_type": "card"`. The `create-transaction` body is the same.
+
+## Webhooks
+
+| Event | When |
+| --- | --- |
+| `payment_method.card.added` | The card was added and is waiting for approval. |
+| `payment_method.card.review_approved` / `.review_rejected` | Finogate approved or rejected the card. |
+| `payment_intent.created` | The payment was created and is waiting for review. |
+| `payment_intent.approved` | Finogate approved the payment. |
+| `payment_intent.processing` | The payment is moving. |
+| `payment_intent.settled` / `.failed` / `.rejected` | The payment finished. |
+
+## Testing in sandbox
+
+| Value | Result |
+| --- | --- |
+| Any 12–19 digit card number | Reads as a Visa, and its transfers settle. |
+| Card number `4000000000000002` | Its transfers are declined when they settle. |
+| CVV `000` | Verification fails (`card_cvv_mismatch`) and the card is not added. |
+
+## Common errors
+
+| Code | Meaning |
+| --- | --- |
+| `product_not_enabled` | The direction isn't enabled for your platform yet. |
+| `card_not_active` | The card was rejected or switched off. |
+| `not_owned_by_user` | The card or the wallet doesn't belong to `user_id`. |
+| `field_not_allowed` | The card is a card-processing card, not one added for card transfers. |

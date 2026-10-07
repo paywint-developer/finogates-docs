@@ -2,3 +2,12 @@
 # One "METHOD /path" per line; * wildcards allowed. Lines starting with # are comments.
 # Example:
 # GET /v1/platform/accounting/*
+
+# Astra card transfers: live, but kept out of the public docs for now.
+* /v1/platform/payment/cards/*
+* /v1/platform/payment-methods/cards/connect*
+# Sandbox card transfers move money through the unified payment API
+# (request-payload + create-transaction), not these endpoints.
+POST /v1/platform/card-transfers/card-to-account
+POST /v1/platform/card-transfers/account-to-card
+GET /v1/platform/card-transfers/transfers*

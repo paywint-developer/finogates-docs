@@ -145,22 +145,12 @@
             "group": "Card Transfers",
             "expanded": false,
             "pages": [
-              "api-reference/card-transfers/get-aft-status",
-              "api-reference/card-transfers/enable-aft",
-              "api-reference/card-transfers/get-oct-status",
-              "api-reference/card-transfers/enable-oct",
-              "api-reference/card-transfers/enroll-card-aft",
-              "api-reference/card-transfers/get-aft-enrollment-status",
-              "api-reference/card-transfers/enroll-card-oct",
-              "api-reference/card-transfers/get-oct-enrollment-status",
-              "api-reference/card-transfers/disable-card-enrollment",
-              "api-reference/card-transfers/card-to-account-transfer",
-              "api-reference/card-transfers/account-to-card-transfer",
-              "api-reference/card-transfers/list-card-transfers",
-              "api-reference/card-transfers/get-card-transfer",
-              "api-reference/card-transfers/connect-card",
-              "api-reference/card-transfers/connect-card-embedded",
-              "api-reference/card-transfers/connect-card-callback"
+              "api-reference/card-transfers/overview",
+              "api-reference/card-transfers/enable-card-transfer",
+              "api-reference/card-transfers/get-card-transfer-status",
+              "api-reference/card-transfers/add-transfer-card",
+              "api-reference/card-transfers/get-transfer-card",
+              "api-reference/card-transfers/list-transfer-cards"
             ]
           },
           {
