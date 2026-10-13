@@ -1,0 +1,122 @@
+---
+title: "Payment Events"
+description: "Webhooks for the lifecycle of a payment."
+icon: "money-bill-transfer"
+---
+
+Every payment — wallet funding, withdrawal, transfer or card charge — sends `payment_intent.*` events.
+
+## Events
+
+| Event                              | Sent when                                                        |
+|------------------------------------|------------------------------------------------------------------|
+| `payment_intent.created`           | The payment is created.                                          |
+| `payment_intent.validated`         | A card payment is submitted and held for review.                 |
+| `payment_intent.approved`          | The payment is approved.                                         |
+| `payment_intent.rejected`          | The payment is rejected during review.                           |
+| `payment_intent.executing`         | The payment is sent for processing.                              |
+| `payment_intent.succeeded`         | The payment completed.                                           |
+| `payment_intent.settled`           | The funds settled.                                               |
+| `payment_intent.failed`            | The payment failed. `failure_reason` says why.                   |
+| `payment_intent.voided`            | The payment was cancelled before it settled.                     |
+| `payment_intent.refunded`          | The payment was refunded.                                        |
+| `payment_intent.charged_back`      | The payment was reversed by a chargeback.                        |
+| `payment_intent.document_scanned`  | A document attached to the payment was scanned.                  |
+
+## Example
+
+```json
+{
+  "id": "6f1d2c8e-4b7a-4e0f-9a51-2c3d4e5f6a7b",
+  "type": "payment_intent.succeeded",
+  "event_type": "payment_intent.succeeded",
+  "created_at": "2026-10-13T09:15:22.481203+00:00",
+  "data": {
+    "intent_id": "5cd7a3c1-4b45-4148-b383-299553699745",
+    "transaction_id": "a5299046-1f62-4f78-8239-6e724d99c38b",
+    "user_id": "b3a9b622-cc63-4d3c-aad6-2d8e29e6f9d4",
+    "source_wallet_id": "44444444-4444-4444-8444-444444444444",
+    "destination_wallet_id": null,
+    "payer_user_id": "b3a9b622-cc63-4d3c-aad6-2d8e29e6f9d4",
+    "payee_user_id": null,
+    "product_id": "7c1e2d3f-4a5b-4c6d-8e7f-9a0b1c2d3e4f",
+    "amount": 100.0,
+    "currency": "USD",
+    "status": 4,
+    "status_code": 4,
+    "status_name": "succeeded",
+    "failure_reason": null
+  }
+}
+```
+
+## Data Fields
+
+Fields that don't apply to a payment are `null` or omitted.
+
+<ResponseField name="intent_id" type="string">
+  The payment id. Some rejection and cancellation events send it as `payment_id`.
+</ResponseField>
+
+<ResponseField name="transaction_id" type="string">
+  The transaction that moved the money, once there is one.
+</ResponseField>
+
+<ResponseField name="user_id" type="string">
+  The user the payment belongs to.
+</ResponseField>
+
+<ResponseField name="source_wallet_id" type="string">
+  The wallet debited. `wallet_id` is also sent when it differs from `source_wallet_id`.
+</ResponseField>
+
+<ResponseField name="destination_wallet_id" type="string">
+  The wallet credited.
+</ResponseField>
+
+<ResponseField name="payer_user_id" type="string">
+  The paying user.
+</ResponseField>
+
+<ResponseField name="payee_user_id" type="string">
+  The receiving user.
+</ResponseField>
+
+<ResponseField name="amount" type="number">
+  The amount in major units, e.g. `100.0` for $100.
+</ResponseField>
+
+<ResponseField name="currency" type="string">
+  ISO 4217 currency code.
+</ResponseField>
+
+<ResponseField name="status" type="integer | string">
+  The payment status. When numeric, `status_code` and `status_name` are added (see below). Approval and review events send a string, e.g. `approved`.
+</ResponseField>
+
+<ResponseField name="failure_reason" type="string">
+  Why the payment failed, was rejected or was cancelled.
+</ResponseField>
+
+<ResponseField name="reference" type="string">
+  For payments created through the unified payment API: the quote reference, with `source_type`, `destination_type` and `destinations`.
+</ResponseField>
+
+## Status Codes
+
+| `status_code` | `status_name`    |
+|---------------|------------------|
+| 1             | `pending`        |
+| 2             | `pending_review` |
+| 3             | `processing`     |
+| 4             | `succeeded`      |
+| 5             | `settled`        |
+| 6             | `failed`         |
+| 7             | `rejected`       |
+| 8             | `voided`         |
+| 9             | `refund_pending` |
+| 10            | `refunded`       |
+
+<Note>
+When `status` is numeric, the envelope's `type` is `payment_intent.<status_name>`. For example, `payment_intent.created` arrives with `type` set to `payment_intent.pending`. Route on `event_type`.
+</Note>

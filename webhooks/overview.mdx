@@ -1,49 +1,29 @@
 ---
 title: "Overview"
-description: "Learn how Finogates uses webhooks to deliver real-time event notifications."
+description: "Receive real-time notifications when something changes on your platform."
 icon: "book-open"
 ---
 
-Finogates webhooks allow your application to receive **real-time notifications** whenever an event occurs — such as a payment success, wallet funding, or KYC approval.
+Webhooks notify your server when an event happens — a payment succeeds, a bank account is added, a user's KYC is approved — so you don't have to poll the API.
 
-Webhooks are essential for keeping your system synchronized without the need for polling the API.  
-They let you automatically respond to user and transaction updates as they happen.
+## How It Works
 
----
-
-## How Webhooks Work
-
-1. You register a single HTTPS endpoint (e.g., `https://yourapp.com/webhook`).
-2. Finogates sends a `POST` request to that URL whenever an event occurs.
-3. Your endpoint verifies the request’s signature for authenticity.
-4. Your system processes the event and returns a `200 OK` response.
+1. You register an HTTPS endpoint and choose the events it receives.
+2. When an event occurs, Finogates sends it to your endpoint as a JSON `POST`.
+3. Your endpoint verifies the signature and responds with a `2xx` status.
+4. Failed deliveries are retried.
 
 <CardGroup cols={2}>
-  <Card title="Webhook Setup" icon="cog" href="/webhooks/setup">
-    Learn how to configure webhook URLs for Sandbox and Production.
+  <Card title="Setup" icon="cog" href="/webhooks/setup">
+    Register an endpoint in Sandbox and Production.
   </Card>
-  <Card title="Webhook Events" icon="shield" href="/webhooks/events">
-    Ensure webhook events are configured.
+  <Card title="Events" icon="calendar" href="/webhooks/events">
+    The structure of every event.
+  </Card>
+  <Card title="Signature Verification" icon="shield" href="/webhooks/signature-verification">
+    Confirm a webhook came from Finogates.
+  </Card>
+  <Card title="Retry Behavior" icon="rotate" href="/webhooks/retry-behavior">
+    When and how deliveries are retried.
   </Card>
 </CardGroup>
-
----
-
-## Use Cases
-
-- Automatically update payment or wallet statuses in your app.  
-- Send notifications to users on successful transactions.  
-- Track verification events for users and businesses.  
-- Reconcile real-time balances and payouts.
-
----
-
-## Next Steps
-
-* Configure endpoints in **Sandbox** and **Production** — see [Webhook Setup](/webhooks/setup).
-* Learn about delivery retries — see [Retry Behavior](/webhooks/retry-behavior).  
-* Explore webhook events and available event types — see [Events](/webhooks/events).
-
-<Card title="Explore Events" icon="radio" href="/webhooks/events">
-  Understand webhook events and how they drive Finogates's real-time updates.
-</Card>

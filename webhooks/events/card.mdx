@@ -1,0 +1,75 @@
+---
+title: "Card Events"
+description: "Webhooks for a user's saved cards."
+icon: "credit-card"
+---
+
+## Events
+
+| Event                                   | Sent when                                         | Additional fields                                  |
+|-----------------------------------------|---------------------------------------------------|----------------------------------------------------|
+| `payment_method.card.added`             | A card is added.                                  | `card`, `status`, `requires_manual_review`         |
+| `payment_method.card.add_failed`        | A card could not be added.                        | `failure_reason`, `failure_message`                |
+| `payment_method.card.review_pending`    | A card is held for manual review.                 | `card`, `status` (`under_review`)                  |
+| `payment_method.card.review_approved`   | The review approved the card.                     | `status` (`approved`), `reason`                    |
+| `payment_method.card.review_rejected`   | The review rejected the card.                     | `status` (`rejected`), `reason`                    |
+| `payment_method.card.image_requested`   | The user must upload card images.                 | `card_id`, `card`, `note`, `verification_state`    |
+| `payment_method.card.deleted`           | A card is removed.                                | `card`, `status` (`disabled`)                      |
+
+## Example
+
+```json
+{
+  "id": "9a0b1c2d-3e4f-4a5b-8c6d-7e8f9a0b1c2d",
+  "type": "payment_method.card.added",
+  "event_type": "payment_method.card.added",
+  "created_at": "2026-10-13T12:01:09.335871+00:00",
+  "data": {
+    "event_id": "2b3c4d5e-6f7a-4b8c-9d0e-1f2a3b4c5d6e",
+    "event_type": "payment_method.card.added",
+    "created_at": "2026-10-13T12:01:09.271440+00:00",
+    "platform_id": "c1d2e3f4-a5b6-4c7d-8e9f-0a1b2c3d4e5f",
+    "tenant_id": "c1d2e3f4-a5b6-4c7d-8e9f-0a1b2c3d4e5f",
+    "user_id": "b3a9b622-cc63-4d3c-aad6-2d8e29e6f9d4",
+    "payment_method_id": "a9ee8f8f-eefd-447e-8d70-ed7343025743",
+    "payment_method_type": "card",
+    "card": {
+      "last4": "4242",
+      "brand": "visa",
+      "exp_month": 12,
+      "exp_year": 2029,
+      "cardholder_name": "John Doe",
+      "cardholder_first_name": "John",
+      "cardholder_last_name": "Doe",
+      "nickname": null
+    },
+    "status": "active"
+  }
+}
+```
+
+## Data Fields
+
+<ResponseField name="payment_method_id" type="string">
+  The card's id. `image_requested` sends it as `card_id`.
+</ResponseField>
+
+<ResponseField name="user_id" type="string">
+  The user the card belongs to.
+</ResponseField>
+
+<ResponseField name="card" type="object">
+  Card details. Always `last4` and `brand`; `card.added` also sends expiry, cardholder name and nickname.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  The card's status, e.g. `active` or `pending`.
+</ResponseField>
+
+<ResponseField name="requires_manual_review" type="boolean">
+  On `card.added`, `true` when the card is held for review; `review_reason` says why.
+</ResponseField>
+
+<ResponseField name="platform_id" type="string">
+  Your platform id. `tenant_id` has the same value.
+</ResponseField>

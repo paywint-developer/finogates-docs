@@ -10,18 +10,19 @@ icon: "key"
 Include the API key in the request header as `X-Api-Key`, and `X-Api-Secret`.
 
 ```curl Example Api Call theme={null}
-curl -X POST "https://<environment>/api/example" \
+curl -X POST "https://<environment>/v1/platform/users" \
   -H "Content-Type: application/json" \
   -H "X-Api-Key: YOUR_API_KEY" \
   -H "X-Api-Secret: YOUR_API_SECRET" \
   -d '{
-    "name": "John Doe",
-    "email": "john@example.com",
-    "phone": "9876543210",
-    "phone_country_code": "+1"
+    "first_name": "John",
+    "last_name": "Doe",
+    "phone": "+15551234567"
   }'
 
 ```
+
+This example creates a user with a phone number only. A user needs an `email`, a `phone` in E.164 format, or both — see [Create User](/api-reference/users/create-user).
 
 Make sure to use the correct API key for the appropriate [environment](/get-started/environments). Using the wrong key or URL may result in authentication failures.
 

@@ -1,0 +1,44 @@
+---
+title: "KYB Events"
+description: "Webhooks for a business user's verification."
+icon: "building"
+---
+
+## Events
+
+| Event               | Sent when                                       | Additional fields                                                  |
+|---------------------|-------------------------------------------------|--------------------------------------------------------------------|
+| `user_kyb.applied`  | The business submitted verification.            | `status`                                                           |
+| `user_kyb.approved` | Verification is approved.                       | —                                                                  |
+| `user_kyb.rejected` | Verification is rejected.                       | `reject_reason`                                                    |
+| `user_kyb.reopened` | Verification is reopened for the user to redo.  | `reopen_reason`, `previous_status`, `reopen_count`, `cascaded_from` |
+| `user_kyb.deleted`  | The verification record is deleted.             | `delete_reason`, `cascaded_from`                                   |
+
+## Example
+
+```json
+{
+  "id": "5d6e7f8a-9b0c-4d1e-8f2a-3b4c5d6e7f8a",
+  "type": "user_kyb.approved",
+  "event_type": "user_kyb.approved",
+  "created_at": "2026-10-13T11:22:37.640218+00:00",
+  "data": {
+    "kyb_record_id": "8f9a0b1c-2d3e-4f5a-8b6c-7d8e9f0a1b2c",
+    "user_id": "b3a9b622-cc63-4d3c-aad6-2d8e29e6f9d4"
+  }
+}
+```
+
+## Data Fields
+
+<ResponseField name="kyb_record_id" type="string">
+  The verification record.
+</ResponseField>
+
+<ResponseField name="user_id" type="string">
+  The business user being verified.
+</ResponseField>
+
+<ResponseField name="cascaded_from" type="string">
+  Set when the change was caused by the user's KYC, e.g. `user_kyc.reopened` or `user_kyc.deleted`; otherwise `null` or omitted.
+</ResponseField>

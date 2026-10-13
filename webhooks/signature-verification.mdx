@@ -1,149 +1,85 @@
 ---
 title: "Webhook Signature Verification"
-description: "Verify that incoming webhooks are securely sent by Finogates using HMAC-SHA256 signatures."
+description: "Verify that a webhook was sent by Finogates."
 keywords: ["webhook", "signature", "hmac", "security"]
 icon: "shield"
 ---
 
-All webhooks sent by Finogates are signed using **HMAC-SHA256**.  
-You must verify this signature to confirm that the request:
+Every webhook is signed with HMAC-SHA256 using your endpoint's signing secret. Verify the signature before processing an event.
 
-- Originated from Finogates
-- Was not modified in transit
-- Is not a replayed request
+## Headers
 
----
+| Header                   | Description                                               |
+|--------------------------|-----------------------------------------------------------|
+| `X-Finogate-Signature`   | `sha256=` followed by the hex HMAC-SHA256 digest.         |
+| `X-Finogate-Timestamp`   | Unix time (seconds) when the request was signed.          |
+| `X-Finogate-Event-Id`    | The event `id`. Identical on every retry.                 |
+| `X-Finogate-Delivery-Id` | This endpoint's delivery of the event.                    |
 
-## Required Headers
-
-Every Finogates webhook request includes the following headers:
-
-| Header | Description |
-|--------|-------------|
-| `Finogates-Signature` | Signature header in the format `t=timestamp,v1=signature` |
-| `Finogates-Signature-Version` | Signature version (currently `1`) |
-| `Content-Type` | `application/json` |
-
-### Example
 ```http
-Finogates-Signature: t=1704978452,v1=5f0c2d7f0c0e9b...
-Finogates-Signature-Version: 1
+X-Finogate-Signature: sha256=5f0c2d7f0c0e9b4a8e1d3c6b9a7f2e4d1c8b5a3f6e9d2c7b4a1f8e5d3c6b9a7f
+X-Finogate-Timestamp: 1760346922
+X-Finogate-Event-Id: 6f1d2c8e-4b7a-4e0f-9a51-2c3d4e5f6a7b
+X-Finogate-Delivery-Id: 0e1f2a3b-4c5d-4e6f-8a7b-9c0d1e2f3a4b
 ```
 
----
+Your signing secret is in the [Developer Panel](https://app.finogates.com/developer-panel).
 
-## Obtaining Your Webhook Secret
+## Verifying a Request
 
-Navigate to the [Developer Panel](https://app.finogates.com/developer-panel) to obtain your secret key for verifying webhook signatures.
+1. Read the **raw** request body. Don't parse and re-serialize it.
+2. Build the signed message: `{X-Finogate-Timestamp}.{raw_body}`.
+3. Compute HMAC-SHA256 of the message with your secret, hex-encoded, and prefix it with `sha256=`.
+4. Compare it with `X-Finogate-Signature` using a constant-time comparison.
+5. Reject the request if the timestamp is more than 5 minutes from your current time.
 
----
-
-## Signature Construction
-
-Finogates signs the webhook payload using the following steps:
-
-### 1. Build the Signed Payload
-```txt
-{timestamp}.{raw_request_body}
-```
-
-* **timestamp** → Unix timestamp (seconds)
-* **raw_request_body** → Exact raw body bytes (no formatting changes)
-
-### 2. Generate HMAC
-```txt
-HMAC_SHA256(secret, signed_payload)
-```
-
-* **secret** → Your webhook signing secret
-* Output → Hex-encoded SHA-256 digest
-
----
-
-## Verification Steps
-
-Your webhook handler must:
-
-1. Read the **raw request body**
-2. Parse `t` and `v1` from `Finogates-Signature`
-3. Reject requests older than your allowed time window (recommended: **5 minutes**)
-4. Recompute the HMAC signature
-5. Compare using a **constant-time comparison**
-6. Respond with `200 OK` **only if verification succeeds**
-
----
-
-## Signature Verification Examples
+## Examples
 
 <CodeGroup>
 ```javascript Node.js
 const crypto = require("crypto");
 
-function verifyFinogatesWebhook(req, secret) {
-  const signatureHeader = req.headers["finogates-signature"];
-  if (!signatureHeader) throw new Error("Missing Finogates-Signature header");
+function verifyFinogatesWebhook(rawBody, headers, secret) {
+  const timestamp = headers["x-finogate-timestamp"];
+  const signature = headers["x-finogate-signature"];
+  if (!timestamp || !signature) throw new Error("Missing signature headers");
 
-  const parts = Object.fromEntries(
-    signatureHeader.replace(/\s/g, "").split(",").map(p => p.split("="))
-  );
-
-  const timestamp = parseInt(parts.t, 10);
-  const receivedSignature = parts.v1;
-
-  const now = Math.floor(Date.now() / 1000);
-  if (Math.abs(now - timestamp) > 300) {
-    throw new Error("Webhook timestamp outside allowed window");
+  if (Math.abs(Math.floor(Date.now() / 1000) - Number(timestamp)) > 300) {
+    throw new Error("Timestamp outside allowed window");
   }
 
-  const rawBody = req.rawBody; // MUST be raw bytes
-  const signedPayload = `${timestamp}.` + rawBody;
+  const expected =
+    "sha256=" +
+    crypto.createHmac("sha256", secret).update(`${timestamp}.${rawBody}`).digest("hex");
 
-  const expectedSignature = crypto
-    .createHmac("sha256", secret)
-    .update(signedPayload)
-    .digest("hex");
-
-  if (
-    !crypto.timingSafeEqual(
-      Buffer.from(expectedSignature),
-      Buffer.from(receivedSignature)
-    )
-  ) {
-    throw new Error("Invalid webhook signature");
+  const a = Buffer.from(expected);
+  const b = Buffer.from(signature);
+  if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) {
+    throw new Error("Invalid signature");
   }
-
-  return true;
 }
 ```
 ```python Python
-import hmac
 import hashlib
+import hmac
 import time
 
-def verify_finogates_webhook(raw_body: bytes, signature_header: str, secret: str):
-    parts = dict(item.split("=", 1) for item in signature_header.replace(" ", "").split(","))
-    timestamp = int(parts["t"])
-    received_signature = parts["v1"]
 
-    now = int(time.time())
-    if abs(now - timestamp) > 300:
-        raise Exception("Webhook timestamp outside allowed window")
+def verify_finogates_webhook(raw_body: bytes, headers: dict, secret: str) -> None:
+    timestamp = headers["X-Finogate-Timestamp"]
+    signature = headers["X-Finogate-Signature"]
 
-    signed_payload = f"{timestamp}.".encode() + raw_body
+    if abs(int(time.time()) - int(timestamp)) > 300:
+        raise ValueError("Timestamp outside allowed window")
 
-    expected_signature = hmac.new(
-        secret.encode(),
-        signed_payload,
-        hashlib.sha256
-    ).hexdigest()
+    message = f"{timestamp}.".encode() + raw_body
+    expected = "sha256=" + hmac.new(secret.encode(), message, hashlib.sha256).hexdigest()
 
-    if not hmac.compare_digest(expected_signature, received_signature):
-        raise Exception("Invalid webhook signature")
-
-    return True
+    if not hmac.compare_digest(expected, signature):
+        raise ValueError("Invalid signature")
 ```
 ```go Go
-package main
+package webhooks
 
 import (
 	"crypto/hmac"
@@ -151,63 +87,42 @@ import (
 	"encoding/hex"
 	"errors"
 	"strconv"
-	"strings"
 	"time"
 )
 
-func verifyFinogatesWebhook(rawBody []byte, signatureHeader string, secret string) error {
-	parts := map[string]string{}
-	for _, part := range strings.Split(strings.ReplaceAll(signatureHeader, " ", ""), ",") {
-		kv := strings.SplitN(part, "=", 2)
-		parts[kv[0]] = kv[1]
+func VerifyFinogatesWebhook(rawBody []byte, timestamp, signature, secret string) error {
+	ts, err := strconv.ParseInt(timestamp, 10, 64)
+	if err != nil {
+		return errors.New("invalid timestamp")
+	}
+	if d := time.Now().Unix() - ts; d > 300 || d < -300 {
+		return errors.New("timestamp outside allowed window")
 	}
 
-	timestamp, _ := strconv.ParseInt(parts["t"], 10, 64)
-	if abs(time.Now().Unix()-timestamp) > 300 {
-		return errors.New("webhook timestamp outside allowed window")
+	mac := hmac.New(sha256.New, []byte(secret))
+	mac.Write([]byte(timestamp + "."))
+	mac.Write(rawBody)
+	expected := "sha256=" + hex.EncodeToString(mac.Sum(nil))
+
+	if !hmac.Equal([]byte(expected), []byte(signature)) {
+		return errors.New("invalid signature")
 	}
-
-	signedPayload := append([]byte(strconv.FormatInt(timestamp, 10)+"."), rawBody...)
-	h := hmac.New(sha256.New, []byte(secret))
-	h.Write(signedPayload)
-	expected := hex.EncodeToString(h.Sum(nil))
-
-	if !hmac.Equal([]byte(expected), []byte(parts["v1"])) {
-		return errors.New("invalid webhook signature")
-	}
-
 	return nil
-}
-
-func abs(n int64) int64 {
-	if n < 0 {
-		return -n
-	}
-	return n
 }
 ```
 ```php PHP
 <?php
-function verifyFinogatesWebhook($rawBody, $signatureHeader, $secret) {
-    $parts = [];
-    foreach (explode(',', str_replace(' ', '', $signatureHeader)) as $item) {
-        [$k, $v] = explode('=', $item, 2);
-        $parts[$k] = $v;
+function verifyFinogatesWebhook(string $rawBody, string $timestamp, string $signature, string $secret): void
+{
+    if (abs(time() - (int) $timestamp) > 300) {
+        throw new Exception("Timestamp outside allowed window");
     }
 
-    $timestamp = intval($parts['t']);
-    if (abs(time() - $timestamp) > 300) {
-        throw new Exception("Webhook timestamp outside allowed window");
+    $expected = 'sha256=' . hash_hmac('sha256', $timestamp . '.' . $rawBody, $secret);
+
+    if (!hash_equals($expected, $signature)) {
+        throw new Exception("Invalid signature");
     }
-
-    $signedPayload = $timestamp . "." . $rawBody;
-    $expected = hash_hmac('sha256', $signedPayload, $secret);
-
-    if (!hash_equals($expected, $parts['v1'])) {
-        throw new Exception("Invalid webhook signature");
-    }
-
-    return true;
 }
 ```
 ```java Java
@@ -215,72 +130,40 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.util.HashMap;
+import java.util.HexFormat;
 
-public class WebhookVerifier {
-    public static void verify(byte[] rawBody, String signatureHeader, String secret) throws Exception {
-        HashMap<String, String> parts = new HashMap<>();
-        for (String item : signatureHeader.replace(" ", "").split(",")) {
-            String[] kv = item.split("=", 2);
-            parts.put(kv[0], kv[1]);
+public final class WebhookVerifier {
+    public static void verify(String rawBody, String timestamp, String signature, String secret) throws Exception {
+        if (Math.abs(System.currentTimeMillis() / 1000 - Long.parseLong(timestamp)) > 300) {
+            throw new SecurityException("Timestamp outside allowed window");
         }
-
-        long timestamp = Long.parseLong(parts.get("t"));
-        if (Math.abs(System.currentTimeMillis() / 1000 - timestamp) > 300) {
-            throw new Exception("Webhook timestamp outside allowed window");
-        }
-
-        String signedPayload = timestamp + "." + new String(rawBody, StandardCharsets.UTF_8);
 
         Mac mac = Mac.getInstance("HmacSHA256");
         mac.init(new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
-        byte[] expected = mac.doFinal(signedPayload.getBytes(StandardCharsets.UTF_8));
+        byte[] digest = mac.doFinal((timestamp + "." + rawBody).getBytes(StandardCharsets.UTF_8));
+        String expected = "sha256=" + HexFormat.of().formatHex(digest);
 
-        String received = parts.get("v1");
-        String computed = bytesToHex(expected);
-
-        if (!MessageDigest.isEqual(computed.getBytes(), received.getBytes())) {
-            throw new Exception("Invalid webhook signature");
+        if (!MessageDigest.isEqual(
+                expected.getBytes(StandardCharsets.UTF_8),
+                signature.getBytes(StandardCharsets.UTF_8))) {
+            throw new SecurityException("Invalid signature");
         }
-    }
-
-    private static String bytesToHex(byte[] bytes) {
-        StringBuilder sb = new StringBuilder();
-        for (byte b : bytes) sb.append(String.format("%02x", b));
-        return sb.toString();
     }
 }
 ```
 ```ruby Ruby
 require "openssl"
-require "time"
 
-def verify_finogates_webhook(raw_body, signature_header, secret)
-  parts = signature_header.gsub(" ", "").split(",").map { |p| p.split("=", 2) }.to_h
-  timestamp = parts["t"].to_i
+def verify_finogates_webhook(raw_body, timestamp, signature, secret)
+  raise "Timestamp outside allowed window" if (Time.now.to_i - timestamp.to_i).abs > 300
 
-  raise "Webhook timestamp outside allowed window" if (Time.now.to_i - timestamp).abs > 300
+  expected = "sha256=" + OpenSSL::HMAC.hexdigest("SHA256", secret, "#{timestamp}.#{raw_body}")
 
-  signed_payload = "#{timestamp}.#{raw_body}"
-  expected = OpenSSL::HMAC.hexdigest("SHA256", secret, signed_payload)
-
-  raise "Invalid webhook signature" unless Rack::Utils.secure_compare(expected, parts["v1"])
+  raise "Invalid signature" unless OpenSSL.fixed_length_secure_compare(expected, signature)
 end
 ```
-
 </CodeGroup>
 
----
-
-## Security Recommendations
-
-* Always read the **raw request body** (do not re-serialize JSON)
-* Enforce a **timestamp tolerance window** (recommended: 5 minutes)
-* Store your **webhook secret securely**
-* Reject requests with missing or malformed headers
-* Respond with **`200 OK` only after successful verification**
-
----
-
-Need help?
-Contact **[support@finogates.com](mailto:support@finogates.com)**
+<Note>
+`OpenSSL.fixed_length_secure_compare` raises when the lengths differ; treat that as an invalid signature.
+</Note>

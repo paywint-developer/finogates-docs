@@ -1,29 +1,29 @@
 ---
 title: "Retry Behavior"
-description: "Understand Finogates webhook delivery and retry logic."
+description: "How Finogates retries webhook deliveries."
 icon: "rotate"
 ---
 
-Finogates guarantees **at-least-once** delivery for all webhook events.  
-If your endpoint does not return a `2xx` HTTP response, the system automatically retries.
+A delivery succeeds when your endpoint responds with a `2xx` status within **10 seconds**. Any other status, a timeout, or a connection error is retried. Redirects are not followed.
 
----
+## Schedule
 
-## Retry Policy
+Each event is attempted up to **7 times**:
 
-| Attempt            | Delay after previous try | Condition                 |
-|--------------------|--------------------------|---------------------------|
-| 1st (initial)      | —                        | Original delivery         |
-| 2nd                | ~1 minute                | No `2xx` response         |
-| 3rd                | ~5 minutes               | Second attempt failed     |
+| Attempt | Sent after the previous attempt |
+|---------|---------------------------------|
+| 1       | Immediately                     |
+| 2       | ~3 seconds                      |
+| 3       | ~1 minute                       |
+| 4       | ~12 minutes                     |
+| 5       | ~1 hour                         |
+| 6       | ~4 hours                        |
+| 7       | ~13 hours                       |
 
-After the final failed attempt, an email is sent to the registered **admin address** with details of the undelivered event.
+Delays include a small random jitter. After the 7th failed attempt, the delivery is marked failed and is not retried.
 
----
+## Recommendations
 
-## Best Practices
-
-- Return `200 OK` **within 5 seconds**; offload heavy work to background jobs.  
-- Store and de-duplicate by `event id` to ensure idempotency.  
-- Implement exponential backoff if you **replay** events from your side.  
-- Monitor endpoint health (latency and error rates).
+- Respond `2xx` as soon as the event is received, and process it asynchronously.
+- De-duplicate by the event `id` — it is the same on every attempt.
+- Don't rely on delivery order; use `created_at`.

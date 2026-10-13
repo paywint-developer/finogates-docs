@@ -103,6 +103,9 @@
               "api-reference/bank-accounts/add-bank-account",
               "api-reference/bank-accounts/list-bank-accounts",
               "api-reference/bank-accounts/add-account-instantly",
+              "api-reference/bank-accounts/add-account-from-connection",
+              "api-reference/bank-accounts/get-manual-bank-account-for-edit",
+              "api-reference/bank-accounts/edit-manual-bank-account",
               "api-reference/bank-accounts/remove-bank-account",
               "api-reference/bank-accounts/apply-for-virtual-bank-account",
               "api-reference/bank-accounts/list-virtual-bank-accounts",
@@ -354,7 +357,17 @@
           "webhooks/signature-verification",
           "webhooks/events",
           "webhooks/event-types",
-          "webhooks/retry-behavior"
+          "webhooks/retry-behavior",
+          {
+            "group": "Event Reference",
+            "pages": [
+              "webhooks/events/payment",
+              "webhooks/events/kyc",
+              "webhooks/events/kyb",
+              "webhooks/events/card",
+              "webhooks/events/bank"
+            ]
+          }
         ]
       },
       {
@@ -408,6 +421,38 @@
     {
       "source": "/",
       "destination": "/get-started/overview"
+    },
+    {
+      "source": "/webhooks/webhook-response",
+      "destination": "/webhooks/events/payment"
+    },
+    {
+      "source": "/webhooks/events/payment/:slug",
+      "destination": "/webhooks/events/payment"
+    },
+    {
+      "source": "/webhooks/events/wallet-funding/:slug",
+      "destination": "/webhooks/events/payment"
+    },
+    {
+      "source": "/webhooks/events/wallet-withdrawal/:slug",
+      "destination": "/webhooks/events/payment"
+    },
+    {
+      "source": "/webhooks/events/kyc/:slug",
+      "destination": "/webhooks/events/kyc"
+    },
+    {
+      "source": "/webhooks/events/kyb/:slug",
+      "destination": "/webhooks/events/kyb"
+    },
+    {
+      "source": "/webhooks/events/card/:slug",
+      "destination": "/webhooks/events/card"
+    },
+    {
+      "source": "/webhooks/events/bank/:slug",
+      "destination": "/webhooks/events/bank"
     }
   ],
   "api": {
