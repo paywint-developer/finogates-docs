@@ -1,0 +1,67 @@
+---
+title: 'Products Overview'
+description: 'Apply for a product, such as a virtual bank account, in two calls.'
+---
+
+An application takes two calls, like a payment. The first says what the application needs and what Finogates already holds. The second sends only what is missing. The first product is a **virtual bank account**: an account in the user's name with US ACH and wire details, and an international SWIFT route.
+
+## How it works
+
+<Steps>
+  <Step title="Request the payload">
+    Call [Request an Application Payload](/api-reference/products/request-application-payload) with the `product`, the `account_kind` (`business`, `sole_proprietor` or `individual`) and the `user_id`. Every field the application needs comes back with a status (`provided`, `missing`, `invalid`, `needs_classification`, `needs_verification` or `optional`) and a `type`: `string`, `number`, `array`, `document` (an entry in `documents[]`) or `verification` (taken from the user's verified KYC/KYB, never sent). A `format` refines it, such as `decimal`, `code`, `country` or `date`. You also get a `reference`, valid for 24 hours. Values Finogates holds are never sent back; a held value that is not one of the options comes back `invalid`.
+  </Step>
+  <Step title="Pick the option codes">
+    Fields such as `entity_type`, `industry`, `purpose_of_account` and `source_of_funds` take codes from [List Application Options](/api-reference/products/list-application-options).
+  </Step>
+  <Step title="Add documents and owners, if asked">
+    A `needs_classification` document lists `candidates`: files Finogates already holds for the user. [List the Documents to Classify](/api-reference/products/list-documents-to-classify) gives just those fields, computed now, with what each accepts and a `content_path` per file. Show one to your user with [Get a User's Document File](/api-reference/users/get-user-document-file); if it is right, send its `document_id` in the application (`{"type": "proof_of_address", "document_id": "…"}`). If none is, upload a new file ([Upload a User's Document](/api-reference/users/upload-user-document), [Add a User's Document From a Link](/api-reference/users/add-user-document-from-link)), or send it by `url` in the application itself. Beneficial owners are set with [Replace Beneficial Owners](/api-reference/users/replace-beneficial-owners), or sent in the application.
+  </Step>
+  <Step title="Create the application">
+    Call [Create an Application](/api-reference/products/create-application) with the `reference` and only the sections the first call asked for. Any other section is refused with `product_field_not_allowed`. The application is filed, and the virtual bank account is created as `initiated`.
+  </Step>
+  <Step title="Follow it to approval">
+    Finogates reviews the application. The account moves to `verification_in_review`, then to `approved` with its numbers. Read them with [Get Virtual Bank Account](/api-reference/bank-accounts/get-virtual-bank-account): `routing_number` and `account_number` for ACH, and `deposit_routes[]` for the ACH, wire and SWIFT instructions (bank name and address, beneficiary, BIC).
+  </Step>
+</Steps>
+
+## When your platform verifies KYC/KYB
+
+If your platform is set up to verify its own users, Finogates takes your verdicts instead of running its own checks. Create the user, then file their KYC and KYB with [Submit a User's KYC and KYB](/api-reference/verification/submit-user-kyc-kyb) before the first call. Until then, the first call shows `kyc.approved` / `kyb.approved` as `needs_verification`, with a `reason` that names that endpoint. Your verdict then arrives as your setup says: you push it ([Report a Verification Verdict](/api-reference/users/report-verification-verdict)), or Finogates asks your status endpoint.
+
+**Creating the user from the application.** If your platform is also set up to create users from applications, you can leave `user_id` out of the first call. The second call then carries the user (`user`), their KYC (`kyc`, or a verification `inquiry_id`) and, for a business, their KYB (`kyb`). The user is created, their verifications are filed and decided the same way, then the application is filed. Nothing is kept if any part fails, and a rejected verdict refuses the call (`verification_rejected`). Every image and document link must be a public `https` URL to a distinct file.
+
+## When the bank asks for further information
+
+The account moves to `information_required`. The [`virtual_bank_account.information_required`](/webhooks/events/virtual-bank-account) webhook carries the `application_id` and a `missing[]` list. To answer:
+1. Call the first endpoint again with the `application_id`; `account_kind` may be left out. Every item the bank asked for comes back required.
+2. Send them with [Create an Application](/api-reference/products/create-application).
+
+The same application goes back to review. No second account is opened.
+
+## Webhooks
+
+| Event | When |
+| --- | --- |
+| `virtual_bank_account.created` | The application was filed. |
+| `virtual_bank_account.verification_in_review` | The application is being reviewed. |
+| `virtual_bank_account.information_required` | The bank needs further information. |
+| `virtual_bank_account.approved` | The account is open. The webhook carries the ACH routing and account numbers. |
+| `virtual_bank_account.rejected` | The application was declined (`failure_reason`). |
+| `virtual_bank_account.deposit_received` | Money arrived in the account. |
+
+See [Virtual Bank Account Events](/webhooks/events/virtual-bank-account).
+
+## Common errors
+
+| Code | Meaning |
+| --- | --- |
+| `product_payload_incomplete` (422) | Something is still missing; `missing[]` lists it. |
+| `product_field_not_allowed` (422) | A section the first call did not ask for was sent. |
+| `product_not_available` (422) | The product or account kind isn't offered to your platform. |
+| `user_id_required` (422) | `user_id` was left out, but your platform is not set up to create users from applications. |
+| `verification_rejected` (422) | Your verification answered rejected for the user in the second call; nothing was filed. |
+| `product_request_expired` / `product_request_consumed` / `product_request_stale` (409) | The reference is over 24 hours old, was already used, or no longer matches what is held. Request a new one. |
+| `verified_data_conflict` (409) | A value contradicts data that is already verified, such as a different tax id. |
+| `limit_reached` (409) | The user already holds the maximum number of accounts. |
+| `application_not_awaiting_information` (409) | The application is not waiting for information. |

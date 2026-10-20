@@ -41,7 +41,15 @@
               "api-reference/users/activate-or-deactivate-user",
               "api-reference/users/deactivate-user",
               "api-reference/users/update-user-details",
-              "api-reference/users/set-user-mailing-address"
+              "api-reference/users/set-user-mailing-address",
+              "api-reference/users/list-user-documents",
+              "api-reference/users/upload-user-document",
+              "api-reference/users/add-user-document-from-link",
+              "api-reference/users/get-user-document-file",
+              "api-reference/users/classify-user-document",
+              "api-reference/users/get-beneficial-owners",
+              "api-reference/users/replace-beneficial-owners",
+              "api-reference/users/report-verification-verdict"
             ]
           },
           {
@@ -84,7 +92,8 @@
               "api-reference/verification/create-user-kyb-record",
               "api-reference/verification/list-document-requests",
               "api-reference/verification/get-check-document-requests",
-              "api-reference/verification/submit-document-request-response"
+              "api-reference/verification/submit-document-request-response",
+              "api-reference/verification/submit-user-kyc-kyb"
             ]
           },
           {
@@ -107,12 +116,28 @@
               "api-reference/bank-accounts/get-manual-bank-account-for-edit",
               "api-reference/bank-accounts/edit-manual-bank-account",
               "api-reference/bank-accounts/remove-bank-account",
+              "api-reference/bank-accounts/list-virtual-bank-account-options",
               "api-reference/bank-accounts/apply-for-virtual-bank-account",
               "api-reference/bank-accounts/list-virtual-bank-accounts",
               "api-reference/bank-accounts/refresh-virtual-bank-account-balance",
               "api-reference/bank-accounts/get-virtual-bank-account",
               "api-reference/bank-accounts/list-all-bank-accounts",
-              "api-reference/bank-accounts/get-bank-account-relink-link"
+              "api-reference/bank-accounts/get-bank-account-relink-link",
+              "api-reference/bank-accounts/sync-virtual-bank-account",
+              "api-reference/bank-accounts/get-virtual-bank-account-verification-link",
+              "api-reference/bank-accounts/activate-virtual-bank-account"
+            ]
+          },
+          {
+            "group": "Products",
+            "expanded": false,
+            "pages": [
+              "api-reference/products/overview",
+              "api-reference/products/request-application-payload",
+              "api-reference/products/get-application-payload",
+              "api-reference/products/list-documents-to-classify",
+              "api-reference/products/create-application",
+              "api-reference/products/list-application-options"
             ]
           },
           {
@@ -365,7 +390,8 @@
               "webhooks/events/kyc",
               "webhooks/events/kyb",
               "webhooks/events/card",
-              "webhooks/events/bank"
+              "webhooks/events/bank",
+              "webhooks/events/virtual-bank-account"
             ]
           }
         ]

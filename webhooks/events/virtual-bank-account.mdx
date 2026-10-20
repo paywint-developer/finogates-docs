@@ -1,0 +1,129 @@
+---
+title: "Virtual Bank Account Events"
+description: "Webhooks for a user's virtual bank account, from application to deposits."
+icon: "vault"
+---
+
+## Events
+
+| Event                                         | Sent when                                                                     | Additional fields                          |
+|-----------------------------------------------|-------------------------------------------------------------------------------|--------------------------------------------|
+| `virtual_bank_account.created`                | The application was filed (the account is `initiated`).                       | `application_id`                           |
+| `virtual_bank_account.verification_in_review` | The application is being reviewed.                                            | `application_id`                           |
+| `virtual_bank_account.information_required`   | The bank needs further information before it can open the account.           | `application_id`, `missing[]`              |
+| `virtual_bank_account.approved`               | The account is open.                                                          | Account and routing numbers, holder, bank  |
+| `virtual_bank_account.rejected`               | The application was declined.                                                 | `failure_reason`                           |
+| `virtual_bank_account.deposit_received`       | Money arrived in the account.                                                 | `deposit`                                  |
+| `virtual_bank_account.verification_required`  | The user must complete identity verification on a hosted page.               | `action`                                   |
+| `virtual_bank_account.verification_approved`  | The user's identity verification passed.                                     |                                            |
+| `virtual_bank_account.verification_failed`    | The user's identity verification failed.                                     | `failure_reason`                           |
+| `virtual_bank_account.agreement_required`     | The user must accept the bank's account agreement on a hosted page.          | `action`                                   |
+
+An application filed with [Create an Application](/api-reference/products/create-application) sends `created`, then `verification_in_review`, then `approved`. If the bank asks for more, `information_required` comes in between. Answer it as described in the [Products Overview](/api-reference/products/overview), and the account returns to `verification_in_review`. The `verification_*` and `agreement_required` events are sent only for accounts the user finishes on a hosted page; follow `action.url`.
+
+`approved` carries the ACH routing and account numbers. For the wire and SWIFT instructions, read `deposit_routes[]` with [Get Virtual Bank Account](/api-reference/bank-accounts/get-virtual-bank-account).
+
+## Example
+
+```json
+{
+  "id": "d47a16ea-da0b-4fed-b94c-655d471f941c",
+  "type": "virtual_bank_account.approved",
+  "event_type": "virtual_bank_account.approved",
+  "created_at": "2026-10-19T11:21:13.214554+00:00",
+  "data": {
+    "id": "0f02ec94-da79-4265-aea4-b6e646daa9ff",
+    "user_id": "0f657ebc-5666-4e22-8336-4cd6353d3879",
+    "application_id": "d83d1435-79e0-43b0-a20b-e9e26070f76e",
+    "account_type": "BUSINESS",
+    "status": "approved",
+    "bank_nick_name": "Acme Trading",
+    "currency": "USD",
+    "account_number": "0378272813",
+    "routing_number": "026073150",
+    "rtp_routing_number": "",
+    "account_holder_name": "Acme Trading LLC",
+    "account_holder_address": null,
+    "account_holder_city": null,
+    "account_holder_state": null,
+    "account_holder_zip": null,
+    "account_holder_country": null,
+    "bank_address": "1 Bank Plaza, New York, NY 10001, US",
+    "bank_city": "",
+    "bank_state": "",
+    "bank_country": "",
+    "bank_zip": "",
+    "created_at": "2026-10-19T11:21:12.379187+00:00",
+    "updated_at": "2026-10-19T11:21:13.201321+00:00"
+  }
+}
+```
+
+`information_required` carries what to send:
+
+```json
+"missing": [
+  { "field": "documents.proof_of_address", "label": "Proof of address" },
+  { "field": "documents.photo_id", "label": "Government photo ID" }
+]
+```
+
+`deposit_received` adds the deposit:
+
+```json
+"deposit": {
+  "id": "28a1fcc7-8fa3-418f-9d63-600adfa6fcdf",
+  "amount": "1000.00",
+  "fee": null,
+  "currency": "USD",
+  "status": "completed",
+  "payer_name": "Northwind Imports",
+  "completed_at": "2026-10-19T11:21:16.903000+00:00"
+}
+```
+
+## Data Fields
+
+<ResponseField name="id" type="string">
+  The virtual bank account's id.
+</ResponseField>
+
+<ResponseField name="user_id" type="string">
+  The user the account belongs to.
+</ResponseField>
+
+<ResponseField name="application_id" type="string">
+  The application, for accounts applied for through the Products API. Use it to answer `information_required`.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  The account's status: `initiated`, `verification_in_review`, `information_required`, `approved`, `rejected`, and so on.
+</ResponseField>
+
+<ResponseField name="account_type" type="string">
+  `BUSINESS`, `CHECKING` or `SAVINGS`. An individual's account opened through the Products API is `CHECKING`.
+</ResponseField>
+
+<ResponseField name="account_number" type="string">
+  On `approved` and `deposit_received` only. The full account number, for ACH and wire.
+</ResponseField>
+
+<ResponseField name="routing_number" type="string">
+  On `approved` and `deposit_received` only. The ACH routing number. The wire routing number can differ; see `deposit_routes[]` on the account.
+</ResponseField>
+
+<ResponseField name="missing" type="array">
+  On `information_required`: what the bank needs, as `field` and `label` pairs. A `field` of `documents` means any supporting document.
+</ResponseField>
+
+<ResponseField name="deposit" type="object">
+  On `deposit_received`: `id`, `amount` (major units, as a string), `fee`, `currency`, `status`, `payer_name`, `completed_at`.
+</ResponseField>
+
+<ResponseField name="failure_reason" type="string">
+  On `rejected` and `verification_failed`.
+</ResponseField>
+
+<ResponseField name="action" type="object">
+  On `verification_required` and `agreement_required`: `kind` and the `url` to send the user to.
+</ResponseField>
