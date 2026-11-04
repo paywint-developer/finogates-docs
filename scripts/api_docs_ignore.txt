@@ -13,3 +13,5 @@ POST /v1/platform/card-transfers/account-to-card
 GET /v1/platform/card-transfers/transfers*
 # The sandbox test-card shortcut: cards are added with a card session.
 POST /v1/platform/card-transfers/cards
+# Removed: always answers 410. A bank is now set up with its first approved payout.
+POST /v1/platform/payees/destinations/ach-push

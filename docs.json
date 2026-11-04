@@ -64,7 +64,6 @@
               "api-reference/payees/create-destination",
               "api-reference/payees/list-destinations",
               "api-reference/payees/revoke-destination",
-              "api-reference/payees/set-up-a-bank-for-ach-payouts-removed",
               "api-reference/payees/get-ach-push-status",
               "api-reference/payees/disable-ach-push",
               "api-reference/payees/update-payee-bank-account",
@@ -463,6 +462,10 @@
     }
   },
   "redirects": [
+    {
+      "source": "/api-reference/payees/set-up-a-bank-for-ach-payouts-removed",
+      "destination": "/api-reference/payees/create-payee"
+    },
     {
       "source": "/api-reference/card-transfers/add-transfer-card",
       "destination": "/api-reference/card-transfers/overview"

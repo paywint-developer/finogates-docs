@@ -4,7 +4,7 @@ description: "Get a manually added bank account's current details to show in an 
 openapi: 'GET /v1/platform/bank/update/{bank_account_id}'
 ---
 
-Use this for a bank account that was added with its routing and account number. Correct the details with `PATCH /platform/bank/update/{bank_account_id}`. See [Edit a Manually Added Bank Account](/api-reference/bank-accounts/edit-manual-bank-account).
+Use this for a bank account that was added with its routing and account number. Correct the details with `PATCH /v1/platform/bank/update/{bank_account_id}`. See [Edit a Manually Added Bank Account](/api-reference/bank-accounts/edit-manual-bank-account).
 
 The account number comes back in full, because these are the numbers you entered. We decrypt it only for this request. Never log or cache it.
 

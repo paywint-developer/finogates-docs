@@ -4,7 +4,7 @@ description: "Get every bank account on file across all of your users in a singl
 openapi: 'GET /v1/platform/bank-accounts'
 ---
 
-This has the same shape as `GET /platform/bank-accounts/{user_id}`, but it is not limited to one user. See [List Bank Accounts](/api-reference/bank-accounts/list-bank-accounts).
+This has the same shape as `GET /v1/platform/bank-accounts/{user_id}`, but it is not limited to one user. See [List Bank Accounts](/api-reference/bank-accounts/list-bank-accounts).
 
 It combines linked bank accounts and virtual bank accounts issued by us. The `type` field tells you which kind each one is. Items include the full account and routing numbers. Each item has a `user_id` that tells you whose account it is.
 

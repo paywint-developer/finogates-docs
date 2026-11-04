@@ -9,7 +9,7 @@ Use this to refresh the instant connection behind a bank account the user alread
 You learn that a bank needs this from any of these:
 
 - The `payment_method.bank.relink_required` webhook
-- `relink_required: true` on `GET /platform/bank-accounts/{user_id}`
+- `relink_required: true` on `GET /v1/platform/bank-accounts/{user_id}`
 - A payment that failed with that reason
 
 Show the page inside your own website in an iframe, or open it in its own window. The user signs in to their bank on it. The account they already have keeps working, and no new bank account is created.

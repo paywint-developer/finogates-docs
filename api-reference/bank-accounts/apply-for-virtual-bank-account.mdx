@@ -20,16 +20,16 @@ A UBO waiting for review does not stop the request. We approve the account once 
 
 ## Hosted verification
 
-When `GET /options` returns `hosted_verification: true`:
+When `GET /v1/platform/virtual-bank-accounts/options` returns `hosted_verification: true`:
 
 - A user with approved KYC is enough. Business accounts also need an approved KYB.
-- The request must include `industry_type` (from `GET /options`) and a `return_url`, or you must have a registered `virtual_account` redirect URL.
+- The request must include `industry_type` (from `GET /v1/platform/virtual-bank-accounts/options`) and a `return_url`, or you must have a registered `virtual_account` redirect URL.
 
 After we approve the request, the account moves through these steps:
 
 1. `awaiting_verification`: the user completes a hosted verification page. See `onboarding.action.url`.
 2. `verification_in_review`: the user finished the page, and their verification is being checked. You have nothing to do yet. If it fails, the account moves to `verification_failed`. [Get a New Verification Link](/api-reference/bank-accounts/get-virtual-bank-account-verification-link) sends it back to `awaiting_verification`.
-3. `awaiting_agreement`: this comes once you call `POST /{account_id}/activate`, when `onboarding.stage` is `ready_to_activate`. The user accepts the bank agreement page.
+3. `awaiting_agreement`: this comes once you call `POST /v1/platform/virtual-bank-accounts/{account_id}/activate`, when `onboarding.stage` is `ready_to_activate`. The user accepts the bank agreement page.
 4. `approved`: the account numbers are in `deposit_routes`.
 
 ## What happens next

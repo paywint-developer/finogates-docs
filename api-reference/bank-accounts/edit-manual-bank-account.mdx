@@ -12,7 +12,7 @@ Use this for a bank account that was added with its routing and account number. 
 - `bank_account_number`: the full bank account number
 - `routing_number`: the bank's 9-digit routing number
 - `account_type`: for example `checking` or `savings`
-- `account_holder_address`: the holder's address. You can also set this on any US bank, verified or not, with `PUT /platform/bank/holder-address/{bank_account_id}`.
+- `account_holder_address`: the holder's address. You can also set this on any US bank, verified or not, with `PUT /v1/platform/bank/holder-address/{bank_account_id}`.
 
 The bank's name follows the routing number, so we update it for you when the routing number changes. New numbers are stored encrypted and returned in full, exactly as when the bank was added. The bank keeps its `payment_method_id`.
 
