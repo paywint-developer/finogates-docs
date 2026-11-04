@@ -1,4 +1,9 @@
 ---
 title: "List a User's Devices"
+description: "Get the devices registered to a user."
 openapi: 'GET /v1/platform/phone-numbers/users/{user_id}/devices'
 ---
+
+By default, you get only active devices. Send `active_only=false` to get inactive ones too. An inactive device is one we switched off because it now belongs to a different user.
+
+Soft-deleted devices are never returned.

@@ -1,4 +1,42 @@
 ---
 title: 'Add a Bank Account From an Existing Connection'
+description: "Add a bank account your own app has already connected and verified."
 openapi: 'POST /v1/platform/bank/add-account-connected'
 ---
+
+The user does not have to connect the bank again. We save the bank account as connected instantly, so it can both add money and receive payouts.
+
+This is available only when it is turned on for your account, so ask us. It works only for a connection your app made through the same instant bank verification account as ours.
+
+We never take your word for the account details. We read them from the connection ourselves. The account number and routing number are stored encrypted and returned in full (`account_number`, `routing_number`). For some banks, the account number is a tokenized number. The bank issued it for this connection, and it is not the number on the user's statement.
+
+## What you need to send
+
+- `user_id`: the user this bank account belongs to
+- `access_token`: the access token of the user's bank connection, as your app holds it
+- `account_id`: the one account in that connection to add
+
+## What you get back
+
+| Status | What it means |
+| --- | --- |
+| **201** | The bank account was added. If the user already had it, added with its routing and account number, we upgrade it in place. It keeps the same `payment_method_id` and can now add money. |
+| **200** | The user already had this bank account connected instantly. We return it unchanged. Sending the same request again is safe. |
+
+We send the `payment_method.bank.added` webhook with a **201**, when a bank account is added or upgraded. A **200** adds nothing, so it sends no webhook.
+
+## Keep the connection
+
+The connection stays shared with your app. If your app removes it, this bank account stops working until the user connects it again (`payment_method.bank.relink_required`).
+
+## Errors
+
+| Code | What it means |
+| --- | --- |
+| `bank_connection_not_enabled` (403) | This is not turned on for your account. |
+| `bank_connection_not_accepted` (422) | The access token is not valid for our account. |
+| `bank_connection_relink_required` (422) | The user must first sign in to their bank again in your app. |
+| `bank_connection_account_not_found` (422) | `account_id` is not in this connection. |
+| `bank_account_not_eligible` (422) | Only checking and savings accounts can be added. |
+| `bank_account_limit_reached` (422) | The user already has the most bank accounts allowed. |
+| `bank_connection_unavailable` (502) | We could not check the connection. Try again. |

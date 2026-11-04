@@ -1,4 +1,9 @@
 ---
 title: 'Activate Virtual Bank Account'
+description: "Open the bank account once the holder is verified."
 openapi: 'POST /v1/platform/virtual-bank-accounts/{account_id}/activate'
 ---
+
+The holder is verified when `onboarding.stage` is `ready_to_activate`.
+
+The account moves to `awaiting_agreement`, and `onboarding.action.url` is the bank agreement page for the holder. If you call this again while the account is `awaiting_agreement`, you get a fresh agreement link.

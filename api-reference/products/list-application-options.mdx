@@ -1,4 +1,11 @@
 ---
 title: 'List Application Options'
+description: "Get the codes an application may use for an account kind."
 openapi: 'GET /v1/platform/products/options'
 ---
+
+You get the entity types, industries and their sub-industries, purposes of the account, sources of funds, currencies and document types.
+
+This is open to platforms with virtual bank accounts or card transfers. A business card account needs its KYB's `industry` and `sub_industry` from these lists.
+
+Each sub-industry has a suggested four-digit `mcc` to send as the KYB's `business_data.mcc`. We do not apply it for you.

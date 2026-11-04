@@ -1,14 +1,14 @@
 ---
 title: "Retry Behavior"
-description: "How Finogates retries webhook deliveries."
+description: "How we retry webhook deliveries."
 icon: "rotate"
 ---
 
-A delivery succeeds when your endpoint responds with a `2xx` status within **10 seconds**. Any other status, a timeout, or a connection error is retried. Redirects are not followed.
+A delivery succeeds when your endpoint responds with a `2xx` status within **10 seconds**. We retry on any other status, a timeout or a connection error. We do not follow redirects.
 
 ## Schedule
 
-Each event is attempted up to **7 times**:
+We try each event up to **7 times**:
 
 | Attempt | Sent after the previous attempt |
 |---------|---------------------------------|
@@ -20,10 +20,10 @@ Each event is attempted up to **7 times**:
 | 6       | ~4 hours                        |
 | 7       | ~13 hours                       |
 
-Delays include a small random jitter. After the 7th failed attempt, the delivery is marked failed and is not retried.
+Each delay also changes by a small random amount. After the 7th failed attempt, we mark the delivery as failed and stop retrying.
 
 ## Recommendations
 
-- Respond `2xx` as soon as the event is received, and process it asynchronously.
-- De-duplicate by the event `id` — it is the same on every attempt.
-- Don't rely on delivery order; use `created_at`.
+- Respond with `2xx` as soon as you receive the event. Process it after you respond.
+- Spot duplicates with the event `id`. It is the same on every attempt.
+- Don't rely on delivery order. Use `created_at`.

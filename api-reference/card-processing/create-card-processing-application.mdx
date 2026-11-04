@@ -1,4 +1,76 @@
 ---
 title: 'Apply for Card Processing'
+description: "Apply for card processing so one of your users can accept card payments."
 openapi: 'POST /v1/platform/card-processing'
 ---
+
+Send this as `multipart/form-data`. The **`payload`** field holds the details as JSON text. The documents are separate file parts.
+
+## What goes in `payload`
+
+| Field | What it means |
+| --- | --- |
+| `user_id` | The user this application is for. |
+| `kyb_id` | The business check (KYB) to apply against. |
+| `merchant_info.average_ticket` | The average transaction amount. |
+| `merchant_info.monthly_volume` | The expected monthly processing volume. |
+| `merchant_info.max_ticket` | The largest expected transaction amount. It can't be lower than `average_ticket`. |
+| `merchant_info.website` | Normally leave this out. We use the website on the business check named by `kyb_id`. Send it **only** when that check has no website. In that case it is required, and we reject the request without it. |
+
+Amounts are plain currency amounts with at most two decimal places: `"50.00"`, not `5000`.
+
+## File parts
+
+| File part | Rule |
+| --- | --- |
+| `voided_check` | Required. |
+| `bank_statements` | Required. The last 3 months, in one file. |
+| `processing_statements` | Optional. Send it only if the business already processes cards elsewhere. |
+
+Each file must be a PNG, JPG, JPEG or PDF, and at most 10 MB. No two files may be identical.
+
+## What you get back
+
+We create the application waiting for review. The merchant can't accept card payments until it is approved.
+
+The response is three IDs: `user_id`, `kyb_id` and `card_acquiring_id`. This is the same shape that `POST /v1/platform/merchant-onboarding` returns.
+
+Keep `card_acquiring_id`. You need it to read the application and to match the webhooks below.
+
+## Webhooks
+
+We tell you the result by webhook (an automatic notification). Subscribe to these instead of calling us again and again to check.
+
+### `card_acquiring.application.status_changed`
+
+The application changed status. This is the webhook to act on.
+
+```json
+{
+  "card_acquiring_id": "07f78e86-b3c6-4761-84ae-22176ca015c1",
+  "status": "approved"
+}
+```
+
+| `status` | What it means |
+| --- | --- |
+| `processing` | Under review. You don't need to do anything. |
+| `approved` | The merchant can now accept card payments. |
+| `rejected` | Turned down. The event also has a `rejection_reason` string when one was recorded. |
+
+### `card_acquiring.application.updated`
+
+The application's details changed, but its status did not.
+
+```json
+{
+  "card_acquiring_id": "07f78e86-b3c6-4761-84ae-22176ca015c1",
+  "updated_fields": { "monthly_volume_minor": 3000000 }
+}
+```
+
+`updated_fields` holds only what changed. Use it to keep your own copy up to date. It does not mean the application was approved or rejected.
+
+### Good to know
+
+Both events arrive in our standard webhook format, signed with your endpoint secret. We retry deliveries, so an event can arrive more than once. Use `card_acquiring_id` to match them.

@@ -1,4 +1,28 @@
 ---
 title: 'Add an Address to a Payee'
+description: "Save an address for a payee."
 openapi: 'POST /v1/platform/payees/addresses/{payee_id}'
 ---
+
+A payee can hold more than one address per destination country.
+
+- `country` is required, in ISO 3166-1 alpha-2 format, such as `MX`, `IN` or `AE`.
+- `purposes` is required. It holds one or more product keys that say what this address may be used for. Get the keys your platform can use from `GET /v1/platform/payees/address-purposes`.
+
+## International payouts
+
+When you send an international payout, you reference the address by its ID. We reject the payout unless both of these are true:
+
+- The address's country matches the payout's destination country.
+- The address carries every field that destination requires.
+
+## One international address per country
+
+Only one live address per country can have the `international` purpose. If you add a second one for a country, you get `409 international_address_conflict`. The error names the existing address's ID.
+
+To fix this, send the request again with `on_international_conflict`:
+
+| Value | What happens |
+| --- | --- |
+| `replace` | The existing address loses the `international` purpose. If that was its only purpose, we revoke the address. |
+| `keep` | The existing address stays as it is, and we drop `international` from this one. This address must have at least one other purpose, or we reject the request. |

@@ -1,4 +1,12 @@
 ---
 title: 'Void a Mailed Document'
+description: "Cancel a mailed document that has no carrier label yet."
 openapi: 'POST /v1/platform/payments/document-mailing/{payment_id}/void'
 ---
+
+This cancels the payment. No wallet is involved, so there is nothing to refund.
+
+You can't void a mailing in these cases:
+
+- A carrier label has been bought, because the document is already with the carrier.
+- The mailing has cleared.

@@ -1,4 +1,22 @@
 ---
 title: 'Get User Verification'
+description: "Get one user's identity check (KYC) details."
 openapi: 'GET /v1/platform/users/verification/{user_id}'
 ---
+
+The response has two parts:
+
+- The latest identity check: status, decline reason, contact email and verification inquiry ID.
+- The personal information we collected during the check: name, date of birth, address and ID document images.
+
+Image fields come back as short-lived download links.
+
+## If the check has not started
+
+If the user has not started the identity check, the call still succeeds. The response holds only these fields, with no empty ones:
+
+- `user_id`
+- `kyc_status` of `not_applied`
+- a short `message` that says so
+
+This is normal and expected. It is not an error.

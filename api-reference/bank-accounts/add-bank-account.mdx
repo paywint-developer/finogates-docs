@@ -1,4 +1,44 @@
 ---
 title: 'Add Bank Account'
+description: "Save a bank account so one of your users can pay with it."
 openapi: 'POST /v1/platform/bank/add-bank-manually'
 ---
+
+We store the account number and routing number encrypted. Responses return both in full (`account_number`, `routing_number`), together with their masked forms.
+
+`bank_country` decides what you send:
+
+| `bank_country` | Bank |
+| --- | --- |
+| `US` | A US bank. This is the default if you leave it out. |
+| `CA` | A Canadian bank. |
+| `GB` | A UK bank. |
+
+`GET /platform/bank/manual-requirements` lists every field, rule and dropdown option for each country. See [Get What Adding a Bank Manually Needs](/api-reference/bank-accounts/get-manual-bank-requirements) and build your form from it.
+
+## A US bank
+
+- `user_id`: the user this bank account belongs to
+- `account_holder_name`: the name on the bank account
+- `bank_account_number`: the full bank account number
+- `routing_number`: the bank's 9-digit routing number
+
+## A Canadian bank (`bank_country: "CA"`)
+
+- `user_id`: the user this bank account belongs to
+- `account_holder_name` and `account_holder_address`, where `region` is a province code
+- `bank_account_number` (7 to 12 digits), `transit_number` (5 digits) and `institution_number` (3 digits)
+- `nickname`, `bank_name` and `bank_address`
+- Optional: `currency` (`CAD`, the default, or `USD`), `account_type`, `check_number` and `fractional_number`
+
+## A UK bank (`bank_country: "GB"`)
+
+- `user_id`: the user this bank account belongs to
+- `account_holder_name` and `account_holder_address`, where `region` is the county and is optional
+- `bank_account_number` and `sort_code`. The account number has 8 digits. If you send 6 or 7 digits, we add leading zeros. The two numbers together must pass UK modulus checking.
+- `nickname`, `bank_name` and `bank_address`
+- Optional: `roll_number`, `iban` and `bic` (both must match the sort code and account number), `account_type` and `check_number` (6 digits)
+
+## Good to know
+
+A Canadian or UK bank is saved for printing checks. It can't be used for ACH or instant payments.

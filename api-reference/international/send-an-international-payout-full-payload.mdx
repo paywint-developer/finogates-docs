@@ -1,4 +1,18 @@
 ---
 title: 'Send an International Payout (Full Payload)'
+description: "Send money abroad by sending all the payout details in one call."
 openapi: 'POST /v1/platform/international/payouts/global'
 ---
+
+`POST /v1/platform/international/payouts` uses a recipient you created earlier, by ID. This call takes the recipient and their bank account in the request itself, so you don't have to register them first.
+
+Send:
+
+- The order details: `orderPartnerID`, `orderCurrency`, `orderAmount`, `payoutCurrency` and `payoutBranchID`.
+- The recipient: `beneficiary`.
+- The recipient's bank: `bankInfo`.
+- The wallet to take the money from: `walletId`.
+
+Our team sets up your sender details for your platform, and we apply them automatically. You never send them.
+
+The payout starts on hold for review. We submit it only after one of our operators approves it.

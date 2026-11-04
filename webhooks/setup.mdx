@@ -1,52 +1,52 @@
 ---
 title: "Webhook Setup"
-description: "Configure webhook URLs in Sandbox and Production environments."
+description: "Set up webhook URLs in the Sandbox and Production environments."
 icon: "cog"
 ---
 
-Before receiving webhook notifications, you must register your endpoint URL within your Finogates dashboard.
+Before you can receive webhooks, you must register your endpoint URL in your Finogates dashboard.
 
 ---
 
 ## Sandbox Environment
 
-Use the **Sandbox environment** to test webhook delivery before going live.
+Use the **Sandbox environment** to test webhook delivery before you go live.
 
 1. **Create a Sandbox Account**  
    Sign up at **app.finogates.com**.
 
-2. **Generate an API Key**  
-   Go to **Settings → API Credentials** to generate your Sandbox API key.  
-   [Open Sandbox Settings → API Key](https://app.finogates.com/developer-panel)
+2. **Get Your API Credentials**  
+   Go to **Settings → API Credentials** to get your Sandbox `client_id` and `client_secret`.  
+   [Open Sandbox Settings → API Credentials](https://app.finogates.com/developer-panel)
 
-3. **Configure Webhook URL**  
-   Navigate to **Settings → Redirect/Webhook** and add your webhook endpoint.  
+3. **Add Your Webhook URL**  
+   Go to **Settings → Redirect/Webhook** and add your webhook endpoint.  
    Example:
    ```text
    https://example.com/webhook
    ```
 
-4. **Test Webhook Delivery**
-   Use test events to confirm your endpoint correctly receives payloads.
+4. **Test Webhook Delivery**  
+   Use test events to check that your endpoint receives them correctly.
 
 ---
 
 ## Production Environment
 
-Once you’ve tested successfully in Sandbox, repeat these steps in the **Production environment**.
+Once your tests pass in Sandbox, repeat these steps in the **Production environment**.
 
-1. **Create a Production Account**
-   Visit **app.finogates.com**.
+1. **Create a Production Account**  
+   Go to **app.finogates.com**.
 
-2. **Enable Production Access**
-   Contact **[support@finogates.com](mailto:support@finogates.com)** to activate production credentials.
+2. **Request Production Access**  
+   Complete onboarding in the [Dashboard](https://app.finogates.com/dashboard). Then wait for our team to review and approve your production access.
 
-3. **Generate Production API Key**
-   From **Settings → API Credentials**, copy your live key.
-   [Open Production Settings → API Key](https://app.finogates.com/developer-panel)
+3. **Get Your Production API Credentials**  
+   In **Settings → API Credentials**, copy your production `client_id` and `client_secret`.  
+   [Open Production Settings → API Credentials](https://app.finogates.com/developer-panel)
 
-4. **Add Webhook URL**
-   Configure your production webhook endpoint in **Settings → Redirect/Webhook**.
+4. **Add Your Webhook URL**  
+   Add your production webhook endpoint in **Settings → Redirect/Webhook**.  
    Example:
 
    ```text
@@ -62,6 +62,6 @@ Once you’ve tested successfully in Sandbox, repeat these steps in the **Produc
 ## Best Practices
 
 * Use **HTTPS** for all webhook endpoints.
-* Return **`200 OK` quickly**; process heavy work asynchronously.
-* Log event **IDs** and timestamps for idempotency and auditing.
-* Secure storage of your **webhook signing secret** is mandatory.
+* Return **`200 OK` quickly**. Do any heavy work after you respond.
+* Log event **IDs** and timestamps. They help you spot repeated events and keep an audit trail.
+* You must store your **webhook signing secret** securely.

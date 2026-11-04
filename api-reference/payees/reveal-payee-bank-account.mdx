@@ -1,4 +1,9 @@
 ---
 title: "Reveal a Payee Bank Account's Full Numbers"
+description: "Get the full account number, routing number and IBAN of a saved payee bank account."
 openapi: 'GET /v1/platform/payees/bank-accounts/{payee_id}/{bank_account_id}/reveal'
 ---
+
+We store these values encrypted and decrypt them only for this request. They are never included in the list or get responses.
+
+Use this call only when you really need it. Never log or cache the result.

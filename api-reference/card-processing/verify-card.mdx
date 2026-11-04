@@ -1,4 +1,26 @@
 ---
 title: 'Verify an Already-Added Card'
+description: "Get a one-time link where your user can verify a card they already added."
 openapi: 'GET /v1/platform/card/verify-card/{payment_method_id}'
 ---
+
+The user confirms the security code and billing address. When enabled, they also complete the card network's authentication step. Show the page inside your own website, in an iframe.
+
+Use this in two cases:
+
+- A charge could not go ahead until the card is verified, and the charge response asked for verification.
+- You want a saved card confirmed before you charge it. You can do this at any time.
+
+## What you get back
+
+| Field | What it means |
+| --- | --- |
+| `payment_method_id` | The card this link verifies. |
+| `verify_card_url` | The link to load inside an iframe. It works once. |
+| `expires_at` | When the link stops working, about 10 minutes from now. |
+
+## Good to know
+
+- We take the card-processing account from the saved card, so you don't need to choose one.
+- `card_processing_id` is optional. If you send it, it must match the card's own account.
+- The link shows nothing about which company processes the card behind the scenes.

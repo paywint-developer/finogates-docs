@@ -1,4 +1,121 @@
 ---
 title: 'Onboard a Merchant for Card Processing'
+description: "Onboard a business for card processing in one call."
 openapi: 'POST /v1/platform/merchant-onboarding'
 ---
+
+This call combines several separate calls:
+
+- Create the user.
+- Record their identity check (KYC).
+- Record the business check (KYB).
+- Submit the card-processing application.
+- Attach its underwriting (risk review) figures and documents. See [Underwriting](#underwriting) for what is required.
+
+Use it when you already have everything you need to onboard the merchant.
+
+Send the request as `multipart/form-data`. Put the structured details in the **`payload`** form field as JSON text. Send the supporting documents as separate binary file parts.
+
+## Identity
+
+Send exactly one of these. We reject the request if you send both.
+
+- `inquiry_id`: an identity check inquiry ID you already have for this person. We pull the verified details from our verification provider. The inquiry must belong to the environment you are calling. One created in sandbox can't be read in production, or the other way around.
+- `kyc`: the identity details typed in directly, when no inquiry exists.
+
+**Every `kyc` field is required**, because `kyc` must carry everything `inquiry_id` would have returned from our provider:
+
+| Group | Fields |
+| --- | --- |
+| Name and birth date | `first_name`, `last_name`, `dob` (`YYYY-MM-DD`) |
+| Contact | `email`, `phone_country_code`, `phone_no` |
+| Address | `address`, `city`, `state`, `zip`, `country` (ISO alpha-2) |
+| ID | `ssn`, `id_type`, `id_no` |
+| Image links | `selfie`, `id_front_img`, `id_back_img` |
+
+If a value does not exist for this person, use `inquiry_id` instead.
+
+## Business
+
+`kyb` is required. It has the same shape as `POST /v1/platform/users/kyb/start/{user_id}`, with these rules:
+
+- `kyb.business_data.business_email` is **required** here. It is the merchant's email. No separate field can override it.
+- `kyb.business_data.website` is **required** here too. We can't underwrite an application without the site the payments come from.
+- `kyb.business_data.business_documents` must have **2 to 5** links to the business check documents.
+
+## Underwriting
+
+`merchant_info` is required, together with its document file parts.
+
+| Item | Rule |
+| --- | --- |
+| `merchant_info.average_ticket_minor` | The average transaction amount, in minor units (cents). |
+| `merchant_info.monthly_volume_minor` | The expected monthly processing volume, in minor units. |
+| `merchant_info.max_ticket_minor` | The largest expected transaction amount, in minor units. It can't be lower than `average_ticket_minor`. |
+| **`voided_check`** file part | **Required.** |
+| **`bank_statements`** file part | **Required.** The last 3 months, in one file. |
+| **`processing_statements`** file part | Optional. It applies only when the business already processes with another provider. |
+
+There is no `merchant_info.website`. We read it from `kyb.business_data.website`, so each merchant gives one site.
+
+## File size limits
+
+These limits are per file:
+
+- Uploaded supporting documents (`voided_check`, `bank_statements`, `processing_statements`): **10 MB**.
+- Linked identity images and business documents: **7 MB**.
+
+## How we handle links
+
+**We download and store your links. We don't just record them.** We fetch every document and identity image link once while we handle your request. We keep that copy on our own storage with the verification record.
+
+We don't keep your original URL. It can expire or change afterwards without affecting the record.
+
+Because of this, your links must work at the moment you call:
+
+- `https://` only. We reject plain `http://`.
+- The host must be publicly reachable. We refuse private, loopback and link-local addresses.
+- The file must be a **PNG, JPG, JPEG or PDF**. These are the only types this endpoint accepts, for uploads and links alike.
+- We do **not** support HEIC/HEIF, so convert iPhone photos before you send them.
+- An `s3://` URI already on our storage stays as it is, and we don't fetch it again.
+
+If we can't fetch any one link, the whole call fails with `422` and we create nothing. We never approve a verification record against a document we could not get.
+
+To upload files directly instead, use `POST /v1/platform/users/kyb/start/{user_id}`.
+
+## What happens next
+
+We create the merchant with a `Primary` USD wallet, the same as `POST /v1/platform/users`.
+
+**Everything this call submits goes to review.** One call replaces four requests, but it does not replace the decision.
+
+- The identity check, the business check and the card-processing application all start waiting for review. The separate endpoints leave them the same way.
+- We approve or decline each one afterwards.
+- The merchant can't process cards, and we issue no merchant ID (MID), until the application is approved.
+- The application can be approved only after the identity and business checks are approved.
+
+To follow the status, keep checking the verification and card-processing endpoints. Or subscribe to the `user_kyc.*`, `user_kyb.*` and `card_acquiring.application.*` webhooks.
+
+## If you run your own KYC/KYB
+
+If your platform runs its own KYC/KYB program, we can waive the identity and business review for you. We then read the verdict you already have for the merchant instead of repeating the check. We approve both on your `APPROVED`.
+
+We arrange this with you per platform. It is off unless we have set it up for you. We still decide the card-processing application either way.
+
+Contact support to have your program assessed.
+
+## Repeat submissions for the same merchant email
+
+What happens depends on what that merchant already has:
+
+| Existing application | What happens |
+| --- | --- |
+| Still **waiting for review** | We reject the request with `409`. Only one can be in progress at a time. Wait for it to be approved or declined. |
+| **Approved**, for the **same business** (same legal name and EIN) | We return that application unchanged and write nothing. Retrying after a timeout can't create a duplicate merchant. |
+| **Approved**, for a **different business** | We create a new business check and a new application. One email can hold several companies. |
+
+Declined and suspended applications never block a new submission.
+
+## What you get back
+
+The response is the three IDs this call produced. Read the records themselves from the endpoints that own them. See the response schema.

@@ -1,4 +1,13 @@
 ---
 title: "Refresh a Mailed Document's Tracking"
+description: "Ask the carrier where a mailed document is now, and get the updated tracking."
 openapi: 'POST /v1/platform/payments/document-mailing/{payment_id}/tracking/refresh'
 ---
+
+The response has the same format as [Track a Mailed Document](/api-reference/document-mailing/track-shipped-document). If you only need to read, call that one instead, because this call uses up a call to the carrier.
+
+## Good to know
+
+- **Limits:** we ask the carrier at most once every 5 minutes. The limit is per mailing, not per caller. If ten people watch the same document, they share one carrier call.
+- **Calling again too soon:** this is **not** an error. You get the tracking we already have, and `synced_at` stays the same so you can see how fresh it is.
+- **Carrier can't be reached:** you get the same result, not an error. Older tracking with a true timestamp is better than none.

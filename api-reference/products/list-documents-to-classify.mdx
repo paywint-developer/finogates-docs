@@ -1,4 +1,26 @@
 ---
 title: 'List the Documents to Classify'
+description: "List the reference's document fields that are waiting for you to classify a file."
 openapi: 'GET /v1/platform/products/request-payload/{reference}/classifications'
 ---
+
+This lists the document fields whose status is `needs_classification`. We work it out now, not as the first call answered.
+
+## What you get back
+
+| Field | What it means |
+| --- | --- |
+| `accepts` | The types the field takes: a `type`, and a `side` for an ID card's two faces. |
+| `send_via` | Where its file is sent: `kyb_update` or `kyc_update`. |
+| `candidates` | The files we hold that may be the right one, with our guess first. They are untyped, or guessed as this type. They come from the KYB's own files and the person's, and each file appears once. |
+
+## How to classify a file
+
+1. Show a candidate with its `content_path` (`GET /v1/platform/users/{user_id}/documents/{document_id}/content`).
+2. If it is the right file, send its `document_id` with the type in that update. Use `business_data.typed_documents` on the KYB update, or `documents` on the KYC update.
+3. If no candidate is right, send the file itself there instead.
+
+## Good to know
+
+- A field leaves this list once it has its file.
+- A reference for a new user lists nothing.

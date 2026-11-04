@@ -8,20 +8,24 @@ icon: "vault"
 
 | Event                                         | Sent when                                                                     | Additional fields                          |
 |-----------------------------------------------|-------------------------------------------------------------------------------|--------------------------------------------|
-| `virtual_bank_account.created`                | The application was filed (the account is `initiated`).                       | `application_id`                           |
+| `virtual_bank_account.created`                | The application was submitted (the account is `initiated`).                   | `application_id`                           |
 | `virtual_bank_account.verification_in_review` | The application is being reviewed.                                            | `application_id`                           |
-| `virtual_bank_account.information_required`   | The bank needs further information before it can open the account.           | `application_id`, `missing[]`              |
+| `virtual_bank_account.information_required`   | The bank needs more information before it can open the account.               | `application_id`, `missing[]`              |
 | `virtual_bank_account.approved`               | The account is open.                                                          | Account and routing numbers, holder, bank  |
 | `virtual_bank_account.rejected`               | The application was declined.                                                 | `failure_reason`                           |
 | `virtual_bank_account.deposit_received`       | Money arrived in the account.                                                 | `deposit`                                  |
-| `virtual_bank_account.verification_required`  | The user must complete identity verification on a hosted page.               | `action`                                   |
-| `virtual_bank_account.verification_approved`  | The user's identity verification passed.                                     |                                            |
-| `virtual_bank_account.verification_failed`    | The user's identity verification failed.                                     | `failure_reason`                           |
-| `virtual_bank_account.agreement_required`     | The user must accept the bank's account agreement on a hosted page.          | `action`                                   |
+| `virtual_bank_account.verification_required`  | The user must complete an identity check on a hosted page.                    | `action`                                   |
+| `virtual_bank_account.verification_approved`  | The user's identity check passed.                                             |                                            |
+| `virtual_bank_account.verification_failed`    | The user's identity check failed.                                             | `failure_reason`                           |
+| `virtual_bank_account.agreement_required`     | The user must accept the bank's account agreement on a hosted page.           | `action`                                   |
 
-An application filed with [Create an Application](/api-reference/products/create-application) sends `created`, then `verification_in_review`, then `approved`. If the bank asks for more, `information_required` comes in between. Answer it as described in the [Products Overview](/api-reference/products/overview), and the account returns to `verification_in_review`. The `verification_*` and `agreement_required` events are sent only for accounts the user finishes on a hosted page; follow `action.url`.
+An application made with [Create an Application](/api-reference/products/create-application) sends `created`, then `verification_in_review`, then `approved`.
 
-`approved` carries the ACH routing and account numbers. For the wire and SWIFT instructions, read `deposit_routes[]` with [Get Virtual Bank Account](/api-reference/bank-accounts/get-virtual-bank-account).
+If the bank asks for more, `information_required` comes in between. Answer it as described in the [Products Overview](/api-reference/products/overview). The account then returns to `verification_in_review`.
+
+We send the `verification_*` and `agreement_required` events only for accounts the user finishes on a hosted page. Follow `action.url`.
+
+`approved` includes the ACH routing and account numbers. For the wire and SWIFT instructions, read `deposit_routes[]` with [Get Virtual Bank Account](/api-reference/bank-accounts/get-virtual-bank-account).
 
 ## Example
 
@@ -59,7 +63,7 @@ An application filed with [Create an Application](/api-reference/products/create
 }
 ```
 
-`information_required` carries what to send:
+`information_required` tells you what to send:
 
 ```json
 "missing": [
@@ -85,7 +89,7 @@ An application filed with [Create an Application](/api-reference/products/create
 ## Data Fields
 
 <ResponseField name="id" type="string">
-  The virtual bank account's id.
+  The virtual bank account's ID.
 </ResponseField>
 
 <ResponseField name="user_id" type="string">
@@ -109,7 +113,7 @@ An application filed with [Create an Application](/api-reference/products/create
 </ResponseField>
 
 <ResponseField name="routing_number" type="string">
-  On `approved` and `deposit_received` only. The ACH routing number. The wire routing number can differ; see `deposit_routes[]` on the account.
+  On `approved` and `deposit_received` only. The ACH routing number. The wire routing number can differ. See `deposit_routes[]` on the account.
 </ResponseField>
 
 <ResponseField name="missing" type="array">

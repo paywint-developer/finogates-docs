@@ -1,4 +1,34 @@
 ---
 title: 'Mail a Document to a Saved Payee'
+description: "Mail a document you supply to a payee you saved earlier."
 openapi: 'POST /v1/platform/payments/document-mailing'
 ---
+
+**Older route.** Use `POST /v1/platform/check-payments` with a document mailing (`type` 11) instead. It is the same mailing, product and rail, in the check-payments request format. This route keeps working for existing integrations.
+
+Name the recipient with `payee_id` and we look up the address, so you don't send it on every mailing. If the payee has several addresses, use `address_id` to pick one.
+
+This is not a payment. No wallet is named or charged. If your document has a value, such as a check you supply, we move no money for it. We only record that value in `amount`. We bill only the mailing fee, on your monthly invoice.
+
+## How to send the request
+
+This is a `multipart/form-data` request:
+
+- `document` is a file part.
+- `attachments` are optional file parts.
+- `payload` is the JSON below, sent as a string alongside the files.
+
+Sample `payload`:
+
+```json
+{
+  "user_id": "b3a9b622-cc63-4d3c-aad6-2d8e29e6f9d4",
+  "payee_id": "c4b5a6d7-e8f9-0123-4567-890abcdef012",
+  "address_id": "d5c6b7e8-f9a0-1234-5678-9abcdef01234",
+  "mail_type": "usps_ground_advantage",
+  "currency": "USD",
+  "description": "Q3 invoice packet",
+  "invoice_number": "INV-10432",
+  "idempotency_key": "doc-mail-2026-08-24-001"
+}
+```

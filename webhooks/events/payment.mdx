@@ -1,10 +1,10 @@
 ---
 title: "Payment Events"
-description: "Webhooks for the lifecycle of a payment."
+description: "Webhooks for each stage of a payment."
 icon: "money-bill-transfer"
 ---
 
-Every payment — wallet funding, withdrawal, transfer or card charge — sends `payment_intent.*` events.
+Every payment sends `payment_intent.*` events. This covers wallet funding, withdrawals, transfers and card charges.
 
 ## Events
 
@@ -20,7 +20,7 @@ Every payment — wallet funding, withdrawal, transfer or card charge — sends 
 | `payment_intent.failed`            | The payment failed. `failure_reason` says why.                   |
 | `payment_intent.voided`            | The payment was cancelled before it settled.                     |
 | `payment_intent.refunded`          | The payment was refunded.                                        |
-| `payment_intent.charged_back`      | The payment was reversed by a chargeback.                        |
+| `payment_intent.charged_back`      | A chargeback reversed the payment.                               |
 | `payment_intent.document_scanned`  | A document attached to the payment was scanned.                  |
 
 ## Example
@@ -52,10 +52,10 @@ Every payment — wallet funding, withdrawal, transfer or card charge — sends 
 
 ## Data Fields
 
-Fields that don't apply to a payment are `null` or omitted.
+Fields that don't apply to a payment are `null` or left out.
 
 <ResponseField name="intent_id" type="string">
-  The payment id. Some rejection and cancellation events send it as `payment_id`.
+  The payment ID. Some rejection and cancellation events send it as `payment_id`.
 </ResponseField>
 
 <ResponseField name="transaction_id" type="string">
@@ -67,7 +67,7 @@ Fields that don't apply to a payment are `null` or omitted.
 </ResponseField>
 
 <ResponseField name="source_wallet_id" type="string">
-  The wallet debited. `wallet_id` is also sent when it differs from `source_wallet_id`.
+  The wallet debited. We also send `wallet_id` when it differs from `source_wallet_id`.
 </ResponseField>
 
 <ResponseField name="destination_wallet_id" type="string">
@@ -75,15 +75,15 @@ Fields that don't apply to a payment are `null` or omitted.
 </ResponseField>
 
 <ResponseField name="payer_user_id" type="string">
-  The paying user.
+  The user who pays.
 </ResponseField>
 
 <ResponseField name="payee_user_id" type="string">
-  The receiving user.
+  The user who receives the money.
 </ResponseField>
 
 <ResponseField name="amount" type="number">
-  The amount in major units, e.g. `100.0` for $100.
+  The amount in major units. For example, `100.0` for $100.
 </ResponseField>
 
 <ResponseField name="currency" type="string">
@@ -91,7 +91,7 @@ Fields that don't apply to a payment are `null` or omitted.
 </ResponseField>
 
 <ResponseField name="status" type="integer | string">
-  The payment status. When numeric, `status_code` and `status_name` are added (see below). Approval and review events send a string, e.g. `approved`.
+  The payment status. When it is a number, we add `status_code` and `status_name` (see below). Approval and review events send a string, such as `approved`.
 </ResponseField>
 
 <ResponseField name="failure_reason" type="string">
@@ -99,7 +99,7 @@ Fields that don't apply to a payment are `null` or omitted.
 </ResponseField>
 
 <ResponseField name="reference" type="string">
-  For payments created through the unified payment API: the quote reference, with `source_type`, `destination_type` and `destinations`.
+  For payments created through the unified payment API: the quote reference. We send it with `source_type`, `destination_type` and `destinations`.
 </ResponseField>
 
 ## Status Codes
@@ -118,5 +118,5 @@ Fields that don't apply to a payment are `null` or omitted.
 | 10            | `refunded`       |
 
 <Note>
-When `status` is numeric, the envelope's `type` is `payment_intent.<status_name>`. For example, `payment_intent.created` arrives with `type` set to `payment_intent.pending`. Route on `event_type`.
+When `status` is a number, the envelope's `type` is `payment_intent.<status_name>`. For example, `payment_intent.created` arrives with `type` set to `payment_intent.pending`. Use `event_type` to route events.
 </Note>

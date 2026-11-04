@@ -1,4 +1,11 @@
 ---
 title: 'List All Wallets'
+description: "Get every wallet on your platform in one paged list."
 openapi: 'GET /v1/platform/wallets'
 ---
+
+The list has your master wallet and all your end users' wallets. It helps with treasury dashboards and reconciliation views.
+
+Each row has the owner's `user_id`, `wallet_type`, `is_primary`, `currency`, `status` and the wallet's balances. `user_id` is `null` for the master wallet.
+
+Rows are in creation order, and this order doesn't change.

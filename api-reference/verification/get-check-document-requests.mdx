@@ -1,4 +1,9 @@
 ---
 title: "Get One Check's Document Requests"
+description: "Get everything we have asked for on one verification check, newest request first."
 openapi: 'GET /v1/platform/compliance/checks/{check_id}/document-requests'
 ---
+
+Documents you have already sent come back as short-lived download links.
+
+Use the `key` on each item to name your file parts when you answer.

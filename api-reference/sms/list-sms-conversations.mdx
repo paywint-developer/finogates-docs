@@ -1,4 +1,14 @@
 ---
 title: 'List SMS Conversations'
+description: "Get the conversation threads for one of your phone numbers."
 openapi: 'GET /v1/platform/phone-numbers/sms/messages/conversations'
 ---
+
+Name the phone number in one of these ways:
+
+- `phone_number_id` (preferred): a stable ID that keeps working after the number is deleted or given to someone else.
+- `number` (fallback): the raw phone number.
+
+You get one entry for each other party, with the most recent message. It works like an inbox with previews.
+
+If the other party's number was given to a different owner, it appears as two separate chats.

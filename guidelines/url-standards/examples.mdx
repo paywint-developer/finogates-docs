@@ -1,18 +1,18 @@
 ---
 title: "Valid & Invalid URL Examples"
-description: "Examples of URLs that pass and fail Finogates's URL validation checks."
+description: "Examples of URLs that pass and fail our URL validation checks."
 icon: "list"
 ---
 
 ## Overview
 
-This page provides clear examples of URLs that **meet** Finogates’s requirements, and those that will be **rejected** during validation. Use these examples as a reference when generating or verifying document URLs.
+This page shows URLs that **meet** our requirements, and URLs we **reject** during validation. Use these examples as a reference when you create or check document URLs.
 
 ---
 
 ## Valid URL Examples
 
-These URLs use HTTPS, point directly to downloadable files, and meet all security and accessibility requirements:
+These URLs use HTTPS and point directly to downloadable files. They meet all security and accessibility requirements:
 
 [https://cdn.example.com/docs/business-license.pdf](https://cdn.example.com/docs/business-license.pdf)  
 [https://secure-storage.mycompany.com/uploads/id-proof.png](https://secure-storage.mycompany.com/uploads/id-proof.png)  
@@ -25,13 +25,13 @@ These URLs use HTTPS, point directly to downloadable files, and meet all securit
 
 ## Invalid URL Examples
 
-The following URLs fail validation due to security issues, unsupported formats, private networks, or non-direct links:
+These URLs fail validation because of security issues, unsupported formats, private networks or links that aren't direct:
 
 
 [http://example.com/document.pdf](http://example.com/document.pdf)                     (not HTTPS)  
 [https://192.168.1.10/file.pdf](https://192.168.1.10/file.pdf)                       (private IP address)  
 [https://localhost:5000/file.pdf](https://localhost:5000/file.pdf)                      (localhost)  
-[ftp://files.example.com/document.pdf](tp://files.example.com/document.pdf)                (unsupported protocol)
+[ftp://files.example.com/document.pdf](ftp://files.example.com/document.pdf)                (unsupported protocol)
 [https://drive.google.com/file/d/12345/view](https://drive.google.com/file/d/12345/view)           (preview link, not direct download)  
 [https://example.com/files/large-document-12mb.pdf](https://example.com/files/large-document-12mb.pdf)    (exceeds 7 MB size limit)  
 [https://myapp.internal.company/documents/id.pdf](https://myapp.internal.company/documents/id.pdf)      (internal network resource)  
@@ -41,7 +41,7 @@ The following URLs fail validation due to security issues, unsupported formats, 
 
 ## Quick Tips
 
-- Always test URLs in an **incognito browser** — if it requires login, it will fail validation.  
-- Avoid preview/share pages from cloud storage.  
-- Direct links **must** end with a file extension (e.g., `.pdf`, `.jpg`, `.png`).  
-- Ensure the file is publicly reachable via HTTPS.
+- Always test URLs in an **incognito browser**. If a URL needs a login, it will fail validation.  
+- Avoid preview and share pages from cloud storage.  
+- A direct link doesn't need a file extension. The server must send a supported `Content-Type`, or the URL must end with a supported extension (such as `.pdf`, `.jpg`, `.png`).  
+- Make sure the file is publicly reachable over HTTPS.

@@ -1,4 +1,7 @@
 ---
 title: "Delete a Payee's Address"
+description: "Remove a saved address so it can no longer be used for new payouts."
 openapi: 'DELETE /v1/platform/payees/addresses/{payee_id}/{address_id}'
 ---
+
+You can safely repeat this call. Deleting an address that is already removed returns the same success response.

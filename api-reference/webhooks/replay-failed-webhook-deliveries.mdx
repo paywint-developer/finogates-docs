@@ -1,4 +1,18 @@
 ---
 title: 'Replay Failed Webhook Deliveries'
+description: "Try sending your failed webhook notifications again."
 openapi: 'POST /v1/platform/webhooks/deliveries/replay-failed'
 ---
+
+Sometimes a notification can't reach your server, for example when your server was briefly down. This call takes those failed notifications and tries to send them again right away.
+
+## Choosing what to resend
+
+You can add one or more of these optional filters:
+
+- `delivery_id`: resend just one specific notification.
+- `event_id`: resend every failed notification for one specific event.
+- `endpoint_id`: resend every failed notification for one specific webhook.
+- `limit`: the most notifications to resend at once. The default is 100, and the most you can set is 500.
+
+If you add no filters, we resend the most recent failed notifications, up to the `limit`.

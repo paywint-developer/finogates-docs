@@ -1,4 +1,20 @@
 ---
 title: 'List Bank Accounts'
+description: "Get every bank account on file for one of your users in a single list."
 openapi: 'GET /v1/platform/bank-accounts/{user_id}'
 ---
+
+This list combines two kinds of bank account. The `type` field on each item tells you which kind it is.
+
+| `type` | What it is |
+| --- | --- |
+| `linked_bank_account` | A bank account the user connected from an outside bank. Examples are a standard bank account, an ACH, RTP or wire account, or an account that was linked instantly. |
+| `virtual_bank_account` | A bank account we issued to the user. It gives them their own account number and routing number for receiving money. |
+
+Fields that apply to only one kind are filled in for that kind. They are empty (`null`) for the other kind.
+
+## Good to know
+
+- Each bank account has its full `account_number` and `routing_number`, plus the masked `account_mask` and `routing_last4`.
+- For a linked bank account, `account_number` is `null` when we have only its last 4 digits.
+- The list is newest first. It is split into pages with `limit` and `offset`.

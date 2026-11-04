@@ -1,4 +1,11 @@
 ---
 title: 'Delete Webhook'
+description: "Switch off a webhook, using its unique ID."
 openapi: 'DELETE /v1/platform/webhooks/{webhook_id}'
 ---
+
+That web address stops getting event notifications. The webhook stays in [List Webhooks](/api-reference/webhooks/list-webhooks), switched off.
+
+To get events again, call [Create Webhook](/api-reference/webhooks/create-webhook). It creates a new webhook with a new signing secret, so save the new secret and use it from then on.
+
+You can safely call this more than once. Deleting a webhook that is already switched off succeeds and changes nothing.

@@ -1,4 +1,9 @@
 ---
 title: 'Get Card Processing Record(s)'
+description: "Get a user's card-processing applications."
 openapi: 'GET /v1/platform/card-processing/users/{user_id}'
 ---
+
+- Leave out `application_id` to get the full list of this user's applications.
+- Send an `application_id` to get just that one application.
+- Send `kyb=true` to include each application's full business (KYB) details.

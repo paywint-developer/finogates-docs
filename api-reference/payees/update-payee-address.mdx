@@ -1,4 +1,9 @@
 ---
 title: "Update a Payee's Address"
+description: "Change a saved payee address."
 openapi: 'PATCH /v1/platform/payees/addresses/{payee_id}/{address_id}'
 ---
+
+Send only the fields you want to update. We keep the rest.
+
+You get `409 international_address_conflict` if the update would break the one-per-country rule. This means it would give the address the `international` purpose, but the payee already has a *different* international address for that country. Fix this the same way as on create, with `on_international_conflict`. See [Add an Address to a Payee](/api-reference/payees/create-payee-address).

@@ -1,4 +1,15 @@
 ---
 title: 'Replace Beneficial Owners'
+description: "Send the whole set of business owners to replace the previous set."
 openapi: 'PUT /v1/platform/users/{user_id}/beneficial-owners'
 ---
+
+The new set must follow these rules:
+
+- Ownership at the top level adds up to at most 100%. The same limit applies to the owners of each business owner.
+- Ownership goes at most 3 levels deep.
+- There is at most one control person, who is an individual with a `title`.
+- Each person has an `email`.
+- Only the control person can have 0% ownership.
+- The same tax ID can't appear twice.
+- The owners of a business owner name it with `parent_ref`.

@@ -1,4 +1,7 @@
 ---
 title: 'List User KYB Records'
+description: "Get one user's business check (KYB) records, or one single record."
 openapi: 'GET /v1/platform/users/kyb-records/{user_id}'
 ---
+
+Leave out `kyb_id` to get the full list of records. Send a `kyb_id` to get only that record.

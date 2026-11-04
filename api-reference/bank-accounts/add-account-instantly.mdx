@@ -1,4 +1,28 @@
 ---
 title: 'Add account Instantly'
+description: "Get a ready-made web page link where your user can add their own bank account."
 openapi: 'GET /v1/platform/bank/add-account-instantly/{user_id}'
 ---
+
+Show this page inside your own website, in an iframe. The user connects their bank on the page, and we save the account for them automatically.
+
+## What you get back
+
+| Field | What it means |
+| --- | --- |
+| `user_id` | The user this link is for. |
+| `add_bank_url` | The link to load inside an iframe. It can be used once. |
+| `expires_at` | When the link stops working, about 10 minutes from now. |
+
+The link contains no details about which company connects the bank behind the scenes. Treat it as a plain string with no meaning of its own.
+
+## How you find out the result
+
+- **It worked:** we send your server a `payment_method.bank.added` webhook, which is an automatic notification. It has the new account details and the `user_id`. This webhook is the official way to know it worked.
+- **Something went wrong on the page:** nothing is saved and we send no webhook. This happens if the link expired or was changed, or if the details didn't pass our checks. Call this endpoint again to get a fresh link. Links can't be renewed.
+
+## A bank account the user already added manually
+
+A bank account added with its routing and account number can receive payouts, but it can't be used to add money.
+
+When the user connects that same account on this page, we upgrade it. We do not save a second copy. It keeps its `payment_method_id` and can add money from then on. We send the `payment_method.bank.added` webhook for it again.

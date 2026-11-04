@@ -1,4 +1,7 @@
 ---
 title: 'Sync Virtual Bank Account Status'
+description: "Check the account's verification and bank status again with our bank partner."
 openapi: 'POST /v1/platform/virtual-bank-accounts/{account_id}/sync'
 ---
+
+We return the updated account: its status, `onboarding`, `deposit_routes` and balance. We also do this on our own every few minutes.

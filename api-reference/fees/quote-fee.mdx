@@ -1,4 +1,31 @@
 ---
 title: 'Quote a Fee for an Amount'
+description: "Calculate the actual fee for a payment of a given amount on one fee line."
 openapi: 'POST /v1/platform/fees/quote'
 ---
+
+You get the same number we will charge at payment time.
+
+Send the `fee_code` (from [List Your Fee Schedule](/api-reference/fees/list-fee-catalog)) and the payment `amount`. The quote uses the live fee engine, so it follows:
+
+- Your **active override** when one is set, otherwise the **global** default. `scope_level` tells you which.
+- The line's **structure**: `flat`, `percent`, `flat_plus_percent`, `per_unit`, `tiered` or `component`. `component` is card acquiring's processing and delivery parts.
+- The **payer/payee bearer** split, and any min/max **caps**.
+
+## What you get back
+
+| Field | What it means |
+| --- | --- |
+| `fee_amount` | The total fee. |
+| `processing_fee_amount`, `delivery_fee_amount` | The two parts of the fee. Delivery is `0` for non-component lines. |
+| `payer_fee_amount`, `payee_fee_amount` | Who bears the fee. |
+| `payer_total_amount` | What the payer pays: the amount plus the payer's share of the fee. |
+| `payee_net_amount` | What the payee receives: the amount minus the payee's share of the fee. |
+
+Every amount comes back in both major units and `_minor` (cents).
+
+## Errors
+
+| Code | What it means |
+| --- | --- |
+| `404` | The `fee_code` is unknown. |

@@ -1,4 +1,12 @@
 ---
 title: 'Create a Wallet'
+description: "Create a named wallet for one of your end users."
 openapi: 'POST /v1/platform/wallets'
 ---
+
+Send a `name` and the currency. The `name` must be unique for that user.
+
+- Send `make_primary=true` to make this the user's primary wallet in that currency. The old primary wallet stops being primary in the same step, so both changes happen together or not at all.
+- The user's first wallet in a currency is always primary, whatever this flag says.
+
+You can't create master wallets here. We set them up automatically when your platform is set up.

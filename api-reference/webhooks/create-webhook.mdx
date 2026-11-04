@@ -1,4 +1,22 @@
 ---
 title: 'Create Webhook'
+description: "Set the one web address and the events for your platform's webhook."
 openapi: 'POST /v1/platform/webhooks'
 ---
+
+Tell us where to send automatic updates when things happen on your platform. When you call this, you:
+
+- Give us one web address (URL) where you want notifications sent.
+- Choose which events you want to hear about: specific ones, whole groups or all of them.
+
+Your platform has one live webhook at a time. If you have a live webhook, calling this again replaces its web address and chosen events with the new details. It does not create a second webhook.
+
+If you deleted your webhook, calling this creates a new one with a new ID. The deleted webhook stays switched off.
+
+## Signing secret
+
+When we create a webhook, the response also has a **signing secret**. This happens the first time you set one up, and again if you set one up after a delete. The secret is a private key you use to confirm that a notification really came from us.
+
+We show the signing secret **only once**, in this response. Save it somewhere safe, because we can't show it again.
+
+When you update a live webhook, we don't issue a new secret and the `secret` field is empty.

@@ -1,4 +1,9 @@
 ---
 title: 'Remove a Redirect URL'
+description: "Remove the primary page for one purpose."
 openapi: 'DELETE /v1/platform/redirect-urls/{purpose}'
 ---
+
+The hosted flows that depend on this page stop working until you set it again. For example, accounting-connect refuses to create a link. It won't send your customer to a Finogates page they have never seen.
+
+Additional URLs stay. Remove them one by one with [Remove an Additional Redirect URL](/api-reference/redirect-urls/remove-additional-redirect-url).

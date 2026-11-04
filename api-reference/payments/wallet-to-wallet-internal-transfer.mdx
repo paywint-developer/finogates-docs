@@ -1,5 +1,17 @@
 ---
 title: 'Wallet to Wallet (Internal Transfer)'
+description: "Move money from one wallet to another on your platform."
 openapi: 'POST /v1/platform/payments/wallet-to-wallet'
 tag: 'LEGACY'
 ---
+
+This is a `transfer` payment. It uses no outside payment network or provider.
+
+Name the destination in one of two ways. Send exactly one:
+
+- `destination_wallet_id`: a wallet UUID you already know. We find the owner from the wallet.
+- `destination_payee_id`: a **payee addressed by email**. The money goes to the matching user's wallet.
+
+If that person hasn't been added yet, we set up a placeholder recipient (a ghost recipient). The money is then held in an inbound-only wallet until the person is added.
+
+`recipient_status` in the response tells you which one happened: `existing` or `pending_claim`.

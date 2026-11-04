@@ -1,4 +1,9 @@
 ---
 title: 'Set Up a Bank for ACH Payouts (removed)'
+description: "This endpoint has been removed, and calling it now returns an error (HTTP 410)."
 openapi: 'POST /v1/platform/payees/destinations/ach-push'
 ---
+
+This endpoint used to set up a bank account in advance, so money could be sent to it by ACH bank transfer. You no longer need that step. We now set up the bank automatically the first time an approved payout is sent to it.
+
+The error is on purpose, so any older code still using this endpoint fails clearly. Instead, create a payout and have it approved.

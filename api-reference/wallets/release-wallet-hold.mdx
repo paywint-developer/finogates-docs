@@ -1,4 +1,9 @@
 ---
 title: 'Unfreeze Funds in a Wallet'
+description: "Return frozen funds to a wallet, using the wallet ID."
 openapi: 'POST /v1/platform/wallets/by-id/{wallet_id}/holds/release'
 ---
+
+The amount moves from the **held** bucket back to **available**. `current` doesn't change.
+
+You can't release more than is currently held.

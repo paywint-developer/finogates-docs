@@ -1,4 +1,15 @@
 ---
 title: "Set a User's Mailing Address"
+description: "Set or replace a user's mailing address."
 openapi: 'PATCH /v1/platform/users/{user_id}/mailing-address'
 ---
+
+This address goes in the sender (FROM) block of the shipping label on a mailed document.
+
+Once every field is present, including `mailing_phone`, a document you mail for this user shows their address as the sender. It replaces your platform's default collection address. Our shipping provider requires `mailing_phone`.
+
+## Good to know
+
+This is a **full replace**, not a merge. Send every field you want to keep on each call. Any field you leave out is cleared.
+
+To remove the address, send a body with every field set to `null`, or send `{}`. The label then goes back to the default collection address.

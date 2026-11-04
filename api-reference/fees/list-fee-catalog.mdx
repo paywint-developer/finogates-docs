@@ -1,4 +1,29 @@
 ---
 title: 'List Your Fee Schedule'
+description: "Get your platform's complete, effective fee schedule in one call."
 openapi: 'GET /v1/platform/fees/catalog'
 ---
+
+You get one row per fee line (wallet, ACH, card, check-mail, international, comms and more).
+
+Each line is the value we will actually charge: the **override** we set for your platform if there is one, otherwise the platform-wide **default**. You can't set an override yourself. The `source` field tells you which:
+
+| `source` | What it means |
+| --- | --- |
+| `"override"` | A value we set specifically for your platform. |
+| `"default"` | The universal default. You get it because this line has no override. |
+
+A schedule that mixes the two is normal, and this list shows both.
+
+## What you get back
+
+| Field | What it means |
+| --- | --- |
+| `fee_code`, `label`, `category`, `domain` | What the fee line is. |
+| `structure` | The active structure: `flat`, `percent`, `flat_plus_percent`, `per_unit`, `tiered` or `component`. |
+| `allowed_structures` | The structures this line can take. |
+| `bearer` | Who bears the fee: `payer` or `payee`. |
+| `actions` | The fee numbers in major units, such as `flat_fee`, `percent_fee` or tier brackets. |
+| `caps` | The limits on the fee: `min_fee` and `max_fee`. |
+| `source` | Where the value comes from, as shown above. |
+| `is_metered`, `is_dormant`, `supports_caps`, `amount_based` | Metadata flags. |

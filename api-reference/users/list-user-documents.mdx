@@ -1,4 +1,9 @@
 ---
 title: 'List a User''s Documents'
+description: "List a user's typed documents, then the files we hold that have no type yet."
 openapi: 'GET /v1/platform/users/{user_id}/documents'
 ---
+
+A file with no type yet has `status: candidate`. An example is a file from a business check (KYB).
+
+To use a candidate, classify it with [Classify a User's Document](/api-reference/users/classify-user-document). Its `document_id` stays the same.

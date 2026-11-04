@@ -1,4 +1,17 @@
 ---
 title: 'Add an Additional Redirect URL'
+description: "Add another URL for a purpose that takes several."
 openapi: 'POST /v1/platform/redirect-urls/{purpose}/additional-urls'
 ---
+
+A purpose takes several URLs when the list shows `multiple_urls: true`. That is `card_transfer`.
+
+Use this when more than one of your apps, on different origins, opens the flow. For example, your web app and your mobile web app might both show the card page in a frame.
+
+The primary URL (`PUT /{purpose}`) stays the default. A card session framed on an additional URL's origin returns to that URL.
+
+## Good to know
+
+- You can safely repeat this call. A URL already registered for the purpose comes back as it is.
+- A purpose can have at most 10 additional URLs.
+- The same URL rules apply as for `PUT /{purpose}`. See [Set a Redirect URL](/api-reference/redirect-urls/set-redirect-url).

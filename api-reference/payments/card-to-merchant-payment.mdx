@@ -1,5 +1,74 @@
 ---
 title: 'Charge a Saved Card into a Card-Acquiring Merchant'
+description: "Charge a saved card into a card-acquiring account."
 openapi: 'POST /v1/platform/payments/card-to-merchant'
 tag: 'LEGACY'
 ---
+
+Name the card with `payment_method_id` and the receiving card-acquiring account with `card_acquiring_id`. The payment starts at `pending_review`. A Finogates admin then approves or rejects it. If your platform has automatic approval, a charge that passes both 3-D Secure and the address check can be approved without waiting.
+
+## Where the money goes
+
+By default, the money goes to the primary wallet of the card-acquiring account's owner, for that currency.
+
+To credit one specific wallet instead, send `destination_wallet_id`. It can be any wallet on your platform, primary or not. Its currency must match `currency`, which defaults to `USD`. The response returns the wallet we used as `destination_wallet_id`.
+
+## Splitting one charge
+
+Send `splits` to credit **several** wallets from this one charge. For example, the end user's share and your own fee.
+
+- Each leg names a wallet (same rules as `destination_wallet_id`) and an amount.
+- The amounts must add up exactly to `amount`.
+- Every leg shows in its wallet's pending balance while the payment waits for review.
+- All legs become spendable together on approval.
+- A rejection, void or refund takes back every leg, or none of them.
+- You can't send `splits` together with `destination_wallet_id`.
+- The final legs come back as `splits` on the response, and they are included in this payment's webhooks.
+
+## How the card is billed
+
+This depends on the card's configured charge mode. The response returns it as `charge_mode`.
+
+| `charge_mode` | What happens |
+| --- | --- |
+| `auth_capture` | We authorize (hold) the card now and run the address and security code checks (AVS/CVV). We capture the money on approval. A rejection voids the hold. |
+| `sale` | We place no hold. Nothing reaches the card until an admin approves. Then we charge it once. |
+
+## Cards still under review
+
+You **can** charge a card here while its manual review is still open. That means a `verification_status` of `awaiting_documents` or `pending`. No other way of using a saved card allows this.
+
+This payment waits for an operator anyway, so that approval covers the open card review too.
+
+- The payment comes back with `needs_review: true`.
+- Its AVS/CVV rules stay strict.
+- A card an admin has **rejected** is still refused with a `409`.
+
+## Repeat requests
+
+Send a unique `idempotency_key`. Repeating the request with that key returns the same record.
+
+## Errors
+
+These errors are about the destination wallet:
+
+| Code | What it means |
+| --- | --- |
+| `409` | The wallet can't take the credit (closed, suspended or frozen). Or the card-acquiring account settles to an outside bank account, so it has no wallet leg to redirect. |
+| `422` | The wallet belongs to another platform or holds a different currency. |
+
+A `201` always means a live payment was recorded. The two results that collect nothing are errors. Tell them apart with `detail.code`:
+
+| Code | What it means |
+| --- | --- |
+| `422 card_declined` | The card issuer declined, or the card failed the AVS/CVV policy. We void any held authorization. |
+| `400 card_processor_error` | We could not try the charge at all. The processor was unreachable, set up wrongly, or sent back something we can't use. We learned nothing about the card, so retry. You don't need to ask the cardholder for another card. |
+
+Both errors have the same body:
+
+- The payment record exists at `failed`.
+- `payment_intent_id` on the error is its ID.
+- `failure_reason` is the short form of the cause.
+- `message` is the processor's own wording for what happened.
+
+The `idempotency_key` is used up, so repeating the request returns this same error.

@@ -1,4 +1,34 @@
 ---
 title: "Get a User's Wallet Activity"
+description: "Get the money in and out history of a user's primary wallet."
 openapi: 'GET /v1/platform/wallets/{user_id}/activity'
 ---
+
+A user can have several wallets per currency. This reads the one marked primary. The default is `USD`. Pass `?currency=` to read the primary wallet of another currency.
+
+The user must belong to your platform.
+
+## What you get back
+
+**Balances:**
+
+| Balance | What it means |
+| --- | --- |
+| `available` | Money the user can spend now. |
+| `outbound_pending` | Money leaving that hasn't cleared. |
+| `inbound_pending` | Money arriving that hasn't cleared. |
+| `current` | The overall balance. |
+
+**Activity list:** one entry per payment, newest first. Each entry has:
+
+- a short description of what happened
+- its status
+- the amount
+- whether it was money in or money out (`amount_sign`)
+- the date and time
+
+## Errors
+
+| Code | What it means |
+| --- | --- |
+| `404` | The user has no primary wallet in the requested currency. |

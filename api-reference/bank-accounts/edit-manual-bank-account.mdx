@@ -1,4 +1,33 @@
 ---
 title: 'Edit a Manually Added Bank Account'
+description: "Correct a manually added bank account's details before it has been verified."
 openapi: 'PATCH /v1/platform/bank/update/{bank_account_id}'
 ---
+
+Use this for a bank account that was added with its routing and account number. Send only the fields you want to change. We keep anything you leave out.
+
+## What you can change
+
+- `account_holder_name`: the name on the bank account
+- `bank_account_number`: the full bank account number
+- `routing_number`: the bank's 9-digit routing number
+- `account_type`: for example `checking` or `savings`
+- `account_holder_address`: the holder's address. You can also set this on any US bank, verified or not, with `PUT /platform/bank/holder-address/{bank_account_id}`.
+
+The bank's name follows the routing number, so we update it for you when the routing number changes. New numbers are stored encrypted and returned in full, exactly as when the bank was added. The bank keeps its `payment_method_id`.
+
+## A Canadian or UK bank
+
+- Send `bank_country` (`CA` or `GB`, the bank's own country) and any of the fields its add request takes.
+- Send `null` to clear an optional field.
+- An address is replaced as a whole.
+- For a UK bank, we check the sort code, account number, IBAN and BIC together, as they will be after the edit. So we refuse an IBAN that no longer matches a changed sort code.
+
+## Errors
+
+| Code | What it means |
+| --- | --- |
+| `bank_not_editable` | The bank was verified instantly (its details came from the bank itself), was removed, or was not added with its numbers. |
+| `bank_country_mismatch` (422) | `bank_country` is not the bank's own country. To change country, add a new bank. |
+| `bank_payment_in_progress` | A payment to or from this bank is still in progress, so the numbers can't change. You can still edit other fields. |
+| `409` "Bank account already exists for user" | The new numbers match another bank this user already has. |

@@ -1,4 +1,21 @@
 ---
 title: 'List Document Mailing Services'
+description: "List the carrier services you can use to mail a document you supply."
 openapi: 'GET /v1/platform/payments/document-mailing/methods'
 ---
+
+**Older route.** Use `GET /v1/platform/check-payments/catalog/shipping-methods` instead. It gives the same quote, in the check-payments catalog. This route keeps working for existing integrations.
+
+We print the PDF, attach a label and hand it to the carrier. No wallet is charged. We bill only the mailing fee, on your monthly invoice.
+
+To give a rate we need the destination, so `zip` is required.
+
+## What you get back
+
+| Field | What it means |
+| --- | --- |
+| `fee` | What we will bill you. |
+| `carrier_cost`, `markup_fee` | The parts that make up `fee`. |
+| `key` | A `mail_type`. Send it on a document mailing (`type` 11) to `POST /v1/platform/check-payments`. |
+
+When you create the mailing, send the file as `document`.

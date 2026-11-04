@@ -1,4 +1,7 @@
 ---
 title: 'Retry a Failed Payout'
+description: "Try a failed international payout again."
 openapi: 'POST /v1/platform/international/payouts/{intent_id}/retry'
 ---
+
+Send the ID of the failed payout as `intent_id` in the path. We keep and reuse the original payout record.

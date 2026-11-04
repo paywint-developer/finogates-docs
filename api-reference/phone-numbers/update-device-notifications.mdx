@@ -1,4 +1,8 @@
 ---
 title: "Turn a Device's Notifications On or Off"
+description: "Turn notifications on or off for a registered device."
 openapi: 'PATCH /v1/platform/phone-numbers/devices/{device_id}'
 ---
+
+- Send `is_active=false` to stop notifications on the device.
+- Send `is_active=true` to start them again.

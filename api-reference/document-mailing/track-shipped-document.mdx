@@ -1,4 +1,24 @@
 ---
 title: 'Track a Mailed Document'
+description: "See where a mailed document is, and everywhere it has been."
 openapi: 'GET /v1/platform/payments/document-mailing/{payment_id}/tracking'
 ---
+
+You get the current delivery stage and the carrier's full scan history, oldest first.
+
+This call reads what we already have and does not contact the carrier. So it is fine to call it often while a page is open. To force a live read, use [Refresh a Mailed Document's Tracking](/api-reference/document-mailing/refresh-shipped-document-tracking).
+
+## Scan times
+
+Each scan time comes in two forms:
+
+- `occurred_at` is in UTC. Sort by this one.
+- `occurred_at_local` is the local time where the parcel was scanned. `utc_offset_minutes` gives the time zone.
+
+Show the local time to people. If you don't, a parcel scanned at 21:14 in Memphis reads as 02:14 the next day.
+
+## Good to know
+
+An empty `events` list is normal for the first several hours after a label is bought. It does not mean tracking has failed.
+
+Check `trackable` to tell this apart from a service that has no barcode at all, such as a letter.

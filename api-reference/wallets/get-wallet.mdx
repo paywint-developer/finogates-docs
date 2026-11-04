@@ -1,4 +1,23 @@
 ---
 title: "Get a User's Wallet"
+description: "Get a user's primary wallet for a currency, with an up-to-the-minute balance breakdown."
 openapi: 'GET /v1/platform/wallets/{user_id}'
 ---
+
+A user can have several wallets per currency. This returns the one marked primary. The default is `USD`. Pass `?currency=` to get the primary wallet of another currency.
+
+The user must belong to your platform.
+
+## What you get back
+
+| Balance | What it means |
+| --- | --- |
+| `available` | Money the user can spend right now. |
+| `current` | Everything attached to the wallet. This includes money still on its way in, and outgoing payments waiting for approval. |
+| `inbound_pending` | Money on its way in that can't be spent yet, such as bank funding still clearing or transfers waiting for approval. It is part of `current`, never of `available`. |
+
+## Errors
+
+| Code | What it means |
+| --- | --- |
+| `404` | The user has no primary wallet in the requested currency. |

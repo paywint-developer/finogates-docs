@@ -1,4 +1,14 @@
 ---
 title: 'List Wallet Holds'
+description: "List the freeze, spend and unfreeze history of a wallet's held funds, using the wallet ID."
 openapi: 'GET /v1/platform/wallets/by-id/{wallet_id}/holds'
 ---
+
+Entries are newest first. Each entry shows:
+
+- the amount
+- the direction: money into or out of the held bucket
+- what happened: `place_hold`, `release_hold`, a spend into escrow, or a rejected spend returned to the hold
+- any `reason` or `reference`
+
+`currency` picks which currency's history you get. It defaults to `USD`, whatever currency the wallet is in. If the wallet has no hold history in that currency, you get an empty list, not an error.

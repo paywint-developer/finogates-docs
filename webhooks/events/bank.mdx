@@ -13,9 +13,9 @@ icon: "building-columns"
 | `payment_method.bank.relink_required`  | The user must sign in to their bank again.                                | `status`, `reason`                   |
 | `payment_method.bank.relinked`         | The user reconnected the bank.                                            | `status` (`relinked`)                |
 
-`payment_method.bank.added` is sent for banks added with [Add account Instantly](/api-reference/bank-accounts/add-account-instantly) and [Add a Bank Account From an Existing Connection](/api-reference/bank-accounts/add-account-from-connection). A manually added bank that is later connected instantly keeps its `payment_method_id` and is sent again.
+We send `payment_method.bank.added` for banks added with [Add account Instantly](/api-reference/bank-accounts/add-account-instantly) and [Add a Bank Account From an Existing Connection](/api-reference/bank-accounts/add-account-from-connection). A manually added bank that is later connected instantly keeps its `payment_method_id`, and we send the event again.
 
-After `relink_required`, payments from the bank fail with `bank_relink_required` until the user reconnects using [Get Bank Account Relink Link](/api-reference/bank-accounts/get-bank-account-relink-link). A bank added from an existing connection is reconnected in your app instead.
+After `relink_required`, payments from the bank fail with `bank_relink_required`. This continues until the user reconnects using [Get Bank Account Relink Link](/api-reference/bank-accounts/get-bank-account-relink-link). A bank added from an existing connection is reconnected in your app instead.
 
 ## Example
 
@@ -49,7 +49,7 @@ After `relink_required`, payments from the bank fail with `bank_relink_required`
 ## Data Fields
 
 <ResponseField name="payment_method_id" type="string">
-  The bank account's id. `null` on `add_failed`.
+  The bank account's ID. `null` on `add_failed`.
 </ResponseField>
 
 <ResponseField name="user_id" type="string">
@@ -57,17 +57,17 @@ After `relink_required`, payments from the bank fail with `bank_relink_required`
 </ResponseField>
 
 <ResponseField name="bank" type="object">
-  Masked details: `account_mask`, `routing_last4`, `account_type`, `account_holder_name`, `bank_name`. Full numbers are never sent.
+  Masked details: `account_mask`, `routing_last4`, `account_type`, `account_holder_name`, `bank_name`. We never send full numbers.
 </ResponseField>
 
 <ResponseField name="failure_reason" type="string">
-  On `add_failed`, e.g. `bank_already_added`.
+  On `add_failed`. For example, `bank_already_added`.
 </ResponseField>
 
 <ResponseField name="reason" type="string">
-  On `relink_required`, always `bank_relink_required`.
+  On `relink_required`, this is always `bank_relink_required`.
 </ResponseField>
 
 <ResponseField name="platform_id" type="string">
-  Your platform id. `tenant_id` has the same value.
+  Your platform ID. `tenant_id` has the same value.
 </ResponseField>

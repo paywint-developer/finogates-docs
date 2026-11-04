@@ -1,4 +1,14 @@
 ---
 title: 'Report a Verification Verdict'
+description: "Report a user's KYC or KYB result, if your platform verifies its own users."
 openapi: 'POST /v1/platform/users/{user_id}/verification-verdict'
 ---
+
+This call is for platforms that verify their own users. We turn it on for each platform separately.
+
+Report the result of the user's identity check (KYC), business check (KYB), or both. The result is `approved`, `rejected` or `in_review`.
+
+- Anything short of approval holds the user's payments.
+- We release the payments when the user's KYC and KYB are both approved. A check you did not send in this call still counts.
+- If the user has only a KYC or only a KYB on file, that one check must be approved.
+- You then receive the matching `user_kyc.*` and `user_kyb.*` webhooks.

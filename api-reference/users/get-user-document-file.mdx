@@ -1,4 +1,13 @@
 ---
 title: 'Get a User''s Document File'
+description: "Get the file itself, for a typed document or a candidate."
 openapi: 'GET /v1/platform/users/{user_id}/documents/{document_id}/content'
 ---
+
+Use this so your user can look at a file before you classify it. They can also check it before you send its `document_id` in [Create an Application](/api-reference/products/create-application).
+
+## Good to know
+
+- This call needs your platform token. Send the file on to your user through your own system, and don't link to it directly.
+- We serve a stored file only once its malware scan is clean. During the scan, you get `409 document_not_ready`.
+- The file is cached privately for five minutes.

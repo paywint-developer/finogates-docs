@@ -1,20 +1,20 @@
 ---
 title: "Webhook Signature Verification"
-description: "Verify that a webhook was sent by Finogates."
+description: "Check that a webhook really came from Finogates."
 keywords: ["webhook", "signature", "hmac", "security"]
 icon: "shield"
 ---
 
-Every webhook is signed with HMAC-SHA256 using your endpoint's signing secret. Verify the signature before processing an event.
+We sign every webhook with HMAC-SHA256, using your endpoint's signing secret. Verify the signature before you process an event.
 
 ## Headers
 
 | Header                   | Description                                               |
 |--------------------------|-----------------------------------------------------------|
 | `X-Finogate-Signature`   | `sha256=` followed by the hex HMAC-SHA256 digest.         |
-| `X-Finogate-Timestamp`   | Unix time (seconds) when the request was signed.          |
-| `X-Finogate-Event-Id`    | The event `id`. Identical on every retry.                 |
-| `X-Finogate-Delivery-Id` | This endpoint's delivery of the event.                    |
+| `X-Finogate-Timestamp`   | Unix time (in seconds) when the request was signed.       |
+| `X-Finogate-Event-Id`    | The event `id`. It is the same on every retry.            |
+| `X-Finogate-Delivery-Id` | Identifies this delivery of the event to this endpoint.   |
 
 ```http
 X-Finogate-Signature: sha256=5f0c2d7f0c0e9b4a8e1d3c6b9a7f2e4d1c8b5a3f6e9d2c7b4a1f8e5d3c6b9a7f
@@ -27,11 +27,11 @@ Your signing secret is in the [Developer Panel](https://app.finogates.com/develo
 
 ## Verifying a Request
 
-1. Read the **raw** request body. Don't parse and re-serialize it.
+1. Read the **raw** request body. Don't parse it and serialize it again.
 2. Build the signed message: `{X-Finogate-Timestamp}.{raw_body}`.
-3. Compute HMAC-SHA256 of the message with your secret, hex-encoded, and prefix it with `sha256=`.
+3. Compute the HMAC-SHA256 of the message with your secret. Hex-encode the result and add `sha256=` to the front.
 4. Compare it with `X-Finogate-Signature` using a constant-time comparison.
-5. Reject the request if the timestamp is more than 5 minutes from your current time.
+5. Reject the request if the timestamp is more than 5 minutes before or after your current time.
 
 ## Examples
 
@@ -165,5 +165,5 @@ end
 </CodeGroup>
 
 <Note>
-`OpenSSL.fixed_length_secure_compare` raises when the lengths differ; treat that as an invalid signature.
+`OpenSSL.fixed_length_secure_compare` raises an error when the lengths differ. Treat that as an invalid signature.
 </Note>

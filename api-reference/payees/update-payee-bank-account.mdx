@@ -1,4 +1,11 @@
 ---
 title: "Update a Payee's Bank Account"
+description: "Change the details of a saved payee bank account."
 openapi: 'PATCH /v1/platform/payees/bank-accounts/{payee_id}/{bank_account_id}'
 ---
+
+Send only the fields you want to update. We keep anything you leave out as it is.
+
+The usual reason is to fill in a field that a destination country requires, but that was missed at creation. An example is the IFSC code for an India destination. Send it in `bank_branch`. We also accept `ifsc` as another name for this field.
+
+If you send a new `bank_account_number`, it must be digits only. We encrypt it again, and only the last four digits are ever returned.

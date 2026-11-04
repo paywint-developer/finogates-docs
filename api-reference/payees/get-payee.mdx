@@ -1,4 +1,7 @@
 ---
 title: 'Get Payee'
+description: "Get one payee's full details by ID, and their payout destinations if you ask for them."
 openapi: 'GET /v1/platform/payees/{payee_id}'
 ---
+
+`includeDestinations` and `includeMethods` do the same thing. Set either one to `true` to add the `destinations` array to the response.

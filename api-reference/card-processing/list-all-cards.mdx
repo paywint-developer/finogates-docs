@@ -1,4 +1,9 @@
 ---
 title: 'List All Cards'
+description: "Get every card saved across all of your users."
 openapi: 'GET /v1/platform/card/cards'
 ---
+
+You get only **card** payment methods. The details are masked in the same way as `GET /v1/platform/card/cards/{user_id}`: last 4 digits, brand and expiry only.
+
+The list is not limited to one user. Each item has the IDs that tell you whose card it is.

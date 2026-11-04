@@ -1,4 +1,9 @@
 ---
 title: 'List Model'
+description: "Search your platform's records with filters, sorting and page settings."
 openapi: 'POST /v1/platform/listings/{model_key}'
 ---
+
+Choose the kind of record in the web address with `model_key`, for example `users`, `wallets` or `payment_intents`. Then send your filters, sorting and page settings in the request body.
+
+Results only include your own platform's records. You can never see another platform's data.

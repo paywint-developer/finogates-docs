@@ -1,6 +1,6 @@
 ---
 title: "KYB Events"
-description: "Webhooks for a business user's verification."
+description: "Webhooks for a business user's business check (KYB)."
 icon: "building"
 ---
 
@@ -8,10 +8,10 @@ icon: "building"
 
 | Event               | Sent when                                       | Additional fields                                                  |
 |---------------------|-------------------------------------------------|--------------------------------------------------------------------|
-| `user_kyb.applied`  | The business submitted verification.            | `status`                                                           |
-| `user_kyb.approved` | Verification is approved.                       | —                                                                  |
-| `user_kyb.rejected` | Verification is rejected.                       | `reject_reason`                                                    |
-| `user_kyb.reopened` | Verification is reopened for the user to redo.  | `reopen_reason`, `previous_status`, `reopen_count`, `cascaded_from` |
+| `user_kyb.applied`  | The business submitted the business check.      | `status`                                                           |
+| `user_kyb.approved` | The check is approved.                          | None                                                               |
+| `user_kyb.rejected` | The check is rejected.                          | `reject_reason`                                                    |
+| `user_kyb.reopened` | The check is reopened for the user to redo.     | `reopen_reason`, `previous_status`, `reopen_count`, `cascaded_from` |
 | `user_kyb.deleted`  | The verification record is deleted.             | `delete_reason`, `cascaded_from`                                   |
 
 ## Example
@@ -40,17 +40,17 @@ icon: "building"
 </ResponseField>
 
 <ResponseField name="cascaded_from" type="string">
-  Set when the change was caused by the user's KYC, e.g. `user_kyc.reopened` or `user_kyc.deleted`; otherwise `null` or omitted.
+  Set when the user's KYC caused the change, such as `user_kyc.reopened` or `user_kyc.deleted`. Otherwise it is `null` or left out.
 </ResponseField>
 
 ## Update events
 
-A change sent to an **approved** KYB with [Update User KYB Record](/api-reference/verification/update-user-kyb-record) waits for our review; the record stays approved meanwhile. Once every item is decided you get one event.
+A change sent to an **approved** KYB with [Update User KYB Record](/api-reference/verification/update-user-kyb-record) waits for our review. The record stays approved during this time. Once every item is decided, you get one event.
 
 | Event | Sent when |
 | --- | --- |
 | `user_kyb.update_approved` | At least one item was approved and is now on the KYB. |
-| `user_kyb.update_rejected` | Every item was rejected; nothing changed. |
+| `user_kyb.update_rejected` | Every item was rejected. Nothing changed. |
 
 ```json
 {
@@ -65,20 +65,20 @@ A change sent to an **approved** KYB with [Update User KYB Record](/api-referenc
     "status": "approved",
     "items": [
       {"id": "c1", "kind": "document", "document_type": "proof_of_address", "status": "approved"},
-      {"id": "c2", "kind": "field", "field": "business_data.website", "status": "rejected", "reason": "The site is not the business's."}
+      {"id": "c2", "kind": "field", "field": "website", "status": "rejected", "reason": "The site is not the business's."}
     ]
   }
 }
 ```
 
 <ResponseField name="update_id" type="string">
-  The update, as `pending_update.id` named it when you sent it.
+  The update. It matches the `pending_update.id` from when you sent it.
 </ResponseField>
 
 <ResponseField name="status" type="string">
-  `approved` (at least one item landed) or `rejected`.
+  `approved` (at least one item was approved) or `rejected`.
 </ResponseField>
 
 <ResponseField name="items" type="array">
-  Each item with its own `status` (`approved` or `rejected`) and, when rejected, a `reason`. `kind` is `field`, `document` or `classification`.
+  Each item has its own `status` (`approved` or `rejected`). A rejected item also has a `reason`. `kind` is `field`, `document` or `classification`.
 </ResponseField>

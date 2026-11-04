@@ -1,6 +1,6 @@
 ---
 title: "KYC Events"
-description: "Webhooks for a user's identity verification."
+description: "Webhooks for a user's identity check (KYC)."
 icon: "id-card"
 ---
 
@@ -8,12 +8,12 @@ icon: "id-card"
 
 | Event                     | Sent when                                         | Additional fields                                     |
 |---------------------------|---------------------------------------------------|-------------------------------------------------------|
-| `user_kyc.applied`        | The user submitted identity verification.         | `status`, `verified_fields`                           |
-| `user_kyc.in_review`      | Verification is under review.                     | `status`                                              |
-| `user_kyc.approved`       | Verification is approved.                         | —                                                     |
-| `user_kyc.semi_approved`  | Verification is moved to semi-approved.           | `status` (`semi_approved`), `previous_status`         |
-| `user_kyc.rejected`       | Verification is rejected.                         | `reject_reason`                                       |
-| `user_kyc.reopened`       | Verification is reopened for the user to redo.    | `reopen_reason`, `previous_status`, `reopen_count`    |
+| `user_kyc.applied`        | The user submitted the identity check.            | `status`, `verified_fields`                           |
+| `user_kyc.in_review`      | The check is under review.                        | `status`                                              |
+| `user_kyc.approved`       | The check is approved.                            | None                                                  |
+| `user_kyc.semi_approved`  | The check is moved to semi-approved.              | `status` (`semi_approved`), `previous_status`         |
+| `user_kyc.rejected`       | The check is rejected.                            | `reject_reason`                                       |
+| `user_kyc.reopened`       | The check is reopened for the user to redo.       | `reopen_reason`, `previous_status`, `reopen_count`    |
 | `user_kyc.required`       | A payment needs the user to complete KYC first.   | `intent_id` or `payment_id`, `status` (`required`), `note` |
 | `user_kyc.deleted`        | The verification record is deleted.               | `delete_reason`                                       |
 
@@ -40,21 +40,21 @@ icon: "id-card"
 </ResponseField>
 
 <ResponseField name="kyc_record_id" type="string">
-  The verification record. Status changes reported during verification (`applied`, `in_review`, and some `approved`/`rejected` events) send it as `check_id`.
+  The verification record. Status changes reported during verification send it as `check_id`. These are `applied`, `in_review`, and some `approved` and `rejected` events.
 </ResponseField>
 
 <ResponseField name="status" type="integer | string">
-  On `applied`, `in_review` and provider-reported `approved`/`rejected`: `1` pending, `2` in review, `3` approved, `4` rejected, `5` semi-approved, repeated in `status_code`. `semi_approved` and `required` send a string.
+  Sent on `applied`, `in_review`, and on `approved` and `rejected` events reported by our provider. The values are `1` pending, `2` in review, `3` approved, `4` rejected and `5` semi-approved. The value is repeated in `status_code`. `semi_approved` and `required` send a string.
 </ResponseField>
 
 ## Update events
 
-A change sent to an **approved** KYC with [Update User KYC Record](/api-reference/verification/update-user-kyc-record) waits for our review; the record stays approved meanwhile. Once every item is decided you get one event.
+A change sent to an **approved** KYC with [Update User KYC Record](/api-reference/verification/update-user-kyc-record) waits for our review. The record stays approved during this time. Once every item is decided, you get one event.
 
 | Event | Sent when |
 | --- | --- |
 | `user_kyc.update_approved` | At least one item was approved and is now on the KYC. |
-| `user_kyc.update_rejected` | Every item was rejected; nothing changed. |
+| `user_kyc.update_rejected` | Every item was rejected. Nothing changed. |
 
 ```json
 {
@@ -69,20 +69,20 @@ A change sent to an **approved** KYC with [Update User KYC Record](/api-referenc
     "status": "approved",
     "items": [
       {"id": "c1", "kind": "document", "document_type": "proof_of_address", "status": "approved"},
-      {"id": "c2", "kind": "field", "field": "business_data.website", "status": "rejected", "reason": "The site is not the business's."}
+      {"id": "c2", "kind": "field", "field": "address", "status": "rejected", "reason": "The address does not match the proof of address."}
     ]
   }
 }
 ```
 
 <ResponseField name="update_id" type="string">
-  The update, as `pending_update.id` named it when you sent it.
+  The update. It matches the `pending_update.id` from when you sent it.
 </ResponseField>
 
 <ResponseField name="status" type="string">
-  `approved` (at least one item landed) or `rejected`.
+  `approved` (at least one item was approved) or `rejected`.
 </ResponseField>
 
 <ResponseField name="items" type="array">
-  Each item with its own `status` (`approved` or `rejected`) and, when rejected, a `reason`. `kind` is `field`, `document` or `classification`.
+  Each item has its own `status` (`approved` or `rejected`). A rejected item also has a `reason`. `kind` is `field`, `document` or `classification`.
 </ResponseField>

@@ -1,4 +1,11 @@
 ---
 title: 'Upload a User''s Document'
+description: "Upload one typed document for a user."
 openapi: 'POST /v1/platform/users/{user_id}/documents'
 ---
+
+Send the file as `multipart/form-data`. It must be a PNG, JPEG or PDF, and at most 10 MB.
+
+- An ID card needs `side`, which is `front` or `back`.
+- A passport is an `identity_document`.
+- A newer document of the same type and side replaces the older one.

@@ -1,10 +1,10 @@
 ---
 title: "Events"
-description: "The structure of every webhook Finogates sends."
+description: "The structure of every webhook we send."
 icon: "calendar"
 ---
 
-Finogates sends each event as a JSON `POST` to your webhook endpoint. Every event uses the same envelope; the event-specific fields are in `data`.
+We send each event as a JSON `POST` to your webhook endpoint. Every event has the same outer structure, called the envelope. The fields specific to each event are in `data`.
 
 ## Example
 
@@ -29,7 +29,7 @@ Finogates sends each event as a JSON `POST` to your webhook endpoint. Every even
 ## Envelope Fields
 
 <ResponseField name="id" type="string">
-  Unique event id (UUID). The same id is sent on every retry — use it to de-duplicate.
+  Unique event ID (UUID). We send the same ID on every retry, so use it to spot duplicates.
 </ResponseField>
 
 <ResponseField name="event_type" type="string">
@@ -37,7 +37,7 @@ Finogates sends each event as a JSON `POST` to your webhook endpoint. Every even
 </ResponseField>
 
 <ResponseField name="type" type="string">
-  Equal to `event_type`, except for payment events, where it reflects the payment's current status. See [Payment Events](/webhooks/events/payment).
+  The same as `event_type`, except for payment events. For those, it shows the payment's current status. See [Payment Events](/webhooks/events/payment).
 </ResponseField>
 
 <ResponseField name="created_at" type="string">
@@ -45,17 +45,17 @@ Finogates sends each event as a JSON `POST` to your webhook endpoint. Every even
 </ResponseField>
 
 <ResponseField name="data" type="object">
-  Event-specific fields. Fields may be added over time; ignore any you don't use.
+  Fields specific to the event. We may add fields over time. Ignore any you don't use.
 </ResponseField>
 
 ## Naming
 
-Event names use dot notation: `<resource>.<action>`, or `<resource>.<sub-resource>.<action>`. For example, `user_kyc.approved` and `payment_method.bank.added`.
+Event names use dots: `<resource>.<action>`, or `<resource>.<sub-resource>.<action>`. For example, `user_kyc.approved` and `payment_method.bank.added`.
 
 ## Delivery
 
-1. Finogates sends the event to every active endpoint subscribed to it.
+1. We send the event to every active endpoint subscribed to it.
 2. Your endpoint [verifies the signature](/webhooks/signature-verification).
-3. Your endpoint responds with a `2xx` status. Any other result is retried — see [Retry Behavior](/webhooks/retry-behavior).
+3. Your endpoint responds with a `2xx` status. We retry on any other result. See [Retry Behavior](/webhooks/retry-behavior).
 
-Events may arrive more than once or out of order. Use `id` to de-duplicate and `created_at` to order.
+Events may arrive more than once or out of order. Use `id` to spot duplicates and `created_at` to put events in order.

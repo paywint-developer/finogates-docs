@@ -1,4 +1,13 @@
 ---
 title: 'Close a Wallet'
+description: "Close a wallet, so that its status becomes closed."
 openapi: 'DELETE /v1/platform/wallets/{wallet_id}'
 ---
+
+This sets the wallet's status to `closed`. You can close a user's last active wallet in a currency.
+
+## Errors
+
+| Code | What it means |
+| --- | --- |
+| `409` | The wallet is primary, and the user has other active wallets in the same currency. Make another wallet primary first with [Rename or Promote a Wallet](/api-reference/wallets/rename-or-promote-wallet). |

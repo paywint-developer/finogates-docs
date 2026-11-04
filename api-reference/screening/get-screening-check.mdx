@@ -1,4 +1,9 @@
 ---
 title: 'Get a Screening Check'
+description: "Read a screening check again by its ID."
 openapi: 'GET /v1/platform/screening/checks/{check_id}'
 ---
+
+A check never changes after it is created. You can call this as often as you like, and we don't bill for it.
+
+To screen a subject again against updated lists, POST a new check with [Screen a Subject](/api-reference/screening/create-screening-check).

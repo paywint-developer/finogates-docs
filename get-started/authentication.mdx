@@ -1,19 +1,38 @@
 ---
 title: "Authentication"
-description: "Authenticate requests to the Finogates API using API keys."
+description: "Use an access token to authenticate your requests to the Finogates API."
 icon: "key"
 ---
 
-> We use API key based authentication to verify and authorize all requests to the Finogates API.
+> We use access tokens to verify and authorize every request to the Finogates API.
 
-**All API requests to Finogates must be made over HTTPS and authenticated using an API key.**
-Include the API key in the request header as `X-Api-Key`, and `X-Api-Secret`.
+**Every API request to Finogates must use HTTPS and be authenticated with an access token.**
+Send your token in the `Authorization` request header, as `Authorization: Bearer <access_token>`.
+
+## Get an access token
+
+Copy your `client_id` and `client_secret` from the [Developer Panel](https://app.finogates.com/developer-panel). Then swap them for a token with [Exchange Client Token](/api-reference/auth/exchange-client-token). This is the only endpoint that does not need a token.
+
+```curl Get an Access Token theme={null}
+curl -X POST "https://<environment>/v1/platform/auth/token" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "client_id": "YOUR_CLIENT_ID",
+    "client_secret": "YOUR_CLIENT_SECRET"
+  }'
+
+```
+
+The token is in `data.access_token` in the response.
+
+## Call the API
+
+Send the token on every other request:
 
 ```curl Example Api Call theme={null}
 curl -X POST "https://<environment>/v1/platform/users" \
   -H "Content-Type: application/json" \
-  -H "X-Api-Key: YOUR_API_KEY" \
-  -H "X-Api-Secret: YOUR_API_SECRET" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
   -d '{
     "first_name": "John",
     "last_name": "Doe",
@@ -22,12 +41,12 @@ curl -X POST "https://<environment>/v1/platform/users" \
 
 ```
 
-This example creates a user with a phone number only. A user needs an `email`, a `phone` in E.164 format, or both — see [Create User](/api-reference/users/create-user).
+This example creates a user with a phone number only. A user needs an `email`, a `phone` in E.164 format, or both. See [Create User](/api-reference/users/create-user).
 
-Make sure to use the correct API key for the appropriate [environment](/get-started/environments). Using the wrong key or URL may result in authentication failures.
+Use the correct credentials for each [environment](/get-started/environments). The wrong credentials or URL can cause authentication failures.
 
-Keep your API key secure and never expose it on the client side.
+Keep your `client_secret` and access token secure. Never expose them on the client side.
 
 ***
 
-Need help? Reach out to [support@finogates.com](mailto:support@finogates.com)
+Need help? Contact [support@finogates.com](mailto:support@finogates.com)

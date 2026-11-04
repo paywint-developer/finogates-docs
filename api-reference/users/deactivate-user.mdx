@@ -1,4 +1,17 @@
 ---
 title: 'Delete a User'
+description: "Delete a user from your platform, and keep their record for your history."
 openapi: 'DELETE /v1/platform/users/{user_id}'
 ---
+
+This is a **soft delete**. We mark the user as deleted, but their full record stays in our system for your history and audit trail. Nothing is permanently erased.
+
+After this call:
+
+- The user no longer appears in your user list.
+- The user can't be used for anything new.
+- The user's email and phone are free to use again right away.
+
+If you later add a new user with the same email or phone, that is a separate record. It has its own ID and its own wallet. The old user's history stays linked to the old ID.
+
+You can safely repeat this call. Deleting a user who is already deleted succeeds and changes nothing.

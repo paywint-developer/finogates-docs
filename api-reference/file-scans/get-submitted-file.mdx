@@ -1,4 +1,28 @@
 ---
 title: 'Get a Submitted File'
+description: "Get one submitted file, with a short-lived download link if it was cleared."
 openapi: 'GET /v1/platform/file-scans/{file_id}'
 ---
+
+If the file's status is `clean`, the response has a short-lived `download_url`.
+
+A file with any other status (`pending`, `infected`, `unscannable` or `error`) comes back with that status and **no link**. No parameter changes that.
+
+A `clean` file also has no link if we can't serve it at that moment.
+
+## The link changes on each call
+
+We create the link per call, so it is not stable. Each request signs a new URL that works for `expires_in` seconds (default 900).
+
+Two calls in the same second happen to give the same string. Any later call gives a different one, because the signature covers a timestamp to the second.
+
+## Keep links safe
+
+Treat every link as live until its own expiry. Asking for a new link does **not** cancel the previous one.
+
+- Request a link when you are about to use it. Don't cache it.
+- Prefer a short `expires_in`. A link that leaks stays usable for its full lifetime, with no authentication in front of it.
+
+## Errors
+
+A file that belongs to another platform returns `404` rather than `403`. This way, the response does not confirm that the ID exists.

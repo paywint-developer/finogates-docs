@@ -1,4 +1,9 @@
 ---
 title: 'Delete Phone Number'
+description: "Ask to remove a phone number from a user."
 openapi: 'DELETE /v1/platform/phone-numbers/users/{user_id}/{phone_number_id}'
 ---
+
+The deletion request is set to `pending`, and an admin must approve it before it is final. Until then, the number's operational `status` does not change.
+
+We keep the record for your history, so nothing is permanently erased.

@@ -1,4 +1,16 @@
 ---
 title: 'List Digital Asset Balances'
+description: "Get digital asset balances, with one total per user, asset and network."
 openapi: 'GET /v1/platform/digital-assets/balances'
 ---
+
+Each row adds up all of a user's wallets for one asset on one network:
+
+| Balance | What it means |
+| --- | --- |
+| `available` | Spendable now. |
+| `pending` | Not cleared yet. |
+| `hold` | Reserved. |
+| `total` | The overall total. |
+
+Money set aside as our own fees isn't counted here. Pass `user_id` to see just one user's balances.

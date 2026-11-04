@@ -1,4 +1,31 @@
 ---
 title: 'Get a Link for the User to Pay by Card'
+description: "Get a one-time link where your user can pay a fixed amount by card."
 openapi: 'POST /v1/platform/card/payment-link'
 ---
+
+Show the page inside your own website, in an iframe. The user enters their card on that page and taps **Pay**. Then we charge the card.
+
+## What to send
+
+- `user_id`: the user who will pay.
+- `amount`: the amount to charge, in major units, such as `12.50`.
+- `currency`: optional ISO currency code. The default is `USD`.
+- `card_processing_id`: optional. Send it to tie the charge to one approved card-processing account.
+
+## What you get back
+
+| Field | What it means |
+| --- | --- |
+| `payment_intent_id` | The recorded payment. We create it right away as `pending`. It shows in your payment lists, so you can track it and match it to your records. It becomes `succeeded` or `failed` once the user pays. |
+| `pay_url` | The link to load inside an iframe. It works once. |
+| `expires_at` | When the link stops working, after about 10 minutes. |
+
+## How you find out the result
+
+The user sees the result on the page. We also send your server a `payment_intent.succeeded` or `payment_intent.failed` webhook (an automatic notification) with the `payment_intent_id`.
+
+## Good to know
+
+- The page also offers a "save card for future use" choice. If the user accepts, we store the card so they can use it again later.
+- The link shows nothing about which company processes the card behind the scenes. Treat it as a plain string with no meaning of its own.

@@ -1,4 +1,7 @@
 ---
 title: 'List Cards'
+description: "Get the cards saved for one user, with masked details."
 openapi: 'GET /v1/platform/card/cards/{user_id}'
 ---
+
+You get only **card** payment methods. For safety, the details are masked: you see only the last 4 digits, the card brand (such as Visa) and the expiry date.

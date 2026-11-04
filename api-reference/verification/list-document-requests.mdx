@@ -1,4 +1,11 @@
 ---
 title: 'List Verification Document Requests'
+description: "List every verification check of yours where we have asked for extra documents."
 openapi: 'GET /v1/platform/compliance/document-requests'
 ---
+
+Use `status=open` to see only what you still need to send us.
+
+If you did not receive, or missed, the `compliance_documents.requested` webhook, call this endpoint regularly to check.
+
+Each check comes back under `kyc_record_id` or `kyb_record_id`, depending on its `check_type`. This is the same ID, and the same field name, that the `user_kyc.*` / `user_kyb.*` webhooks use.

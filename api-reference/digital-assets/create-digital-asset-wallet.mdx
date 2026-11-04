@@ -1,4 +1,22 @@
 ---
 title: 'Create Digital Asset Wallet'
+description: "Create a digital asset wallet (a deposit address) for a user, or get the existing one back."
 openapi: 'POST /v1/platform/digital-assets/wallets'
 ---
+
+Our team must first approve every new asset and network combination.
+
+- **New combination:** this call returns straight away with a request ID and a "waiting for approval" status. Once our team approves it, we create the wallet for you automatically. You don't need to call this again.
+- **Wallet already exists:** we return its deposit address right away.
+
+Some assets also need a small amount of a separate "gas" asset to cover network fees. When that applies, the response includes a `gas_dependency` section. You can use it to ask the user to top up.
+
+<Warning>
+**A digital asset sent on the wrong network is usually lost for good.**
+
+The response gives you both the deposit `address` and its `network_code`, such as `ethereum` or `tron`. Users must send funds on the exact network the address belongs to.
+
+Sending an asset from a different blockchain usually loses the money for good. It never reaches us, and we have no way to recover it. Two examples are USDT on Tron sent to an Ethereum address, and Bitcoin sent to an Ethereum-style address.
+
+Always show the network clearly on any deposit screen you build.
+</Warning>

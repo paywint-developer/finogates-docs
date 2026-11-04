@@ -1,4 +1,29 @@
 ---
 title: 'Submit Files for Scanning'
+description: "Send files for malware scanning."
 openapi: 'POST /v1/platform/file-scans'
 ---
+
+## Limits
+
+| Limit | Maximum |
+| --- | --- |
+| Files in one request | 20 |
+| Size of one file | 25 MB |
+| Size of the whole request | 50 MB |
+
+The request total is usually the limit you reach first. Twenty files at the per-file maximum is far more than 50 MB. So large files use up the request limit long before you reach 20 files. Send big files in smaller batches.
+
+We refuse these two cases in different ways:
+
+- **A file that is too large:** we reject that file only. The rest of the batch still succeeds.
+- **A request that is too large:** we refuse the whole request with `413`, before we read any file. There are no per-file details, because nothing was parsed.
+
+## What you get back
+
+Every file gets its own entry in `files[]` with `accepted` and, if rejected, an `error`. One bad file never discards the good ones sent with it.
+
+Accepted files are `pending` with an `id`. The result is not instant. To get it, subscribe to the `file_scan` webhook group, or call `GET /v1/platform/file-scans/{file_id}` regularly.
+
+- Each file sends its **own** webhook when its own scan finishes. Ten accepted files mean up to ten separate webhooks. They arrive independently and in no guaranteed order.
+- Rejected files send no webhook. They were never stored, so they are never scanned.

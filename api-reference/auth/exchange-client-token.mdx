@@ -1,4 +1,28 @@
 ---
 title: 'Exchange Client Token'
+description: "Swap your client credentials for the access token that every other call needs."
 openapi: 'POST /v1/platform/auth/token'
 ---
+
+Send your `client_id` and `client_secret` to get a Bearer access token. This is the OAuth2 **client-credentials** grant.
+
+Every other Platform API endpoint needs this token. Send it as an `Authorization: Bearer <access_token>` header. This is the only endpoint that does not need a token.
+
+We give you your `client_id` at onboarding. We show the matching `client_secret` only once, when it is created or rotated. Store it safely, and never put it in client-side code.
+
+## What you get back
+
+On success, `data.access_token` is a signed JWT. What `expires_in` shows depends on the setup:
+
+| `expires_in` | What it means |
+| --- | --- |
+| `null` | This is the default. The token does not expire, and stays valid until you rotate the `client_secret` that issued it. |
+| A number | If a fixed token lifetime is set, this is the lifetime in seconds. Refresh the token before it ends. |
+
+Rotating the secret cancels every token issued earlier for that client. Each old token stops working at once, on its next request.
+
+## Good to know
+
+- **Sandbox and production are fully separate.** The host you call decides the environment. Your credentials must belong to that environment. A sandbox `client_id` can't get a production token, and a production one can't get a sandbox token.
+- **IP allowlist:** if your client has an IP allowlist, we reject requests from any other IP address.
+- **Failed attempts:** we rate-limit repeated failures, and we may lock the client for a while. Wait before you retry, and don't keep calling the endpoint.

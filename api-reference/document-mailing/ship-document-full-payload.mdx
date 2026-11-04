@@ -1,4 +1,55 @@
 ---
 title: 'Mail a Document (Full Payload)'
+description: "Mail a document you supply, with the recipient sent in the same call."
 openapi: 'POST /v1/platform/payments/document-mailing/global'
 ---
+
+**Older route.** Use `POST /v1/platform/check-payments` with a document mailing (`type` 11) instead. It is the same mailing, product and rail, in the check-payments request format. This route keeps working for existing integrations.
+
+Everything goes in one call, and nothing needs to be saved first. Use this for a one-off recipient you don't want to keep. For a saved payee, use [`POST /v1/platform/payments/document-mailing`](/api-reference/document-mailing/ship-document).
+
+## Who the mailing is from
+
+This request has no `payee_id` to show who owns the mailing. `sender` is optional:
+
+- **Send `sender`** to type a one-off sender. That address prints on the label instead of the facility address.
+- **Leave out `sender`** to mail as your platform's own admin/master account. It becomes the owner, and its details go on the mailing label.
+
+Don't send `user_id`. We work it out for you either way.
+
+## How to send the request
+
+This is a `multipart/form-data` request:
+
+- `document` is a file part.
+- `attachments` are optional file parts.
+- `payload` is the JSON below, sent as a string alongside the files.
+
+Sample `payload`:
+
+```json
+{
+  "sender": {
+    "name": "Jane Roe",
+    "email": "jane@example.com",
+    "phone": "+12125550123",
+    "line_1": "123 Main St",
+    "city": "Austin",
+    "state": "TX",
+    "zip": "78701",
+    "country": "US"
+  },
+  "recipient": {
+    "name": "Dana Reed",
+    "line_1": "456 Oak Ave",
+    "city": "Denver",
+    "state": "CO",
+    "zip": "80202",
+    "country": "US"
+  },
+  "mail_type": "usps_ground_advantage",
+  "currency": "USD",
+  "description": "Signed lease agreement",
+  "idempotency_key": "doc-mail-2026-08-24-002"
+}
+```

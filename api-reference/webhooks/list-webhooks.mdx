@@ -1,4 +1,9 @@
 ---
 title: 'List Webhooks'
+description: "Get the list of webhooks set up for your platform."
 openapi: 'GET /v1/platform/webhooks'
 ---
+
+Your platform has one live webhook at a time. The list also includes any webhooks you deleted, which are switched off. It is split into pages.
+
+Send `is_active=true` to get only the live one. That is the address we are sending to right now.

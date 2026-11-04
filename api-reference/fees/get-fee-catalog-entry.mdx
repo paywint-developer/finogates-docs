@@ -1,4 +1,15 @@
 ---
 title: 'Get One Fee by Code'
+description: "Get one fee line's effective value for your platform, using its fee code."
 openapi: 'GET /v1/platform/fees/catalog/{fee_code}'
 ---
+
+Look it up by its `fee_code`, such as `ach.push`, `wallet.send` or `card.acquiring`.
+
+This works the same as [List Your Fee Schedule](/api-reference/fees/list-fee-catalog). You get your override if one is set, otherwise the universal default. The `source` field tells you which one you got.
+
+## Errors
+
+| Code | What it means |
+| --- | --- |
+| `404` | The `fee_code` is not a known catalog line. |

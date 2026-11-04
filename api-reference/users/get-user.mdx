@@ -1,4 +1,7 @@
 ---
 title: 'Get User'
+description: "Get the details of one user by their unique ID."
 openapi: 'GET /v1/platform/users/{user_id}'
 ---
+
+The user must belong to your platform. To find a user by email or phone instead, call `GET /v1/platform/users/lookup` with `email` or `phone`. Send only one of them.

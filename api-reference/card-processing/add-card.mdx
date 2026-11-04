@@ -1,4 +1,51 @@
 ---
 title: 'Add Card'
+description: "Get a one-time link where your user can add a payment card."
 openapi: 'POST /v1/platform/card/add-card'
 ---
+
+Show the page inside your own website, in an iframe. The user types their card details on that page, and we store the card safely for them.
+
+## What to send
+
+- `user_id`: the user the card is for.
+- `card_processing_id`: optional. Send it to tie the card to one approved card-processing account.
+- `metadata`: optional. This is an object of your own keys and values, and we do not read them.
+
+We save `metadata` with the card. We send it back unchanged when you read the card, and on the `payment_method.card.added` and `.add_failed` webhooks. Use it to match a card to your own end user when many of your users share one Finogates user.
+
+## What you get back
+
+| Field | What it means |
+| --- | --- |
+| `user_id` | The user this link is for. |
+| `add_card_url` | The link to load inside an iframe. It works once. |
+| `expires_at` | When the link stops working, about 10 minutes from now. |
+
+## How you find out the result
+
+When the card is saved, we send your server a `payment_method.card.added` webhook (an automatic notification). It has the card details, the `user_id` and any `metadata` you sent. This webhook is the official way to know the card exists.
+
+Check `status` on that webhook before you charge the card:
+
+| `status` | What it means |
+| --- | --- |
+| `active` | The card is ready to use. |
+| `pending` | Sent with `requires_manual_review`. The card is saved, but our team must review it first. |
+
+You get this webhook once per card, and never again for that card. When we decide on a reviewed card, we send a different webhook. Listen for these too. Both have the same `payment_method_id`.
+
+| Webhook | What it means |
+| --- | --- |
+| `payment_method.card.review_approved` | We accepted the card. You can charge it from now on. |
+| `payment_method.card.review_rejected` | We did not accept the card. |
+
+## If something goes wrong
+
+If something goes wrong on the page, we save nothing and send no success webhook. For example, the link expired, someone tampered with it, or the details did not pass our checks.
+
+Call this endpoint again to get a new link. Links can't be renewed.
+
+## Good to know
+
+The link shows nothing about which company processes the card behind the scenes. Treat it as a plain string with no meaning of its own.

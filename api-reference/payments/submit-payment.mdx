@@ -1,5 +1,35 @@
 ---
 title: 'Wallet to Bank (Payout)'
+description: "Pay out from a wallet to a bank account."
 openapi: 'POST /v1/platform/payments/wallet-to-bank'
 tag: 'LEGACY'
 ---
+
+This is a `payout` payment, sent by ACH push or digital check auto-deposit. The required `payment_type` chooses the flow:
+
+| Flow | What it does | How to name the bank |
+| --- | --- | --- |
+| `payment_type=send` | Pays another party. | Use `payee_destination_id` (recommended) or the older `payee_payment_method_id`. |
+| `payment_type=transfer` | Withdraws to the user's **own** bank. | Use `payment_method_id`: the user's linked bank, the same one they fund from. |
+
+## Good to know
+
+- If a Plaid-linked bank isn't connected to our payout provider yet, we connect it when needed.
+- A virtual bank account can't receive a payout, and we refuse its ID. It only receives deposits, and it can't fund a wallet.
+
+## What happens after you submit
+
+These steps are the same in both flows:
+
+1. The money moves `available → escrow` in the wallet, so it can't be spent.
+2. The payment normally starts at `pending_review`. Our team then approves or rejects it. If we have turned on automatic approval for your platform, a payout can skip this step.
+3. Once approved, we send the payout. The status becomes `processing`.
+4. The bank's result comes later. We send it by webhook, and you can also read it with [Get Payment](/api-reference/payments/get-payment).
+
+| Webhook | What it means |
+| --- | --- |
+| `payment_intent.approved` | The payout was approved. |
+| `payment_intent.rejected` | We rejected the payout. The money goes back to the wallet. |
+| `payment_intent.executing` | We sent the payout for processing. |
+| `payment_intent.succeeded` / `payment_intent.settled` | The payout completed. |
+| `payment_intent.failed` | The payout failed, and `failure_reason` says why. The money goes back to the wallet. |

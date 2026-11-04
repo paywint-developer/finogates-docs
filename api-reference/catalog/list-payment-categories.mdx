@@ -1,4 +1,9 @@
 ---
 title: 'List Payment Categories'
+description: "Get the payment categories your platform can use."
 openapi: 'GET /v1/platform/catalog/payment-categories'
 ---
+
+Each entry is a number and a name. Send the number with a payment to record what the payment was for. We list only the categories switched on for your platform.
+
+The numbers are stable and never reused, so you can safely store them. They are issued separately in test and live, so check this list in each.

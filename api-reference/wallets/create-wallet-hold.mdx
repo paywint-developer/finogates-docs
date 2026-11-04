@@ -1,4 +1,18 @@
 ---
 title: 'Freeze Funds in a Wallet'
+description: "Freeze part of a wallet's balance, using the wallet ID."
 openapi: 'POST /v1/platform/wallets/by-id/{wallet_id}/holds'
 ---
+
+The amount moves out of the wallet's **available** balance into a **held** bucket. `available` drops, but `current` doesn't change. The money hasn't left the wallet, but it can't be spent normally.
+
+The freeze happens right away, with no approval.
+
+Later, you can do either of these with held funds:
+
+- Spend them with any payment from a wallet (Wallet to Bank, Wallet to Wallet) sent with `from_hold: true`.
+- Return them to available with [Unfreeze Funds in a Wallet](/api-reference/wallets/release-wallet-hold).
+
+Freezes add up. If you freeze twice, both amounts are held.
+
+You can also send a `reason` and a `reference`. We record both on the ledger and audit trail, and show them in [List Wallet Holds](/api-reference/wallets/list-wallet-holds).

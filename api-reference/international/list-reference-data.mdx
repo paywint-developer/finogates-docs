@@ -1,4 +1,12 @@
 ---
 title: 'List Reference Data'
+description: "Look up one reference list (a catalogue) for building international payouts."
 openapi: 'GET /v1/platform/international/catalogues'
 ---
+
+The `type` query parameter picks the list you get back. Only one list comes back per request.
+
+Some lists need extra inputs:
+
+- `states` needs a `country_id`.
+- `cities` needs both a `country_id` and a `state_id`.

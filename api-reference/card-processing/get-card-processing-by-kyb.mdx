@@ -1,4 +1,7 @@
 ---
 title: 'Get Card Processing by KYB'
+description: "Get the card-processing application for one business (KYB)."
 openapi: 'GET /v1/platform/card-processing/kybs/{kyb_id}'
 ---
+
+You get the single application tied to `kyb_id`. You get a `404` if no application exists for that business.

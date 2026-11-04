@@ -1,4 +1,68 @@
 ---
 title: 'Create an Application'
+description: "File an application with your reference and the application's own answers."
 openapi: 'POST /v1/platform/products/create-application'
 ---
+
+This is the second of two calls. Send the `reference` and the answers that [Request an Application Payload](/api-reference/products/request-application-payload) asked for (`send_via: create_application`):
+
+- `application`
+- `business.annual_revenue`. An individual also sends `business.industry` / `sub_industry`.
+- `person`: citizenship, occupation, annual income, full SSN, middle name and address line 2
+- `user`, `kyc` (or `inquiry_id`) and `kyb`, when the first call asked for them
+
+We keep these for the user and the KYB, and reuse them for the next application.
+
+## What not to send here
+
+- **KYB data and documents:** these return `422 use_kyb_update`. An individual's documents return `use_kyc_update`. Send them with the KYB or KYC update instead. Only a call that files a new user in the same request sends its `documents` here, by `url` or `document_id`.
+- **Beneficial owners (UBOs):** file them with `PUT /v1/platform/users/kyb-records/{user_id}/{kyb_id}/beneficial-owners`. A top-level `beneficial_owners` returns `422 product_field_not_allowed`. A new user's `kyb` in this call carries its own in `business_data.beneficial_owners`: the owners with at least 25% and the control person.
+
+## Naming a control person
+
+A business KYB filed without its control person names one here with `control_person`. Pick from the first call's `control_person_choices`, and include a `title`:
+
+- `{kyc_id}`: the account holder their KYC verified
+- `{beneficial_owner_id}`: a UBO of the KYB
+
+They join the KYB's UBOs (the holder at 0%). We review them before the account is approved.
+
+## What happens
+
+- We check everything again here. A change still in our review returns `422 product_payload_incomplete` with `missing`.
+- A call that files a user or verifications is all or nothing.
+- The account is created as `initiated`, and we review it.
+- When you are answering a request for information (`application_id` in the first call), the same application goes back into review instead.
+
+## UBO checks
+
+We check UBOs here, before anything the first call asked for.
+
+A business account is requested once the KYB's UBOs are on file and carry what the bank needs. On file means one of these:
+
+- The owners with at least 25% and the control person
+- The control person alone, when no one owns at least 25% (`has_beneficial_owners: false`)
+
+A UBO waiting for review does not stop the request. We approve the account once every UBO is approved.
+
+Otherwise, you get one of the errors below. Each comes with `fields` and `ownership` (the KYB's UBO `status` and review `summary`). Nothing the call carried is kept.
+
+| Code | What it means |
+| --- | --- |
+| `ubo_not_answered` (422) | The KYB doesn't say whether the business has UBOs, or they were requested. |
+| `ubo_not_approved` (422) | A UBO was rejected. |
+| `ubo_incomplete` (422) | The bank needs more of the owners, such as a control person. |
+
+## Webhooks
+
+We send one webhook per status change, in this order:
+
+| Event | What it means |
+| --- | --- |
+| `virtual_bank_account.created` | The application was filed. It has the `application_id`. |
+| `virtual_bank_account.verification_in_review` | We approved it, and it is with the bank. |
+| `virtual_bank_account.information_required` | The bank needs more, listed in `missing[]`. Answer through the first call with `application_id`. It then goes back to `verification_in_review`. |
+| `virtual_bank_account.approved` | The account is open. It has the numbers and `deposit_routes`. |
+| `virtual_bank_account.rejected` | The application was declined. It has a `failure_reason`. |
+
+After that, we send `virtual_bank_account.deposit_received` for each completed deposit.

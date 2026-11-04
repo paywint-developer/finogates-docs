@@ -1,4 +1,67 @@
 ---
 title: 'Submit a User''s KYC and KYB'
+description: "File a user's identity (KYC) and business (KYB) checks in one call."
 openapi: 'POST /v1/platform/users/kyc-kyb/{user_id}'
 ---
+
+Use this for a user you already created with `POST /v1/platform/users`.
+
+A deposit from a bank into a wallet needs this user's KYC and KYB approved. Without them, we refuse it with `KYC and KYB must be approved before funding`.
+
+## What to send
+
+Send plain JSON. It holds the same evidence as `POST /v1/platform/merchant-onboarding`, without the card-processing parts.
+
+**Identity:** send at most one of these.
+
+- `inquiry_id`: an identity check inquiry for this person.
+- `kyc`: the details typed in. Every field is required: `first_name`, `last_name`, `email`, `dob`, `phone_country_code`, `phone_no`, `ssn`, `address`, `city`, `state`, `zip`, `country`, `id_type`, `id_no`, and the image links `selfie`, `id_front_img`, `id_back_img`.
+
+**Business:** send `kyb`, with the same fields as `POST /v1/platform/users/kyb/start/{user_id}`. `kyb.business_data.business_documents` takes **2 to 5** links.
+
+The owner (UBO) rules are different here. Send at most one control person. Only the control person has a `title`. Every person needs an `email`.
+
+## Sending only one check
+
+We accept either one alone.
+
+- Send only the identity (for example, just `inquiry_id`), and we file and follow only the KYC.
+- Send `kyb` in a later call, and from then on we follow both.
+- The response's `kyb_*` (or `kyc_*`) fields are `null` until you have filed that check here.
+- A business check needs an identity check on file first. `kyb` alone for a user with none is refused with `422`.
+
+## Links
+
+We download each link and host the file ourselves. Each link must be:
+
+- `https://` only
+- publicly reachable
+- PNG, JPG, JPEG or PDF
+- 7 MB at most
+- a different file from the other links
+
+If we can't fetch a link, the call fails with `422` and nothing is filed.
+
+## Review
+
+We file the checks you send for review.
+
+If your platform runs its own KYC/KYB programme, and this has been arranged with us:
+
+1. We ask your API for the status you hold for this user.
+2. The checks you filed are approved at once, unless you report `rejected` for one.
+3. We ask again afterwards. If you then report anything other than `approved`, the check returns to review (or is rejected).
+4. This user's payments that have not been sent yet are then held until you report `approved` again.
+
+The response carries each check's status. `approved` on both means the user may fund. You can also follow the `user_kyc.*` / `user_kyb.*` webhooks.
+
+## Sending it again
+
+Sending it again is safe.
+
+| What you send | What happens |
+| --- | --- |
+| An identity check that is already approved | We keep it as it is. You get `200`, and nothing is filed twice. |
+| A business check for the same business (same legal name and EIN) that is approved or in review | We keep it as it is. You get `200`, and nothing is filed twice. |
+| Anything new | You get `201`. |
+| A business check for a different business while one is still in review | We refuse it with `409`. |

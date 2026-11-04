@@ -1,4 +1,11 @@
 ---
 title: 'Rename or Promote a Wallet'
+description: "Rename a wallet, make it the user's primary wallet for its currency, or both."
 openapi: 'PATCH /v1/platform/wallets/{wallet_id}'
 ---
+
+To change the primary wallet, send `is_primary=true` to the wallet you want to make primary. The old primary wallet stops being primary automatically, in the same step.
+
+Sending `is_primary=false` is rejected. Each user must have exactly one primary wallet per currency.
+
+You can't rename a master wallet or change its primary setting.

@@ -1,4 +1,9 @@
 ---
 title: 'List Submitted Files'
+description: "List the files you have submitted, newest first."
 openapi: 'GET /v1/platform/file-scans'
 ---
+
+This list never includes a download link, at any status. To get a link, get one file at a time with [Get a Submitted File](/api-reference/file-scans/get-submitted-file).
+
+This is on purpose. A signed link on each row would put a live credential in the response. A list response is far more likely to be logged whole than a single-file read.

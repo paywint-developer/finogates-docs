@@ -1,12 +1,12 @@
 ---
 title: "Security Rules"
-description: "Security restrictions for document URLs."
+description: "Security limits for document URLs."
 icon: "shield-check"
 ---
 
 ## Allowed Protocols
 
-Only secure **HTTPS** URLs are supported.
+We only support secure **HTTPS** URLs.
 
 Blocked schemes include:
 
@@ -22,13 +22,13 @@ Blocked schemes include:
 
 URLs cannot resolve to:
 
-- Private IP ranges (e.g., `192.168.x.x`, `10.x.x.x`)
+- Private IP ranges (such as `192.168.x.x`, `10.x.x.x`)
 - `localhost` or `127.0.0.1`
-- Internal corporate servers
+- Internal company servers
 - Non-public networks
 - Administrative service ports
 
-Finogates must be able to access the file over the public internet.
+We must be able to access the file over the public internet.
 
 ---
 
@@ -37,6 +37,6 @@ Finogates must be able to access the file over the public internet.
 These rules prevent:
 
 - Exposure of internal systems  
-- Security vulnerabilities  
-- Attempts to bypass public hosting  
-- API failures due to inaccessible resources  
+- Security weaknesses  
+- Attempts to get around public hosting  
+- API failures caused by resources we can't access  

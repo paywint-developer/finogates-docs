@@ -1,4 +1,37 @@
 ---
 title: 'Update User KYB Record'
+description: "Change the details of a user's business check (KYB)."
 openapi: 'PATCH /v1/platform/users/kyb-records/{user_id}/{kyb_id}'
 ---
+
+Send only what changes, nested the same way as on [Create User KYB Record](/api-reference/verification/create-user-kyb-record).
+
+UBOs have their own endpoint: [Replace KYB Beneficial Owners](/api-reference/verification/replace-kyb-beneficial-owners).
+
+## Documents
+
+Documents go in `business_data.typed_documents`. Each one is either:
+
+- **A new file:** send `url`, or `file` naming a part of a `multipart/form-data` request. The `payload` part of that request is this JSON.
+- **A document we already hold, which you give a type:** send `document_id`, from `GET /v1/platform/users/{user_id}/documents`.
+
+## What happens to your change
+
+It depends on the KYB's status:
+
+| KYB status | What happens |
+| --- | --- |
+| Pending or in review | We save the change at once. |
+| Approved | See below. |
+| Rejected | The call returns `409`. |
+
+### When the KYB is approved
+
+`business_legal_name`, `business_ein` and a `business_type` we already hold can't change. Sending a change returns `409`. Another business needs a KYB of its own.
+
+Anything else waits for our review:
+
+- The change reaches the KYB only once it is approved. The KYB stays approved meanwhile.
+- `pending_update` in the response lists what is waiting.
+- You get `user_kyb.update_approved` / `user_kyb.update_rejected` once every item is decided.
+- If you send another change before then, we add it to what is waiting. A field sent again replaces its pending value.

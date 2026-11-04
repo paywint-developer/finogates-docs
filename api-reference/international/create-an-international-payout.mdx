@@ -1,4 +1,18 @@
 ---
 title: 'Send an International Payout'
+description: "Send money abroad to a recipient."
 openapi: 'POST /v1/platform/international/payouts'
 ---
+
+You only need to send:
+
+- `payeeId`: the recipient's payee ID.
+- `destinationId`: the bank destination to pay into.
+- `amount`, `sourceCurrency` and `destinationCurrency`: the transaction details.
+
+We work out everything else for you: the sender's details, the recipient's full details, the bank details, the collection branch and which partner delivers the money. Our team sets up your sender details for your platform.
+
+## Set up the recipient first
+
+1. **Create the payee** with `POST /v1/platform/payees`. See [Create Payee](/api-reference/payees/create-payee). It returns the payee's `id`, which is the `payeeId` you send here.
+2. **Add their bank destination** with `POST /v1/platform/payees/bank-accounts/{payee_id}`. See [Add a Bank Account to a Payee](/api-reference/payees/create-destination). It returns the destination's `id`, which is the `destinationId` you send here. Include `payout_branch_id` so the payout can be routed.

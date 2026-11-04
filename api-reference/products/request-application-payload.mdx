@@ -1,4 +1,53 @@
 ---
 title: 'Request an Application Payload'
+description: "Find out what an application still needs before you create it."
 openapi: 'POST /v1/platform/products/request-payload'
 ---
+
+This is the first of two calls. See [Products Overview](/api-reference/products/overview).
+
+Name the product, the account kind (`individual`, `business` or `sole_proprietor`) and the user.
+
+For a business or a sole proprietor, also send `kyb_id`, the business check (KYB) the account is for. It is required for them and refused for an individual. The KYB's entity type must match the kind (`account_kind_mismatch`).
+
+## What you get back
+
+The answer lists only what still needs something: every field, document or beneficial owner (UBO) the application needs that is not on file yet. What we hold is left out. Each item says if it is `required` or not, and has a `status` and a `send_via`.
+
+| `status` | What it means |
+| --- | --- |
+| `missing` | It is missing. |
+| `invalid` | A value we hold is not one of the options. |
+| `needs_classification` | Classify one of the `candidates`. |
+| `pending_review` | It was sent in a KYB or KYC update that is waiting for our review. |
+| `needs_verification` | The user's identity check (KYC) or KYB must be approved first. |
+| `optional` | It is optional. |
+
+`send_via` says where to send what the item needs:
+
+| `send_via` | Where to send it |
+| --- | --- |
+| `kyb_update` | `PATCH /v1/platform/users/kyb-records/{user_id}/{kyb_id}`: the KYB's data and files. |
+| `kyc_update` | `PATCH /v1/platform/users/kyc-records/{user_id}/{kyc_id}`: the address, the phone and the person's own files, including a sole proprietor's ID. |
+| `beneficial_owners` | `PUT /v1/platform/users/kyb-records/{user_id}/{kyb_id}/beneficial-owners`. |
+| `create_application` | The second call: the application's own answers. |
+| `identity_check` | The user's identity check, with `POST /v1/platform/users/kyc/start/{user_id}`: the name and date of birth. `kyc_update` can't change them. |
+| `verification` | Nothing to send for the approval. The KYC or KYB must be approved first, and `reason` says where it stands. Start a missing check with `POST /v1/platform/users/kyc/start/{user_id}` or `POST /v1/platform/users/kyb/start/{user_id}`. If your platform verifies its own users, `reason` names the endpoint to use. |
+| `user` | `PATCH /v1/platform/users/{user_id}/details`: the email and phone on the user record. See [Update a User's Details](/api-reference/users/update-user-details). |
+
+## Good to know
+
+- A change to an approved KYB or KYC waits for our review, and the record stays approved. `user_kyb.update_approved` / `user_kyc.update_approved` say when the change takes effect.
+- Ask again afterwards. `ready: true` means nothing is left except what [Create an Application](/api-reference/products/create-application) itself carries (`send_via: create_application`). Send that now.
+- The reference lasts 24 hours and files one application.
+- One account per currency per KYB (and per currency for an individual), unless your limit says otherwise.
+
+## A new user
+
+This is for platforms set up to create users from applications. Leave out `user_id`. The answer then asks for `user`, `kyc` and (for a business) `kyb` as whole objects. You send them in Create an Application, and they are decided as your verification says.
+
+Without that setup, `user_id` is required (`user_id_required`). First create the user and file their KYC and KYB with `POST /v1/platform/users/kyc-kyb/{user_id}`.
+
+## Answering a request for further information
+
+Send `application_id`, which you get from the account or from the `virtual_bank_account.information_required` webhook. `account_kind` may be left out. Every item the bank asked for comes back required, with where to send it.

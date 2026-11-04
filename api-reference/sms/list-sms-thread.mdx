@@ -1,4 +1,14 @@
 ---
 title: 'List SMS Thread'
+description: "Get the full message history of one chat."
 openapi: 'GET /v1/platform/phone-numbers/sms/messages/thread'
 ---
+
+Send both sides of the chat:
+
+- Your side: `phone_number_id` or `number`.
+- The other side: `counterpart_phone_number_id` or `counterpart`.
+
+Messages come back newest first.
+
+To load older messages when the user scrolls up, send the `next_cursor` from the last response as `before_id`. This way of paging stays stable as new messages arrive.

@@ -1,4 +1,9 @@
 ---
 title: 'List Digital Asset Catalog'
+description: "Get the digital assets your platform can offer to its users, such as Bitcoin, Ethereum or USDT."
 openapi: 'GET /v1/platform/digital-assets/assets'
 ---
+
+The list is already sorted in a good display order, so you can show it as it is.
+
+Some assets need a separate "gas" asset to cover network fees. Those assets include a `gas_dependency` section. It tells you what else the user will need, for example "you also need TRX".

@@ -1,4 +1,23 @@
 ---
 title: 'Set a Redirect URL'
+description: "Set or replace the page an end user returns to when a hosted flow finishes."
 openapi: 'PUT /v1/platform/redirect-urls/{purpose}'
 ---
+
+This is the purpose's **primary** URL. Sending the same purpose again replaces it, so repeating the call has no extra effect. Additional URLs, where a purpose takes them, don't change.
+
+## URL rules
+
+The URL must:
+
+- use HTTPS
+- have a host that resolves on the public internet
+- have no `#` fragment
+- have no credentials in it
+- be 2048 characters or shorter
+
+We refuse a private or loopback address. Your end user's browser does the redirect, and that browser is not on your network.
+
+## Query strings
+
+We keep your own query string and add our own parameters to it. For accounting-connect, these are `status` and, on success, `connection_id`.

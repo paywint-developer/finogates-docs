@@ -1,4 +1,15 @@
 ---
 title: 'List Digital Asset Vault Requests'
+description: "Get your platform's digital asset wallet requests, and where each one stands."
 openapi: 'GET /v1/platform/digital-assets/vault-requests'
 ---
+
+Every wallet request needs approval from our team. Each entry shows the decision so far:
+
+| Status | What it means |
+| --- | --- |
+| `pending_review` | Still being reviewed. |
+| `approved` | Our team approved it. |
+| `rejected` | Our team rejected it. |
+
+Filter by `status=pending_review` to show only the ones still waiting. Leave it out for the full history.

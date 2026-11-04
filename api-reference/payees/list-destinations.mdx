@@ -1,4 +1,7 @@
 ---
 title: "List a Payee's Bank Accounts"
+description: "Get every active bank account saved for a payee."
 openapi: 'GET /v1/platform/payees/bank-accounts/{payee_id}'
 ---
+
+Revoked (deleted) accounts are not included. Each entry shows only the last four digits of the account and routing numbers.

@@ -1,29 +1,33 @@
 ---
 title: "Overview"
-description: "Receive real-time notifications when something changes on your platform."
+description: "Get a message in real time when something changes on your platform."
 icon: "book-open"
 ---
 
-Webhooks notify your server when an event happens — a payment succeeds, a bank account is added, a user's KYC is approved — so you don't have to poll the API.
+A webhook is a message we send to your server when an event happens. This means you don't have to poll the API. For example, we can tell you when:
+
+- A payment succeeds
+- A bank account is added
+- A user's identity check (KYC) is approved
 
 ## How It Works
 
-1. You register an HTTPS endpoint and choose the events it receives.
-2. When an event occurs, Finogates sends it to your endpoint as a JSON `POST`.
+1. You register an HTTPS endpoint and choose which events it receives.
+2. When an event happens, we send it to your endpoint as a JSON `POST`.
 3. Your endpoint verifies the signature and responds with a `2xx` status.
-4. Failed deliveries are retried.
+4. If a delivery fails, we retry it.
 
 <CardGroup cols={2}>
   <Card title="Setup" icon="cog" href="/webhooks/setup">
     Register an endpoint in Sandbox and Production.
   </Card>
   <Card title="Events" icon="calendar" href="/webhooks/events">
-    The structure of every event.
+    See the structure of every event.
   </Card>
   <Card title="Signature Verification" icon="shield" href="/webhooks/signature-verification">
-    Confirm a webhook came from Finogates.
+    Confirm that a webhook came from Finogates.
   </Card>
   <Card title="Retry Behavior" icon="rotate" href="/webhooks/retry-behavior">
-    When and how deliveries are retried.
+    See when and how we retry deliveries.
   </Card>
 </CardGroup>

@@ -1,18 +1,34 @@
 ---
 title: "Event Types"
-description: "Webhook events you can subscribe to."
+description: "The webhook events you can subscribe to."
 icon: "calendars"
 ---
 
-Each family page lists its events, an example payload and the data fields.
+A family with a link has its own page. It lists the events, an example and the data fields. [List Webhook Event Types](/api-reference/webhooks/list-webhook-event-types) gives you every event you can subscribe to.
 
 | Family                                        | Events                                                                                                                                                                                                                                                                                                                        |
 |-----------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | [Payment](/webhooks/events/payment)           | `payment_intent.created`, `payment_intent.validated`, `payment_intent.approved`, `payment_intent.rejected`, `payment_intent.executing`, `payment_intent.succeeded`, `payment_intent.settled`, `payment_intent.failed`, `payment_intent.voided`, `payment_intent.refunded`, `payment_intent.charged_back`, `payment_intent.document_scanned` |
-| [KYC](/webhooks/events/kyc)                   | `user_kyc.applied`, `user_kyc.in_review`, `user_kyc.approved`, `user_kyc.semi_approved`, `user_kyc.rejected`, `user_kyc.reopened`, `user_kyc.required`, `user_kyc.deleted`                                                                                                                                                      |
-| [KYB](/webhooks/events/kyb)                   | `user_kyb.applied`, `user_kyb.approved`, `user_kyb.rejected`, `user_kyb.reopened`, `user_kyb.deleted`                                                                                                                                                                                                                            |
+| [KYC](/webhooks/events/kyc)                   | `user_kyc.applied`, `user_kyc.in_review`, `user_kyc.approved`, `user_kyc.semi_approved`, `user_kyc.rejected`, `user_kyc.reopened`, `user_kyc.required`, `user_kyc.update_approved`, `user_kyc.update_rejected`, `user_kyc.deleted`                                                                                                                                                      |
+| [KYB](/webhooks/events/kyb)                   | `user_kyb.applied`, `user_kyb.approved`, `user_kyb.rejected`, `user_kyb.reopened`, `user_kyb.update_approved`, `user_kyb.update_rejected`, `user_kyb.beneficial_owners_requested`, `user_kyb.beneficial_owner_verified`, `user_kyb.deleted`                                                                                                                                                                                                                            |
 | [Card](/webhooks/events/card)                 | `payment_method.card.added`, `payment_method.card.add_failed`, `payment_method.card.review_pending`, `payment_method.card.review_approved`, `payment_method.card.review_rejected`, `payment_method.card.image_requested`, `payment_method.card.deleted`                                                                          |
 | [Bank Account](/webhooks/events/bank)         | `payment_method.bank.added`, `payment_method.bank.add_failed`, `payment_method.bank.relink_required`, `payment_method.bank.relinked`                                                                                                                                                                                            |
 | [Virtual Bank Account](/webhooks/events/virtual-bank-account) | `virtual_bank_account.created`, `virtual_bank_account.verification_in_review`, `virtual_bank_account.information_required`, `virtual_bank_account.approved`, `virtual_bank_account.rejected`, `virtual_bank_account.deposit_received`, `virtual_bank_account.verification_required`, `virtual_bank_account.verification_approved`, `virtual_bank_account.verification_failed`, `virtual_bank_account.agreement_required` |
+| Payment Method | `payment_method.created`, `payment_method.disabled` |
+| Issued Card | `card.requested`, `card.issued`, `card.reloaded`, `card.image_requested`, `card.image_submitted`, `card.verified`, `card.rejected` |
+| Card Transfer | `card_transfer.enrollment.approved`, `card_transfer.enrollment.rejected` |
+| Card Acquiring | `card_acquiring.application.status_changed`, `card_acquiring.application.updated` |
+| User | `user.created`, `user.activated`, `user.deactivated`, `user.deleted`, `user.claimed` |
+| Wallet | `wallet.created`, `wallet.renamed`, `wallet.primary_changed`, `wallet.closed` |
+| Payee | `payee.created`, `payee.updated`, `payee.archived`, `payee.destination.added`, `payee.destination.updated`, `payee.destination.removed` |
+| Platform Compliance | `platform_compliance.submitted`, `platform_compliance.approved`, `platform_compliance.rejected`, `platform_compliance.reopened`, `platform_kyc.deleted`, `platform_kyb.deleted` |
+| Compliance Documents | `compliance_documents.requested`, `compliance_documents.resent`, `compliance_documents.submitted`, `compliance_documents.cancelled` |
+| Risk and Screening | `fraud_alert.raised`, `screening.hit`, `screening.cleared`, `screening.info_requested` |
+| Document Mailing | `document_mailing.created`, `document_mailing.approved`, `document_mailing.rejected`, `document_mailing.mailed`, `document_mailing.failed`, `document_mailing.voided`, `document_mailing.tracking_updated` |
+| Check Signature | `check_signature.requested`, `check_signature.completed` |
+| Accounting | `accounting.connection.created`, `accounting.connection.reauth_required`, `accounting.connection.revoked`, `accounting.connection.disconnected`, `accounting.connection.sync_completed`, `accounting.connection.sync_failed`, `accounting.bill.imported`, `accounting.bill.updated`, `accounting.bill.paid`, `accounting.bill.write_back_failed`, `accounting.check.imported`, `accounting.check.mailed`, `accounting.account.imported`, `accounting.account.updated`, `accounting.vendor.imported`, `accounting.vendor.updated` |
+| Integration App | `integration_app.status_changed` |
+| File Scan | `file_scan.completed`, `file_scan.blocked`, `file_scan.unscannable` |
+| Phone SMS | `phone_sms.received` |
 
-Every event uses the envelope described in [Events](/webhooks/events).
+Every event has the same outer structure, called the envelope. See [Events](/webhooks/events).

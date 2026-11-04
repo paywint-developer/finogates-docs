@@ -1,4 +1,14 @@
 ---
 title: 'Activate or Deactivate a User'
+description: "Turn a user on or off with one call."
 openapi: 'PATCH /v1/platform/users/{user_id}'
 ---
+
+You don't need a request body. What the call does depends on the user's current state:
+
+| If the user is | This call | What happens |
+| --- | --- | --- |
+| **On** | Turns them **off** | We keep their record for your history, but they can't be used for anything new. |
+| **Off** | Turns them back **on** | They can be used again right away. |
+
+The response shows the new state in `is_active`.

@@ -1,4 +1,15 @@
 ---
 title: 'Mint Embed Token'
+description: "Create a short-lived pass that lets one user do one job on a page we host."
 openapi: 'POST /v1/platform/embed-tokens'
 ---
+
+This pass is called an embed token. It lets one of your users do one specific job inside a Finogates-hosted page shown on your website. Right now, that job is adding a card (`add_card`).
+
+The pass lasts about **10 minutes**. Take the `token` we return and load the page inside an iframe on your site, like this:
+
+```
+<iframe src="{embed_url}#token={token}&mode={mode}"></iframe>
+```
+
+The pass works only for the one user it was created for, and only for that one job. It can't be used for anything else.

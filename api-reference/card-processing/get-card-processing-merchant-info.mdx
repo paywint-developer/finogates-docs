@@ -1,4 +1,7 @@
 ---
 title: 'Get Card Processing Supporting Documents'
+description: "Get a merchant's supporting documents and volume figures."
 openapi: 'GET /v1/platform/card-processing/merchants/{card_acquiring_id}/merchant-info'
 ---
+
+Each document comes with a short-lived download URL, not the file itself. `submitted` is `false` when nothing has been supplied yet.

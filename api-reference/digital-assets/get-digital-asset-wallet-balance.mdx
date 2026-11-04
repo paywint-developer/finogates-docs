@@ -1,4 +1,14 @@
 ---
 title: 'Get Digital Asset Wallet Balance'
+description: "Get the balance of one digital asset wallet, broken down by type."
 openapi: 'GET /v1/platform/digital-assets/wallets/{wallet_id}/balance'
 ---
+
+| Part | What it means |
+| --- | --- |
+| `available` | Money spendable now. |
+| `pending` | Deposits that haven't fully cleared. |
+| `hold` | Money reserved for a withdrawal or transfer in progress. |
+| `platform_fee_escrow` | Our own fees. Shown for completeness, and not counted in `total_balance`. |
+
+Any part with no money in it shows zero.

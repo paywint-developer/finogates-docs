@@ -1,4 +1,9 @@
 ---
 title: 'Refresh Virtual Bank Account Balance'
+description: "Get the latest balance of a virtual bank account from our bank partner."
 openapi: 'POST /v1/platform/virtual-bank-accounts/{account_id}/refresh-balance'
 ---
+
+We return the updated account. Our bank partner reports the balance, so a short delay on their side just returns the last known balance. It never returns an error.
+
+This call only means something once the account is approved.

@@ -1,4 +1,78 @@
 ---
 title: 'Screen a Subject'
+description: "Screen a person or business against global sanctions and denied-party watchlists."
 openapi: 'POST /v1/platform/screening/checks'
 ---
+
+The subject is the person or business you are screening.
+
+## Act on `decision`, not on `topScore`
+
+`decision` is the field your integration should rely on. Use it to choose what to do, and use nothing else.
+
+| `decision` | What it means | What you should do |
+| --- | --- | --- |
+| `clear` | Nothing matched. | Go ahead. |
+| `review` | A possible match that a person must decide on. | Hold the subject. |
+| `blocked` | A confident match to an asset-freeze list. | Hold and escalate. |
+| `unavailable` | Screening could not finish. | **Not screened.** Try again or hold. Never treat it as clear. |
+
+## Why not the score
+
+`topScore` is a **name-similarity score, not a risk score**. We return it for diagnostics only. Show it to your reviewers to help them sort cases, but do not build thresholds on it.
+
+There are four reasons, all measured against live watchlist data:
+
+- **It does not separate real matches from innocent people.** A true OFAC SDN entry scores `0.8122` on name alone. An innocent person with a common name scores `0.7513`. That is only six points apart, so no threshold sits safely between them.
+- **You can't compare it across subjects.** The score has a coverage penalty. A name-only query has a fixed upper limit, however perfect the name. A query with a date of birth does not. The same SDN entry scores `0.8122` on name alone and `0.9025` with a date of birth. It is the same person and the same list entry, with a different number. A threshold used across a mix of customers applies different standards to different customers.
+- **It is not stable over time.** That same entry scored `0.8762` on 2026-07-14 and `0.9025` on 2026-07-16. The subject, query and software were the same. The watchlists themselves refresh (OFAC gained 61 entries in those two days), and scores move with the data. Lists reload every 12 hours. A hard-coded `>= 0.90` can change behaviour twice a day, with no release on your side.
+- **Legal effect follows the list, not the number.** A `0.95` match on a sectoral list is a transaction restriction. A `0.82` match on a freeze list is an asset freeze. Ranking those by score is backwards.
+
+`decision` deals with all four. It is the only part of this response we promise to keep stable.
+
+`decision` already takes in the score, the list's legal effect, how much identity data was available, and exact government-ID matches. You don't have to do this yourself.
+
+## Send more than a name
+
+A `dateOfBirth` (for people) or `address` (for businesses) is what makes the answer trustworthy.
+
+`dataCompleteness` in the response tells you what you gave us: `full`, `partial` or `name_only`.
+
+We never block a `name_only` check automatically. This is on purpose, because the score can't carry that weight with so little data. If you see `name_only`, your integration is giving up accuracy it could have.
+
+## `confirmWith`: the one thing to send next
+
+When a check comes back `review` or `blocked`, `confirmWith` asks for **exactly one field**. This is the strongest piece of identity data you have not sent yet.
+
+`key` is the request field to send it in. Fill in that field and POST a new check. If it still matches, we ask for the next field. We never ask twice for anything you already sent, whatever order it arrived in.
+
+The order is:
+
+- **Person:** `dateOfBirth` → `governmentIds` → `altNames` → `address`
+- **Business:** `address` → `governmentIds` → `altNames` → `incorporationDate`
+
+So a check with only a name is asked for a date of birth. A check that already has a government ID skips past that step:
+
+| Your check carries | `confirmWith` asks for |
+| --- | --- |
+| name | `dateOfBirth` |
+| name + `governmentIds` | `dateOfBirth` |
+| name + `governmentIds` + `dateOfBirth` | `altNames` |
+| the whole list | *(empty: nothing left to send)* |
+
+`label` uses the same wording our compliance desk would use for that field. You can safely show it exactly as it is to whoever supplies the data.
+
+Two notes on this order:
+
+- A **government ID** is the strongest confirmation available. An exact match to a listed party's identifier is not a coincidence. But the effect goes one way. An ID that *doesn't* match does not clear anything by itself. It gives a reviewer the grounds to clear it.
+- That is why a **date of birth** ranks above it for a person. A date of birth changes what the search returns, not only how we judge a returned match.
+
+`confirmWith` is empty in these cases:
+
+- On `clear`.
+- On `unavailable`. That check never ran, so more identity data does not help. Retry it instead.
+- On a match, when the check is already as strong as this API can make it. An empty array here means the remaining question needs a person.
+
+## Billing
+
+We bill each successful check once on your monthly invoice. We do not bill `unavailable` checks.

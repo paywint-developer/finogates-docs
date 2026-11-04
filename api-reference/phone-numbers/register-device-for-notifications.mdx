@@ -1,4 +1,9 @@
 ---
 title: 'Register a Device for Notifications'
+description: "Save a device's push token so a user gets notifications on it."
 openapi: 'POST /v1/platform/phone-numbers/users/{user_id}/devices'
 ---
+
+A user can have several devices. Register each one, and they all get notifications.
+
+Sending the same token again is safe. It just refreshes the token.

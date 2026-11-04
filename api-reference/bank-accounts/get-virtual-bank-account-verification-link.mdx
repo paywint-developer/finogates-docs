@@ -1,4 +1,9 @@
 ---
 title: 'Get a New Verification Link'
+description: "Get a fresh hosted verification link for the account holder."
 openapi: 'POST /v1/platform/virtual-bank-accounts/{account_id}/verification-link'
 ---
+
+Links expire, so use this to get a new one. The link is in `onboarding.action.url`.
+
+You can call this while the account is `awaiting_verification` or `verification_failed`. A failed verification goes back to `awaiting_verification`.

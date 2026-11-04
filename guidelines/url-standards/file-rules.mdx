@@ -1,49 +1,45 @@
 ---
 title: "File Requirements"
-description: "File size, type, and validation rules for uploaded documents."
+description: "File size, type and validation rules for uploaded documents."
 icon: "file-check"
 ---
 
 ## Requirements
 
 ### File Size
-Maximum allowed file size: **7 MB**
+Maximum file size: **7 MB**. User documents added from a link can be up to **10 MB**.
 
 ### Download Timeout
-All files must be downloadable within **10 seconds**.
+Every file must finish downloading within **20 seconds**.
 
 ---
 
 ## Supported File Types
 
-Depending on the API, supported formats include:
+Supported formats depend on the API. They include:
 
 ### Documents
 - PDF  
-- DOCX  
-- DOC  
-- TXT  
 
 ### Images
 - JPG / JPEG  
 - PNG  
-- GIF  
 
 <Note>
-Always check the API-specific documentation to confirm supported formats.
+Always check the documentation for the API to confirm which formats it supports.
 </Note>
 
 ---
 
 ## Validation Process
 
-When you submit a URL, Finogates performs these checks:
+When you submit a URL, we run these checks:
 
-1. **Syntax & length validation**  
+1. **Syntax and length check**  
 2. **Security rule checks**  
 3. **DNS resolution**  
-4. **Public IP validation**  
+4. **Public IP check**  
 5. **File download test**  
-6. **Content type & size verification**
+6. **Content type and size check**
 
-A URL is accepted only if all checks pass.
+We accept a URL only if all checks pass.

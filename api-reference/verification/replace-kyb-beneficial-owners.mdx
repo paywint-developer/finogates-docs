@@ -1,4 +1,33 @@
 ---
 title: 'Replace KYB Beneficial Owners'
+description: "Send the full set of a business check's UBOs, replacing the previous set."
 openapi: 'PUT /v1/platform/users/kyb-records/{user_id}/{kyb_id}/beneficial-owners'
 ---
+
+UBOs are the business's beneficial owners. Send the whole set each time, because it replaces the previous one.
+
+## Who to include
+
+- Every owner with at least 25%.
+- The business's control person (`is_control_person: true`, with a `title`). This can be an owner, or someone else at 0%.
+
+You can send at most one control person. You need one only for a business virtual bank account. We can approve a KYB without a control person, but only once the user's KYC is approved.
+
+`has_beneficial_owners: false` says no one owns at least 25%. In that case, send the control person alone, or no one yet.
+
+## What each person needs
+
+Each person needs `first_name`, `last_name`, `email`, `dob`, `citizenship_country`, `address`, `tax_id`, `ownership_pct` and `id_document`. Only the control person needs a `title`.
+
+`from_kyc: true` takes a person from the user's approved KYC: name, date of birth, address, citizenship, tax ID and government ID. Send anything it doesn't hold.
+
+<Note>
+[Create User KYB Record](/api-reference/verification/create-user-kyb-record) has different rules. It needs exactly one control person and a `title` on every UBO, and it does not need `email`. Each endpoint checks its own rules.
+</Note>
+
+## Good to know
+
+- Any KYB that is not rejected accepts UBOs, including an approved one.
+- The KYB's own status does not change.
+- A UBO sent again unchanged keeps its decision.
+- A changed UBO, or one with a new ID file, is reviewed again.

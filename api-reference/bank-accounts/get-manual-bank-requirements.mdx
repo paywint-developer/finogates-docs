@@ -1,4 +1,19 @@
 ---
 title: "Get What Adding a Bank Manually Needs"
+description: "List every field you need to add a US, Canadian or UK bank manually."
 openapi: 'GET /v1/platform/bank/manual-requirements'
 ---
+
+This lists every field that [Add Bank Account](/api-reference/bank-accounts/add-bank-account) (`POST /platform/bank/add-bank-manually`) takes. For each field, you get:
+
+- Its label
+- Whether it is required
+- The pattern and length it must match
+- An example
+- For dropdowns, such as the Canadian province or the account type, the exact options we accept
+
+Build your form from this list. Do not copy the list into your own code. The add endpoint accepts exactly these values.
+
+A dotted `key` is a field of an address object, such as `bank_address.postal_code`.
+
+Send `country` for one country. Leave it out to get all of them.

@@ -1,4 +1,11 @@
 ---
 title: 'Submit Card Processing Supporting Documents'
+description: "Submit or replace a merchant's supporting documents."
 openapi: 'PUT /v1/platform/card-processing/merchants/{card_acquiring_id}/merchant-info'
 ---
+
+This call replaces the whole set of documents. A document slot stays filled only if you upload a new file for it or name it in `keep_existing`.
+
+The voided check and bank statements are required. Processing statements are not.
+
+You can't use this call once the account is approved. At that point, the documents are the record we based the onboarding decision on.

@@ -1,4 +1,63 @@
 ---
 title: 'Update a Pending Card Processing Application'
+description: "Correct a card-processing application that is still under review."
 openapi: 'PUT /v1/platform/merchant-onboarding'
 ---
+
+Use this while an application is pending. For example, an underwriter (risk reviewer) may ask for a clearer bank statement or a corrected volume figure.
+
+Once the application is **approved, declined or suspended**, you can't edit it and this call returns `409`. At that point, the documents are the record we based the decision on.
+
+Name the application with `card_acquiring_id` in the `payload` form field. This is the ID you got when the merchant was onboarded. An ID that belongs to another platform returns `404`.
+
+## Only what you send changes
+
+**`card_acquiring_id` is the only required key.** Everything else is optional.
+
+- If you leave out a block, we leave it alone.
+- If you leave out a field inside a block you do send, we leave that field alone too. You can correct one figure without sending everything again.
+- Documents work the same way. A `voided_check`, `bank_statements` or `processing_statements` file part replaces that slot. A slot with no file part keeps what we have stored.
+
+The **`payload`** form field is a JSON object. It has the same shape as when you onboarded the merchant:
+
+| Key | What you can send |
+| --- | --- |
+| `card_acquiring_id` | **Required.** The application to edit. |
+| `merchant_info` | Any of `average_ticket_minor`, `monthly_volume_minor`, `max_ticket_minor`. We check the max-versus-average rule on the merged result. If you raise only the average, we check it against the stored maximum. |
+| `kyb` | Any of `business_legal_name`, `business_ein` and `business_data`. |
+| `kyb.business_data` | Any of `business_type`, `formation_date`, `mcc`, `business_phone`, `phone_country_code`, `dba`, `website`, `registration_number`, `business_description`, `contact_first_name`, `contact_last_name`, `contact_email`, `business_address`, `business_physical_address`, `ownership`, `business_documents`, `industry`, `sub_industry`, `source_of_funds`, `purpose_of_account`, `monthly_expected_activity`, `annual_revenue`, `sending_countries`, `receiving_countries`. Sending `business_documents` **replaces the whole list**, so include every document you want to keep (2 to 5 entries). |
+| `kyc` | Any identity field: `first_name`, `last_name`, `email`, `dob`, `phone_country_code`, `phone_no`, `ssn`, `address`, `city`, `state`, `zip`, `country`, `id_type`, `id_no`, and the image links `selfie`, `id_front_img`, `id_back_img`. |
+| `inquiry_id` | A new identity check inquiry ID. We pull the verified details from our verification provider and replace what is on file. Send `inquiry_id` or `kyc`, not both. |
+
+## The field you can't change
+
+**`business_email` can't be changed.** We reject it with `422` if you send it. It is the key we use to find the merchant record, so to use another email, onboard a new merchant.
+
+You can correct `business_legal_name` and `business_ein`. We use these two to decide whether a resubmission is the same business. After you change them, a new onboarding call with the old name and EIN counts as a different business.
+
+## File rules
+
+These match [Onboard a Merchant for Card Processing](/api-reference/merchant-onboarding/onboard-merchant):
+
+- `https://` links only, and they must be publicly reachable.
+- PNG, JPG, JPEG or PDF only.
+- 10 MB per uploaded document, and 7 MB per linked file.
+- We download and store your links.
+- No two files in one request may be byte-identical.
+
+## Editing a check sends it back for review
+
+- A change to `kyc` returns the identity (KYC) check to `in_review`.
+- A change to `kyb` returns the business (KYB) check to `in_review`.
+
+This is the same state a new submission starts in, so an edited check waits in the queue with new ones.
+
+A verdict describes the evidence it was given: the identity details, or the legal name, EIN and documents. This call changes that evidence. An approval of the old details would not describe what is now on file.
+
+Only the check you edit changes. If you send just `kyb`, we leave the identity check alone.
+
+Sending a new `inquiry_id` also decides the identity check again, because the re-sync takes its status from our verification provider.
+
+Edit a check only when you want it reviewed again.
+
+This endpoint never approves or declines the card-processing application itself.

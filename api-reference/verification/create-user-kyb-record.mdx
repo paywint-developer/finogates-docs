@@ -1,4 +1,111 @@
 ---
 title: 'Create User KYB Record'
+description: "Send a user's business check (KYB) details, with supporting files if you have them."
 openapi: 'POST /v1/platform/users/kyb/start/{user_id}'
 ---
+
+Send the details in the `payload` field. You can also attach supporting documents as files along with the details.
+
+## What goes in `payload`
+
+`payload` is a JSON object with these fields:
+
+| Field | Required | What it is |
+| --- | --- | --- |
+| `business_legal_name` (string) | Yes | The official registered name of the business. |
+| `business_ein` (string) | Yes | The business's US federal tax ID (EIN). |
+| `business_data` (object) | Yes | Structured business details. |
+
+We check the fields listed on this page. We save any other field as it is.
+
+### Fields in `business_data`
+
+**Required:** `business_type`, `formation_date` (YYYY-MM-DD), `mcc`, `business_phone` and `business_address`.
+
+`business_address` is an object with `line1`, `city`, `state`, `postal_code` and `country`.
+
+**Other fields:**
+
+| Field | What it is |
+| --- | --- |
+| `dba`, `website`, `registration_number`, `business_description`, `business_email`, `phone_country_code` | More details about the business. |
+| `contact_first_name`, `contact_last_name`, `contact_email` | The primary contact. |
+| `business_physical_address` | Optional. Same shape as `business_address`. |
+| `industry`, `sub_industry`, `source_of_funds`, `purpose_of_account` | Optional. Codes from `GET /v1/platform/products/options?product=virtual_bank_account&account_kind=business`. |
+| `monthly_expected_activity` | Optional. Expected monthly activity. |
+| `annual_revenue` | Optional. In USD. |
+| `sending_countries`, `receiving_countries` | Optional. ISO alpha-2 country codes. |
+| `has_beneficial_owners` (boolean), `beneficial_owners` (array) | The UBOs. See below. |
+| `ownership` (array) | A short list of owners, each `{ name, role, ownership_pct }`. We keep this for older integrations. |
+
+## UBOs
+
+UBOs are the business's beneficial owners.
+
+- **No UBOs:** `has_beneficial_owners: false` skips them.
+- **No answer:** if you leave this out and send no UBOs, the KYB is `unanswered`. A business virtual bank account then waits for the answer.
+- **UBOs to send:** otherwise, send each UBO with the fields below.
+
+Each UBO needs `first_name`, `last_name`, `title`, `dob`, `citizenship_country`, `address`, `tax_id`, `ownership_pct` and `id_document`. This endpoint does not need `email`.
+
+- `address`: `line1`, `city`, `state`, `postal_code`, `country`.
+- `tax_id`: 9 digits. Dashes are fine, as in `123-45-6789`.
+- `id_document`: `type` (`passport`, `drivers_license` or `national_id`), `front` and, for a licence or ID card, `back`.
+- `front` and `back`: each one is `{ "url": "https://…" }` or `{ "document_id": "…" }`.
+
+Exactly one UBO is the control person (`is_control_person: true`).
+
+We store UBOs apart from the KYB and verify them one by one. To send them later, use `PUT /v1/platform/users/kyb-records/{user_id}/{kyb_id}/beneficial-owners`. See [Replace KYB Beneficial Owners](/api-reference/verification/replace-kyb-beneficial-owners).
+
+<Note>
+These UBO rules are for this endpoint only. The rules are different when you send UBOs with [Replace KYB Beneficial Owners](/api-reference/verification/replace-kyb-beneficial-owners) or [Replace Beneficial Owners](/api-reference/users/replace-beneficial-owners). Those endpoints allow at most one control person, and only that person needs a `title`. Each person needs an `email`.
+</Note>
+
+## Example `payload`
+
+```json
+{
+  "business_legal_name": "Lovelace Analytics LLC",
+  "business_ein": "12-3456789",
+  "business_data": {
+    "business_type": "llc",
+    "formation_date": "2021-04-12",
+    "mcc": "7372",
+    "business_phone": "4155550199",
+    "dba": "Lovelace Analytics",
+    "website": "https://lovelace.example.com",
+    "business_address": {
+      "line1": "500 Terry Francois Blvd",
+      "city": "San Francisco",
+      "state": "CA",
+      "postal_code": "94158",
+      "country": "US"
+    },
+    "annual_revenue": 1200000,
+    "has_beneficial_owners": true,
+    "beneficial_owners": [
+      {
+        "first_name": "Ada",
+        "last_name": "Lovelace",
+        "title": "Founder",
+        "dob": "1985-12-10",
+        "citizenship_country": "US",
+        "address": {
+          "line1": "12 Elm St",
+          "city": "San Francisco",
+          "state": "CA",
+          "postal_code": "94110",
+          "country": "US"
+        },
+        "tax_id": "123-45-6789",
+        "ownership_pct": 100,
+        "is_control_person": true,
+        "id_document": {
+          "type": "passport",
+          "front": { "url": "https://files.example.com/ada-passport.pdf" }
+        }
+      }
+    ]
+  }
+}
+```

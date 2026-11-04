@@ -1,4 +1,14 @@
 ---
 title: 'List Redirect URLs'
+description: "See every redirect purpose we define, and the URL you registered for each one."
 openapi: 'GET /v1/platform/redirect-urls'
 ---
+
+Each purpose shows the URL you registered for it, or `null` if you have not registered one.
+
+`url` is the purpose's primary URL. A purpose with `multiple_urls: true` (`card_transfer`) also lists `additional_urls`.
+
+## Good to know
+
+- Read this list before you set a URL. The purposes are a fixed set. If you send a purpose you made up, we refuse it and don't save it.
+- `accounting_return` is required before `POST /v1/platform/accounting/connect-sessions` will create a link. Without it, that call fails with `accounting_return_url_required`.

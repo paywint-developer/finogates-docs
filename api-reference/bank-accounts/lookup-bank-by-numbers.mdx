@@ -1,4 +1,17 @@
 ---
 title: "Look Up a Canadian or UK Bank by Its Numbers"
+description: "Use a bank's numbers to pre-fill your add-bank form."
 openapi: 'GET /v1/platform/bank/lookup'
 ---
+
+For a Canadian bank, you get the institution behind its `institution_number` and a `bank_name` to suggest.
+
+- `country=CA` with `institution_number` (3 digits).
+- `country=GB` with `sort_code`. We have no list of UK sort codes yet, so the answer is `found: false`.
+
+## Good to know
+
+- The answer is a suggestion, never a rule.
+- `found: false` is not an error.
+- Nothing here limits what `POST /platform/bank/add-bank-manually` accepts. A number we do not know is added like any other, with the name and address typed in.
+- We check only the format of the number.

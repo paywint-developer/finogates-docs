@@ -1,4 +1,9 @@
 ---
 title: 'Get Digital Asset Vault Request'
+description: "Check where a single digital asset wallet request stands."
 openapi: 'GET /v1/platform/digital-assets/vault-requests/{request_id}'
 ---
+
+Use this to see if our team has approved or rejected a request that [Create Digital Asset Wallet](/api-reference/digital-assets/create-digital-asset-wallet) returned as still pending.
+
+Once the `status` shows `approved`, the deposit address is ready.

@@ -1,4 +1,18 @@
 ---
 title: "Get a Wallet's Activity by ID"
+description: "Get the money in and out history of any wallet, using its UUID."
 openapi: 'GET /v1/platform/wallets/by-id/{wallet_id}/activity'
 ---
+
+`GET /v1/platform/wallets/{user_id}/activity` only ever returns the activity of a user's **primary** wallet. This call works for **any** wallet you own: primary or not, user or master. So you can reach every wallet's history.
+
+Use the `wallet_id` from [List All Wallets](/api-reference/wallets/list-all-wallets), [List a User's Wallets](/api-reference/wallets/list-user-wallets), or a payment.
+
+The wallet must belong to your platform.
+
+## What you get back
+
+You get the same shape as [Get a User's Wallet Activity](/api-reference/wallets/get-wallet-activity):
+
+- **Balances:** `available`, `outbound_pending`, `inbound_pending` and `current`.
+- **Activity list:** one entry per payment, newest first. Each entry has the journey, status, amount, direction (`amount_sign`) and timestamps.

@@ -1,4 +1,7 @@
 ---
 title: "Delete a Payee's Bank Account"
+description: "Remove a saved bank account from a payee so new payments can't use it."
 openapi: 'DELETE /v1/platform/payees/bank-accounts/{payee_id}/{bank_account_id}'
 ---
+
+You can safely repeat this call. Calling it on an account that is already removed returns the same success response.

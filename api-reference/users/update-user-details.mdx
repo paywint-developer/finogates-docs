@@ -1,4 +1,14 @@
 ---
 title: "Update a User's Details"
+description: "Change a user's name, email or phone."
 openapi: 'PATCH /v1/platform/users/{user_id}/details'
 ---
+
+Every field is optional, so send only what you want to change. This call does not change the user's active state or wallets.
+
+## Good to know
+
+- **User type:** the individual or business type is set when the user is created. You can't change it here.
+- **Name:** for an **individual**, update `first_name` and `last_name`. For a **business**, update `business_name`.
+- **Verified users:** if the user has already passed identity verification, a changed name must match the verified name on file. The match ignores letter case and any spaces before or after the name. If the names differ, we reject the request and change nothing.
+- **Email and phone:** `email` and `phone` (E.164) must each be unique across your platform. Send `null` to remove one. A user always keeps at least one of the two.

@@ -1,4 +1,24 @@
 ---
 title: 'Create User'
+description: "Add a new user, one of your customers, to your platform."
 openapi: 'POST /v1/platform/users'
 ---
+
+When we create the user, we also set up a primary wallet in US dollars (USD). They can use it to hold and move money. You can view or manage that wallet later with the wallets endpoints.
+
+## Good to know
+
+- A name is required, plus an `email`, a `phone`, or both.
+- `phone` uses international (E.164) format, such as `+14155550142`.
+- The email and the phone must each be unique across your platform.
+- Some features need an email on file. If one is refused because the user has no email, add it with [Update a User's Details](/api-reference/users/update-user-details) and try again.
+
+## Errors
+
+If the email or phone already belongs to one of your users, you get a 409. Its `code` says which one.
+
+| Code | What it means |
+| --- | --- |
+| `email_already_exists` (409) | The email is already in use. |
+| `phone_already_exists` (409) | The phone is already in use. |
+| `email_and_phone_already_exist` (409) | The email and the phone are both already in use. |

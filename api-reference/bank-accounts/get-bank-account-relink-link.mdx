@@ -1,4 +1,36 @@
 ---
 title: 'Get a Bank Account Relink Link'
+description: "Get a ready-made web page link where your user can reconnect a bank account."
 openapi: 'GET /v1/platform/bank/relink/{bank_account_id}'
 ---
+
+Use this to refresh the instant connection behind a bank account the user already added. The bank has asked them to sign in again. Until they do, payments from that account fail with `bank_relink_required`.
+
+You learn that a bank needs this from any of these:
+
+- The `payment_method.bank.relink_required` webhook
+- `relink_required: true` on `GET /platform/bank-accounts/{user_id}`
+- A payment that failed with that reason
+
+Show the page inside your own website in an iframe, or open it in its own window. The user signs in to their bank on it. The account they already have keeps working, and no new bank account is created.
+
+## What you get back
+
+| Field | What it means |
+| --- | --- |
+| `bank_account_id` / `user_id` | The account this link is for. |
+| `relink_bank_url` | The link to load. It can be used once. |
+| `expires_at` | When the link stops working, about 10 minutes from now. |
+
+The link contains no details about which company connects the bank behind the scenes. Treat it as a plain string with no meaning of its own.
+
+## How you find out the result
+
+- **It worked:** when the connection is working again, we send your server a `payment_method.bank.relinked` webhook with the `payment_method_id` and `user_id`. `relink_required` goes back to false.
+- **The user did not finish:** nothing changes and we send no webhook. Call this endpoint again for a fresh link. Links can't be renewed.
+
+## Errors
+
+| Code | What it means |
+| --- | --- |
+| `bank_not_relinkable` | This bank account was added manually with its routing and account number, so it has no instant connection to refresh. To connect it instantly, send the user through `add-account-instantly`. We upgrade the same bank account in place. |

@@ -51,7 +51,7 @@ icon: "credit-card"
 ## Data Fields
 
 <ResponseField name="payment_method_id" type="string">
-  The card's id. `image_requested` sends it as `card_id`.
+  The card's ID. `image_requested` sends it as `card_id`.
 </ResponseField>
 
 <ResponseField name="user_id" type="string">
@@ -59,17 +59,17 @@ icon: "credit-card"
 </ResponseField>
 
 <ResponseField name="card" type="object">
-  Card details. Always `last4` and `brand`; `card.added` also sends expiry, cardholder name and nickname.
+  Card details. We always send `last4` and `brand`. `card.added` also sends the expiry date, cardholder name and nickname.
 </ResponseField>
 
 <ResponseField name="status" type="string">
-  The card's status, e.g. `active` or `pending`.
+  The card's status, such as `active` or `pending`.
 </ResponseField>
 
 <ResponseField name="requires_manual_review" type="boolean">
-  On `card.added`, `true` when the card is held for review; `review_reason` says why.
+  On `card.added`, this is `true` when the card is held for review. `review_reason` says why.
 </ResponseField>
 
 <ResponseField name="platform_id" type="string">
-  Your platform id. `tenant_id` has the same value.
+  Your platform ID. `tenant_id` has the same value.
 </ResponseField>

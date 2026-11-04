@@ -1,4 +1,14 @@
 ---
 title: "List a Wallet's Incoming-Pending Transfers"
+description: "List incoming transfers to a wallet that are waiting for approval."
 openapi: 'GET /v1/platform/wallets/by-id/{wallet_id}/pending-incoming'
 ---
+
+These are wallet-to-wallet transfers sent to this wallet and held for approval. The amounts count in the wallet's `current` balance, but **not** in `available`.
+
+- If a transfer is approved, the money becomes available.
+- If a transfer is rejected, the money goes back to the sender.
+
+Each item has the ID of the payment that started it, the amount, the currency and the creation time. It also has the sending wallet, when we can find it.
+
+The wallet must belong to your platform.

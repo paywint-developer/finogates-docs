@@ -1,4 +1,26 @@
 ---
 title: 'Add a Bank Account to a Payee'
+description: "Save the bank account where a payee should receive money."
 openapi: 'POST /v1/platform/payees/bank-accounts/{payee_id}'
 ---
+
+This one endpoint covers two cases. Send the fields for the case that applies.
+
+## US domestic (ACH)
+
+Send `bank_account_number` and `routing_number`. The routing number has 9 digits and must be ABA-valid. You can also add `account_type` (`checking` or `savings`).
+
+## International
+
+Send `bank_account_number` and `bank_country`. `bank_country` is the destination country in ISO 3166-1 alpha-2 format, such as `AE`, `IN` or `MX`.
+
+| Field | Rule |
+| --- | --- |
+| `bank_branch` | Optional. This is the receiving bank's routing identifier. It varies by country: IFSC for India, CLABE for Mexico, and SWIFT/BIC elsewhere. All of them go in this one field. Some countries, such as the UAE, need only the account number. |
+| `payout_branch_id` | Optional, and a number. If you leave it out, we work it out when a payout is sent, from the destination country and currency. |
+| `bank_name`, `bank_document`, `purpose_of_payment`, `recipient_type` | Add these where the destination country requires them. |
+
+## Good to know
+
+- Each field is optional on its own, but the request must match one of the two cases above. If it doesn't, we reject it.
+- We store account and routing numbers encrypted. Only the last four digits are ever returned (`account_last4`, `routing_last4`).

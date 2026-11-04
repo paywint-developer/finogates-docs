@@ -1,4 +1,60 @@
 ---
 title: 'Apply for Virtual Bank Account'
+description: "Apply for a virtual bank account for one of your users."
 openapi: 'POST /v1/platform/virtual-bank-accounts'
 ---
+
+A virtual bank account (a "Virtual Account") gives the user their own account number and routing number for receiving money.
+
+## Before this works
+
+We turn the request down unless all of these are true:
+
+- Your platform has the virtual bank account product (`virtual_account`) switched on. You ask for it during the normal sign-up process, and our team must approve that request first.
+- Your platform has finished its own identity check (KYC) and business check (KYB), and both are approved.
+- The user has passed the identity check (an approved KYC record).
+- The user has passed the business check (at least one approved KYB record).
+- For a `BUSINESS` account, that KYB's beneficial owners (UBOs) were skipped because the business has none, or they are on file.
+
+A UBO waiting for review does not stop the request. We approve the account once every UBO is approved.
+
+## Hosted verification
+
+When `GET /options` returns `hosted_verification: true`:
+
+- A user with approved KYC is enough. Business accounts also need an approved KYB.
+- The request must include `industry_type` (from `GET /options`) and a `return_url`, or you must have a registered `virtual_account` redirect URL.
+
+After we approve the request, the account moves through these steps:
+
+1. `awaiting_verification`: the user completes a hosted verification page. See `onboarding.action.url`.
+2. `verification_in_review`: the user finished the page, and their verification is being checked. You have nothing to do yet. If it fails, the account moves to `verification_failed`. [Get a New Verification Link](/api-reference/bank-accounts/get-virtual-bank-account-verification-link) sends it back to `awaiting_verification`.
+3. `awaiting_agreement`: this comes once you call `POST /{account_id}/activate`, when `onboarding.stage` is `ready_to_activate`. The user accepts the bank agreement page.
+4. `approved`: the account numbers are in `deposit_routes`.
+
+## What happens next
+
+The account starts as `initiated`. Our team reviews every application by hand. We may mark it `applied` once checked, but this step is not always used.
+
+After we approve the request, the account moves through the steps above. Our bank partner then issues the real account and routing numbers, and the account becomes `approved`.
+
+We tell you the result with a webhook, which is an automatic notification to your server:
+
+| Webhook | What it means |
+| --- | --- |
+| `virtual_bank_account.approved` | The application succeeded. |
+| `virtual_bank_account.rejected` | The application was declined. |
+
+This webhook is the only sign that the account is ready. **Until the account is `approved`, it must not be used for any payments, payouts or deposits, or linked to a wallet.**
+
+## Avoiding duplicates
+
+- You can include an `idempotency_key`, a unique value you choose. If the same request reaches us twice by mistake, we create the account only once. If you reuse a key with different details, we reject the request.
+- The same user can't hold two active accounts of the same type on your platform. We reject a repeat attempt.
+
+## Errors
+
+| Code | What it means |
+| --- | --- |
+| `ubo_not_answered` | The KYB doesn't say whether it has UBOs, they were requested, or none are on file. |
+| `ubo_not_approved` | A UBO was rejected. |

@@ -1,4 +1,25 @@
 ---
 title: 'Verify a Saved Card'
+description: "Get a web page link where your user can verify a saved card."
 openapi: 'POST /v1/platform/card/verify-token/{payment_method_id}'
 ---
+
+The user confirms the security code and billing address. When enabled, they also complete the card network's authentication step. Show the page inside your own website, in an iframe.
+
+Use this in two cases:
+
+- A charge could not go ahead until the card is verified, and the charge response asked for verification.
+- You want a card confirmed before you charge it. You can do this at any time.
+
+## What you get back
+
+| Field | What it means |
+| --- | --- |
+| `token` | Load it inside the verify iframe. |
+| `embed_url` | The base page URL. Add `#token=<token>&mode=<mode>` to the end. |
+| `mode` | The value for `<mode>`: the environment you called. `sandbox` runs the page in your test environment, and `production` runs it live. A token works only in its own environment. |
+| `expires_at` | When the link stops working, after about 10 minutes. |
+
+## Good to know
+
+The link shows nothing about which company processes the card behind the scenes. Treat it as a plain string with no meaning of its own.

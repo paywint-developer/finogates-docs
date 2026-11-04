@@ -1,4 +1,9 @@
 ---
 title: "Get One Card's Details"
+description: "Get the masked details of one saved card."
 openapi: 'GET /v1/platform/card/cards/{user_id}/{payment_method_id}'
 ---
+
+Send the user's ID and the card's payment method ID. You get card information only: last 4 digits, brand (such as Visa), expiry and cardholder name. We never include bank account details.
+
+If the ID does not belong to a card owned by this user, you get a `404`.

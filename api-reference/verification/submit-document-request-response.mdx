@@ -1,4 +1,40 @@
 ---
 title: 'Send Requested Verification Documents'
+description: "Send the documents and written answers we asked for during a verification review."
 openapi: 'POST /v1/platform/compliance/checks/{check_id}/document-requests/{request_id}/submit'
 ---
+
+Send this as **`multipart/form-data`**.
+
+## What to send
+
+- **`payload`** (optional): a JSON object with your written answers, for the items whose `kind` is `text`.
+
+  ```json
+  {
+    "responses": [
+      { "key": "source_of_funds", "text": "Retained earnings from 2023 trading." }
+    ]
+  }
+  ```
+
+- **One file part per document**, named **`file:<key>`**, for example `file:certificate_of_incorporation`. Use this for the items whose `kind` is `file`.
+
+The `key` values come from the list endpoint. See [List Verification Document Requests](/api-reference/verification/list-document-requests).
+
+Accepted file types: PNG, JPG, JPEG, PDF, HEIF, HEIC.
+
+## Rules
+
+- We reject a `text` item answered with a file, or a `file` item answered with text. This happens before we store anything.
+- We also reject a request that sends nothing at all.
+
+## Partial answers
+
+Partial answers are fine. Send what you have now and the rest later. We add up your answers, and the request closes by itself once every required item has one.
+
+## After you answer
+
+Answering does not approve the verification by itself. Our reviewer still makes that decision.
+
+To follow where a request stands, watch the `compliance_documents.*` webhooks or call the list endpoint regularly.
