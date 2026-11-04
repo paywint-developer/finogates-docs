@@ -1,4 +1,15 @@
 ---
-title: 'Get a Card Session'
-openapi: 'GET /v1/platform/card-transfers/cards/sessions/{session_id}'
+title: "Get a Card Session"
+description: "Check how a card session is going, and get the card ID once the card is added."
+openapi: "GET /v1/platform/card-transfers/cards/sessions/{session_id}"
 ---
+
+| `status` | What it means |
+| --- | --- |
+| `created` | Waiting for the user to add a card. |
+| `completed` | The card was added. See `card_id` and `card_status`. |
+| `adopted` | The page closed early, but we found the card and added it. See `card_id` and `card_status`. |
+| `completed_unverified` | The card was added and we are confirming it. The `payment_method.card.added` webhook follows. |
+| `failed` | The card wasn't added. See `failure_code`. |
+| `cancelled` | The user closed the form. |
+| `expired` | The user didn't finish in time. |

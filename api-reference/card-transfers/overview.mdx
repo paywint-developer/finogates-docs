@@ -1,39 +1,43 @@
 ---
 title: 'Card Transfers Overview'
-description: 'Move money between a user''s card and their wallet.'
+description: 'Move money between a user''s wallet and their own card.'
 ---
 
-| Direction | Money moves | Payload types | Cards | Minimum |
-| --- | --- | --- | --- | --- |
-| `account_to_card` | Wallet to card | `account` → `card` | Debit | $10.00 |
-| `card_to_account` | Card to wallet | `card` → `account` | Debit or credit | $10.00 |
+There are two types of card transfer:
 
-The user needs approved KYC. A business or sole proprietor also needs an approved KYB.
+| Transfer | What happens | Cards allowed | Minimum amount |
+| --- | --- | --- | --- |
+| Account to card (`account_to_card`) | Money goes from the user's wallet to their card | Debit only | $10.00 |
+| Card to account (`card_to_account`) | Money comes from the user's card into their wallet | Debit or credit | $10.00 |
+
+Before adding a card, the user must pass the identity check (KYC). A business or sole proprietor must also pass the business check (KYB).
 
 ## How it works
 
 <Steps>
-  <Step title="Enable the direction">
-    Call [Enable a Card Transfer Direction](/api-reference/card-transfers/enable-card-transfer). Sandbox approves it at once; production waits for Finogates.
+  <Step title="Turn on the transfer type">
+    Call [Enable a Card Transfer Direction](/api-reference/card-transfers/enable-card-transfer) for each type you want. Sandbox turns it on right away. In production, Finogates approves it first.
   </Step>
-  <Step title="Register your redirect URL">
-    Call [Set a Redirect URL](/api-reference/redirect-urls/set-redirect-url) with the `card_transfer` purpose.
+  <Step title="Tell us your website address">
+    Call [Set a Redirect URL](/api-reference/redirect-urls/set-redirect-url) with `card_transfer`. The card page only works on this address.
   </Step>
   <Step title="Add the user's card">
-    Call [Open a Card Session](/api-reference/card-transfers/create-card-session) and show the user the returned `url`. For a business or sole proprietor, send `account_kind` and `kyb_id`. Read the `card_id` from [Get a Card Session](/api-reference/card-transfers/get-card-session).
+    Call [Open a Card Session](/api-reference/card-transfers/create-card-session) and show the user the `url` you get back. For a business or sole proprietor, also send `account_kind` and `kyb_id`. When the user finishes, get the `card_id` from [Get a Card Session](/api-reference/card-transfers/get-card-session).
   </Step>
-  <Step title="Request a payment payload">
-    Call [Request a Payment Payload](/api-reference/payments/request-payment-payload). Keep the `reference`.
+  <Step title="Get a quote">
+    Call [Request a Payment Payload](/api-reference/payments/request-payment-payload) with the transfer type and amount. Keep the `reference` you get back.
   </Step>
-  <Step title="Create the payment">
-    Call [Create a Payment from a Request](/api-reference/payments/create-payment-from-request). In master wallet mode, leave out `wallet_id` to use your master wallet.
+  <Step title="Make the payment">
+    Call [Create a Payment from a Request](/api-reference/payments/create-payment-from-request) with the `reference`, user, card and wallet. If master wallet mode is on for your platform, you can leave out `wallet_id` to use your master wallet.
   </Step>
-  <Step title="Track it">
-    The payment starts as `pending_review`, or `pending` if auto-approved, then moves to `processing` and ends `settled` or `failed`. You can [cancel it](/api-reference/payments/cancel-payment) while it is `pending_review` or `pending`.
+  <Step title="Follow the payment">
+    A new payment is `pending_review` while we check it, or `pending` if it was approved automatically. It then moves to `processing` and ends as `settled` or `failed`. You can [cancel it](/api-reference/payments/cancel-payment) before it reaches `processing`.
   </Step>
 </Steps>
 
 ## Example: account to card
+
+First, get a quote:
 
 ```json POST /v1/platform/payments/request-payload
 {
@@ -45,9 +49,11 @@ The user needs approved KYC. A business or sole proprietor also needs an approve
 }
 ```
 
+Then make the payment:
+
 ```json POST /v1/platform/payments/create-transaction
 {
-  "reference": "<reference from the payload>",
+  "reference": "<reference from the quote>",
   "user_id": "<user_id>",
   "card_id": "<card_id>",
   "wallet_id": "<the user's wallet_id>",
@@ -55,27 +61,36 @@ The user needs approved KYC. A business or sole proprietor also needs an approve
 }
 ```
 
-For card to account, swap the two types.
+`idempotency_key` is any unique value you choose. If the same request reaches us twice, it only counts once.
+
+For card to account, swap the two types: `source_type` is `card` and `destination_type` is `account`.
 
 ## Webhooks
 
-- **Card:** `payment_method.card.added`, `.review_approved`, `.review_rejected`
-- **Payment:** `payment_intent.created`, `.approved`, `.processing`, `.settled`, `.failed`, `.rejected`, `.voided`
+We can tell your system when something changes:
 
-## Sandbox
+- **Cards:** `payment_method.card.added`, `.review_approved`, `.review_rejected`
+- **Payments:** `payment_intent.created`, `.approved`, `.processing`, `.settled`, `.failed`, `.rejected`, `.voided`
 
-The card page shows a test form. `4000000000000002` declines transfers, `4000000000000010` is a credit card, and any other number from 12 to 19 digits is a debit card.
+## Testing in sandbox
+
+The card page shows a test form. Any number from 12 to 19 digits works as a debit card, except these:
+
+| Card number | What it does |
+| --- | --- |
+| `4000000000000002` | Transfers are declined. |
+| `4000000000000010` | A credit card. It can add money to a wallet, but can't receive money. |
 
 ## Common errors
 
-Card page errors are listed on [Open a Card Session](/api-reference/card-transfers/create-card-session).
+For errors from the card page, see [Open a Card Session](/api-reference/card-transfers/create-card-session).
 
-| Code | Meaning |
+| Code | What it means |
 | --- | --- |
-| `product_not_enabled` (403) | The direction isn't enabled. |
-| `payload_incomplete` (422) | The card can't take this transfer, or the user's KYC isn't approved. `missing` names it. |
-| `not_owned_by_user` (422) | The card or wallet doesn't belong to `user_id`. |
-| `payment_not_available` / `amount_below_minimum` (422) | The amount is under the minimum. |
-| `card_readd_required` (409) | The user must add the card again. |
-| `card_account_pending_verification` (409) | The user's card account isn't ready. Retry later. |
-| `payment_cooldown` (429) | The user just made a payment. Retry shortly. |
+| `product_not_enabled` (403) | This transfer type isn't turned on for your platform. |
+| `payload_incomplete` (422) | The card can't be used for this transfer, or the user hasn't passed KYC. `missing` tells you what to fix. |
+| `not_owned_by_user` (422) | The card or wallet belongs to someone else. |
+| `payment_not_available` / `amount_below_minimum` (422) | The amount is below the minimum. |
+| `card_readd_required` (409) | The user needs to add the card again. |
+| `card_account_pending_verification` (409) | The user's card account isn't ready yet. Try again later. |
+| `payment_cooldown` (429) | The user just made a payment. Wait a moment and try again. |

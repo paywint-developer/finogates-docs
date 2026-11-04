@@ -1,4 +1,61 @@
 ---
-title: 'Open a Card Session'
-openapi: 'POST /v1/platform/card-transfers/cards/sessions'
+title: "Open a Card Session"
+description: "Get a one-time link where your user can add a card."
+openapi: "POST /v1/platform/card-transfers/cards/sessions"
 ---
+
+Show the user the `url` you get back. They type their card details on that page, so you never see the card number. The link works until `expires_at`.
+
+Each user has one open session. If you call this again, you get the same session with a new link. Sending a different `account_kind` or `kyb_id` replaces it.
+
+A user can hold up to 5 cards, unless your platform has a different limit. Debit and credit cards can both be added, but only a debit card can receive money.
+
+## Ways to show the page
+
+| `channel` | What happens |
+| --- | --- |
+| `embedded` | The page appears inside your site. Send `parent_origin`. |
+| `hosted` | The user leaves your site for the page, then comes back to `return_url`. |
+
+Both addresses must be on the website you saved as your `card_transfer` [redirect URL](/api-reference/redirect-urls/set-redirect-url).
+
+## Who the card is for
+
+| `account_kind` | What you need |
+| --- | --- |
+| `individual` | The user's approved KYC. |
+| `business` or `sole_proprietor` | The user's approved KYC, and an approved KYB sent as `kyb_id`. The KYB's entity type must match. |
+
+If you leave this out, we use the user's existing card account. If they have none, we use their newest approved KYB, or `individual` if they have no KYB.
+
+## When the user finishes
+
+- **Embedded:** the page sends your site a `card_transfer_card_added` message with `session_id`, `card_id` and `status`. If it fails, the message is `card_transfer_failed` with `session_id` and `code`.
+- **Hosted:** the user returns to `return_url` with the same values in the address.
+- **Any time:** call [Get a Card Session](/api-reference/card-transfers/get-card-session).
+
+The webhooks are `payment_method.card.added`, then `.review_approved` or `.review_rejected`. A card waits for Finogates to approve it, unless your platform has automatic card approval.
+
+## Errors
+
+| Code | What it means |
+| --- | --- |
+| `user_not_found` (404) | We can't find this user. |
+| `user_inactive` (409) | The user isn't active. |
+| `product_not_enabled` (403) | Card transfers aren't turned on for your platform. |
+| `kyc_required` (409) | The user hasn't passed KYC. |
+| `verification_record_not_found` (404) | `kyb_id` doesn't belong to this user. |
+| `kyb_required` (409) | The KYB isn't approved. |
+| `account_kind_mismatch` (422) | The KYB's entity type doesn't match `account_kind`. |
+| `entity_type_not_supported` (422) | We don't recognise the KYB's entity type. `location.entity_type` names it. |
+| `customer_email_in_use` (409) | The email is already used by another user's card account. |
+| `account_kind_unavailable` (409) | The email already has an account of another kind, or for another business. It can't be changed. |
+| `card_limit_reached` (409) | The user already has the most cards allowed. |
+| `card_in_use` (409) | The card belongs to another user. This comes from the card page. |
+| `origin_not_allowed` / `redirect_url_not_allowed` (422) | `parent_origin` or `return_url` isn't on your saved website. |
+| `customer_data_incomplete` / `customer_data_invalid` (422) | Some user details are missing or wrong. `location.fields` and `location.reasons` tell you which. |
+| `customer_rejected` (422) | The user's details were refused. |
+| `provider_unavailable` (503) | Try again shortly. |
+| `provider_configuration_error` (502) | Something is wrong on our side. Contact Finogates. |
+
+To fix missing details, add a phone number with `PATCH /v1/platform/users/{user_id}/details`, or update a business with [Update User KYB Record](/api-reference/verification/update-user-kyb-record). Changes to an approved KYB are reviewed first.
