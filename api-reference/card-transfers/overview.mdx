@@ -5,7 +5,7 @@ description: 'Move money between a user''s card and their wallet.'
 
 | Direction | Money moves | Payload types | Cards | Minimum |
 | --- | --- | --- | --- | --- |
-| `account_to_card` | Wallet to card | `account` → `card` | Debit | $3.00 |
+| `account_to_card` | Wallet to card | `account` → `card` | Debit | $10.00 |
 | `card_to_account` | Card to wallet | `card` → `account` | Debit or credit | $10.00 |
 
 The user needs approved KYC. A business or sole proprietor also needs an approved KYB.
@@ -75,7 +75,7 @@ Card page errors are listed on [Open a Card Session](/api-reference/card-transfe
 | `product_not_enabled` (403) | The direction isn't enabled. |
 | `payload_incomplete` (422) | The card can't take this transfer, or the user's KYC isn't approved. `missing` names it. |
 | `not_owned_by_user` (422) | The card or wallet doesn't belong to `user_id`. |
-| `amount_below_minimum` (422) | The amount is under the direction's minimum. |
+| `payment_not_available` / `amount_below_minimum` (422) | The amount is under the minimum. |
 | `card_readd_required` (409) | The user must add the card again. |
 | `card_account_pending_verification` (409) | The user's card account isn't ready. Retry later. |
 | `payment_cooldown` (429) | The user just made a payment. Retry shortly. |
