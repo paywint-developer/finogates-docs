@@ -9,21 +9,25 @@ An application takes two calls, like a payment. The first says what the applicat
 
 <Steps>
   <Step title="Request the payload">
-    Call [Request an Application Payload](/api-reference/products/request-application-payload) with the `product`, the `account_kind` (`business`, `sole_proprietor` or `individual`) and the `user_id`. Every field the application needs comes back with a status (`provided`, `missing`, `invalid`, `needs_classification`, `needs_verification` or `optional`) and a `type`: `string`, `number`, `array`, `document` (an entry in `documents[]`) or `verification` (taken from the user's verified KYC/KYB, never sent). A `format` refines it, such as `decimal`, `code`, `country` or `date`. You also get a `reference`, valid for 24 hours. Values Finogates holds are never sent back; a held value that is not one of the options comes back `invalid`.
+    Call [Request an Application Payload](/api-reference/products/request-application-payload) with the `product`, the `account_kind` (`business`, `sole_proprietor` or `individual`), the `user_id` and — for a business or a sole proprietor — the `kyb_id` of the KYB the account is for (an individual sends none). The KYB's entity type must match the kind. Only what still needs something comes back: every field, document and UBO the application needs that is not on file yet (what Finogates already holds is left out), each `required` or not, with a `status` (`missing`, `invalid`, `needs_classification`, `pending_review`, `needs_verification` or `optional`), a `type` and `send_via`: where to send it. You also get a `reference`, valid for 24 hours. A held value that is not one of the options comes back `invalid`.
   </Step>
-  <Step title="Pick the option codes">
-    Fields such as `entity_type`, `industry`, `purpose_of_account` and `source_of_funds` take codes from [List Application Options](/api-reference/products/list-application-options).
+  <Step title="Fill the gaps where send_via says">
+    - `kyb_update`: the KYB's data and files — [Update User KYB Record](/api-reference/verification/update-user-kyb-record). Documents go in `business_data.typed_documents`, as a new file or a held one given its type (`document_id`, such as a `needs_classification` candidate).
+    - `kyc_update`: the person's address, phone and own files (an individual's documents, a sole proprietor's ID) — [Update User KYC Record](/api-reference/verification/update-user-kyc-record). An individual's government ID also counts as their proof of address, so a separate one is needed only when there is no ID on file.
+    - `beneficial_owners`: the KYB's UBOs — [Replace KYB Beneficial Owners](/api-reference/verification/replace-kyb-beneficial-owners).
+    - `create_application`: the application's own answers, in the second call.
+
+    A change to an **approved** KYB or KYC waits for our review (`pending_update`); the record stays approved, the field shows `pending_review`, and `user_kyb.update_approved` / `user_kyc.update_approved` says when it lands. A KYB still in review takes the change at once. Codes such as `purpose_of_account` and `source_of_funds` come from [List Application Options](/api-reference/products/list-application-options).
   </Step>
-  <Step title="Add documents and owners, if asked">
-    A `needs_classification` document lists `candidates`: files Finogates already holds for the user. [List the Documents to Classify](/api-reference/products/list-documents-to-classify) gives just those fields, computed now, with what each accepts and a `content_path` per file. Show one to your user with [Get a User's Document File](/api-reference/users/get-user-document-file); if it is right, send its `document_id` in the application (`{"type": "proof_of_address", "document_id": "…"}`). If none is, upload a new file ([Upload a User's Document](/api-reference/users/upload-user-document), [Add a User's Document From a Link](/api-reference/users/add-user-document-from-link)), or send it by `url` in the application itself. Beneficial owners are set with [Replace Beneficial Owners](/api-reference/users/replace-beneficial-owners), or sent in the application.
-  </Step>
-  <Step title="Create the application">
-    Call [Create an Application](/api-reference/products/create-application) with the `reference` and only the sections the first call asked for. Any other section is refused with `product_field_not_allowed`. The application is filed, and the virtual bank account is created as `initiated`.
+  <Step title="Ask again, then create the application">
+    Call the first endpoint again: `ready: true` means nothing is left but the application's own answers (`send_via: create_application`). Call [Create an Application](/api-reference/products/create-application) with them: `application`, `business.annual_revenue` and `person`. They are kept for the user and the KYB and reused by the next application. KYB data and documents sent here are refused (`use_kyb_update` / `use_kyc_update`). The application is filed, and the virtual bank account is created as `initiated`.
   </Step>
   <Step title="Follow it to approval">
-    Finogates reviews the application. The account moves to `verification_in_review`, then to `approved` with its numbers. Read them with [Get Virtual Bank Account](/api-reference/bank-accounts/get-virtual-bank-account): `routing_number` and `account_number` for ACH, and `deposit_routes[]` for the ACH, wire and SWIFT instructions (bank name and address, beneficiary, BIC).
+    Finogates reviews the application. The account moves to `verification_in_review`, then to `approved` with its numbers. Read them with [Get Virtual Bank Account](/api-reference/bank-accounts/get-virtual-bank-account): `routing_number` and `account_number` for ACH, and `deposit_routes[]` for every route, each with a `label` to show (`ACH (domestic)`, `Wire (domestic)`, `SWIFT (international)`) and its bank name and address, beneficiary and BIC.
   </Step>
 </Steps>
+
+One account per currency per KYB (and per currency for an individual) unless your limit says otherwise.
 
 ## When your platform verifies KYC/KYB
 
@@ -34,8 +38,8 @@ If your platform is set up to verify its own users, Finogates takes your verdict
 ## When the bank asks for further information
 
 The account moves to `information_required`. The [`virtual_bank_account.information_required`](/webhooks/events/virtual-bank-account) webhook carries the `application_id` and a `missing[]` list. To answer:
-1. Call the first endpoint again with the `application_id`; `account_kind` may be left out. Every item the bank asked for comes back required.
-2. Send them with [Create an Application](/api-reference/products/create-application).
+1. Call the first endpoint again with the `application_id`; `account_kind` may be left out. Every item the bank asked for comes back required, with its `send_via`.
+2. Send each where it says (the KYB or KYC update, the UBOs), then the application's own answers with [Create an Application](/api-reference/products/create-application).
 
 The same application goes back to review. No second account is opened.
 
@@ -57,11 +61,13 @@ See [Virtual Bank Account Events](/webhooks/events/virtual-bank-account).
 | Code | Meaning |
 | --- | --- |
 | `product_payload_incomplete` (422) | Something is still missing; `missing[]` lists it. |
-| `product_field_not_allowed` (422) | A section the first call did not ask for was sent. |
+| `product_field_not_allowed` (422) | A section the first call did not ask for was sent, or UBOs were sent in the application. |
+| `use_kyb_update` / `use_kyc_update` (422) | KYB data or documents were sent in the application; send them with the KYB or KYC update. |
+| `account_kind_mismatch` (422) | The KYB's entity type is not the account kind asked for. A business or sole proprietor without a `kyb_id` is a `422` validation error. |
 | `product_not_available` (422) | The product or account kind isn't offered to your platform. |
 | `user_id_required` (422) | `user_id` was left out, but your platform is not set up to create users from applications. |
 | `verification_rejected` (422) | Your verification answered rejected for the user in the second call; nothing was filed. |
 | `product_request_expired` / `product_request_consumed` / `product_request_stale` (409) | The reference is over 24 hours old, was already used, or no longer matches what is held. Request a new one. |
 | `verified_data_conflict` (409) | A value contradicts data that is already verified, such as a different tax id. |
-| `limit_reached` (409) | The user already holds the maximum number of accounts. |
+| `limit_reached` (409) | The user already holds the maximum number of accounts in that currency for that KYB. |
 | `application_not_awaiting_information` (409) | The application is not waiting for information. |

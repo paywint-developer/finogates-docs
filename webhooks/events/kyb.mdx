@@ -42,3 +42,43 @@ icon: "building"
 <ResponseField name="cascaded_from" type="string">
   Set when the change was caused by the user's KYC, e.g. `user_kyc.reopened` or `user_kyc.deleted`; otherwise `null` or omitted.
 </ResponseField>
+
+## Update events
+
+A change sent to an **approved** KYB with [Update User KYB Record](/api-reference/verification/update-user-kyb-record) waits for our review; the record stays approved meanwhile. Once every item is decided you get one event.
+
+| Event | Sent when |
+| --- | --- |
+| `user_kyb.update_approved` | At least one item was approved and is now on the KYB. |
+| `user_kyb.update_rejected` | Every item was rejected; nothing changed. |
+
+```json
+{
+  "id": "6a7b8c9d-0e1f-4a2b-8c3d-4e5f6a7b8c9d",
+  "type": "user_kyb.update_approved",
+  "event_type": "user_kyb.update_approved",
+  "created_at": "2026-10-29T09:12:44.512031+00:00",
+  "data": {
+    "kyb_record_id": "8f9a0b1c-2d3e-4f5a-8b6c-7d8e9f0a1b2c",
+    "user_id": "b3a9b622-cc63-4d3c-aad6-2d8e29e6f9d4",
+    "update_id": "0d1e2f3a-4b5c-4d6e-8f7a-9b0c1d2e3f4a",
+    "status": "approved",
+    "items": [
+      {"id": "c1", "kind": "document", "document_type": "proof_of_address", "status": "approved"},
+      {"id": "c2", "kind": "field", "field": "business_data.website", "status": "rejected", "reason": "The site is not the business's."}
+    ]
+  }
+}
+```
+
+<ResponseField name="update_id" type="string">
+  The update, as `pending_update.id` named it when you sent it.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  `approved` (at least one item landed) or `rejected`.
+</ResponseField>
+
+<ResponseField name="items" type="array">
+  Each item with its own `status` (`approved` or `rejected`) and, when rejected, a `reason`. `kind` is `field`, `document` or `classification`.
+</ResponseField>

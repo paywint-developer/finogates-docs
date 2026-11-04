@@ -3,54 +3,51 @@ title: 'Card Transfers Overview'
 description: 'Move money between a user''s card and their wallet.'
 ---
 
-Card transfers move money in both directions between a user's card and their own wallet:
+| Direction | Money moves | Payload types | Cards | Minimum |
+| --- | --- | --- | --- | --- |
+| `account_to_card` | Wallet to card | `account` → `card` | Debit | $3.00 |
+| `card_to_account` | Card to wallet | `card` → `account` | Debit or credit | $10.00 |
 
-- **Card to account** (`card_to_account`): pull money from the user's card into their wallet.
-- **Account to card** (`account_to_card`): push money from the user's wallet to their card.
-
-<Note>
-Card transfers are available in the **Sandbox environment** only. In production these endpoints answer `403` with code `sandbox_only`.
-</Note>
+The user needs approved KYC. A business or sole proprietor also needs an approved KYB.
 
 ## How it works
 
 <Steps>
-  <Step title="Enable the directions you need">
-    Call [Enable a Card Transfer Direction](/api-reference/card-transfers/enable-card-transfer) once per direction, with `product` set to `card_to_account` or `account_to_card`. In sandbox the request is approved at once. Check both directions with [Card Transfer Direction Status](/api-reference/card-transfers/get-card-transfer-status).
+  <Step title="Enable the direction">
+    Call [Enable a Card Transfer Direction](/api-reference/card-transfers/enable-card-transfer). Sandbox approves it at once; production waits for Finogates.
+  </Step>
+  <Step title="Register your redirect URL">
+    Call [Set a Redirect URL](/api-reference/redirect-urls/set-redirect-url) with the `card_transfer` purpose.
   </Step>
   <Step title="Add the user's card">
-    Call [Add a Card](/api-reference/card-transfers/add-transfer-card) with the user's `user_id` and card details. The response carries the `card_id`. The card starts as `pending_approval` and can already be used: Finogate approves it together with its first transfer. Read cards back with [Get a Card](/api-reference/card-transfers/get-transfer-card) and [List Cards](/api-reference/card-transfers/list-transfer-cards).
+    Call [Open a Card Session](/api-reference/card-transfers/create-card-session) and show the user the returned `url`. For a business or sole proprietor, send `account_kind` and `kyb_id`. Read the `card_id` from [Get a Card Session](/api-reference/card-transfers/get-card-session).
   </Step>
   <Step title="Request a payment payload">
-    Call [Request a Payment Payload](/api-reference/payments/request-payment-payload) with `account` as the user's wallet. Use `card` → `account` for money in and `account` → `card` for money out. The response carries a `reference` and the fee.
+    Call [Request a Payment Payload](/api-reference/payments/request-payment-payload). Keep the `reference`.
   </Step>
   <Step title="Create the payment">
-    Call [Create a Payment from a Request](/api-reference/payments/create-payment-from-request) with the `reference`, the `user_id`, the `card_id` and the user's `wallet_id`. Both the card and the wallet must belong to that user.
+    Call [Create a Payment from a Request](/api-reference/payments/create-payment-from-request). In master wallet mode, leave out `wallet_id` to use your master wallet.
   </Step>
-  <Step title="Track it to settlement">
-    The payment waits as `pending_review` until Finogate approves it, then moves to `processing` and settles on its own. Read it with [Get Payment](/api-reference/payments/get-payment), or follow the webhooks.
+  <Step title="Track it">
+    The payment starts as `pending_review`, or `pending` if auto-approved, then moves to `processing` and ends `settled` or `failed`. You can [cancel it](/api-reference/payments/cancel-payment) while it is `pending_review` or `pending`.
   </Step>
 </Steps>
 
-## Example: card to account
-
-**1. Request the payload**
+## Example: account to card
 
 ```json POST /v1/platform/payments/request-payload
 {
-  "source_type": "card",
-  "destination_type": "account",
+  "source_type": "account",
+  "destination_type": "card",
   "amount": "25.00",
   "currency": "USD",
   "idempotency_key": "6f1c2a9e-3d4b-4c8a-9f21-0b7e5d3a1c44"
 }
 ```
 
-**2. Create the payment**
-
 ```json POST /v1/platform/payments/create-transaction
 {
-  "reference": "<reference from step 1>",
+  "reference": "<reference from the payload>",
   "user_id": "<user_id>",
   "card_id": "<card_id>",
   "wallet_id": "<the user's wallet_id>",
@@ -58,32 +55,27 @@ Card transfers are available in the **Sandbox environment** only. In production 
 }
 ```
 
-For account to card, swap the types: `"source_type": "account"` and `"destination_type": "card"`. The `create-transaction` body is the same.
+For card to account, swap the two types.
 
 ## Webhooks
 
-| Event | When |
-| --- | --- |
-| `payment_method.card.added` | The card was added and is waiting for approval. |
-| `payment_method.card.review_approved` / `.review_rejected` | Finogate approved or rejected the card. |
-| `payment_intent.created` | The payment was created and is waiting for review. |
-| `payment_intent.approved` | Finogate approved the payment. |
-| `payment_intent.processing` | The payment is moving. |
-| `payment_intent.settled` / `.failed` / `.rejected` | The payment finished. |
+- **Card:** `payment_method.card.added`, `.review_approved`, `.review_rejected`
+- **Payment:** `payment_intent.created`, `.approved`, `.processing`, `.settled`, `.failed`, `.rejected`, `.voided`
 
-## Testing in sandbox
+## Sandbox
 
-| Value | Result |
-| --- | --- |
-| Any 12–19 digit card number | Reads as a Visa, and its transfers settle. |
-| Card number `4000000000000002` | Its transfers are declined when they settle. |
-| CVV `000` | Verification fails (`card_cvv_mismatch`) and the card is not added. |
+The card page shows a test form. `4000000000000002` declines transfers, `4000000000000010` is a credit card, and any other number from 12 to 19 digits is a debit card.
 
 ## Common errors
 
+Card page errors are listed on [Open a Card Session](/api-reference/card-transfers/create-card-session).
+
 | Code | Meaning |
 | --- | --- |
-| `product_not_enabled` | The direction isn't enabled for your platform yet. |
-| `card_not_active` | The card was rejected or switched off. |
-| `not_owned_by_user` | The card or the wallet doesn't belong to `user_id`. |
-| `field_not_allowed` | The card is a card-processing card, not one added for card transfers. |
+| `product_not_enabled` (403) | The direction isn't enabled. |
+| `payload_incomplete` (422) | The card can't take this transfer, or the user's KYC isn't approved. `missing` names it. |
+| `not_owned_by_user` (422) | The card or wallet doesn't belong to `user_id`. |
+| `amount_below_minimum` (422) | The amount is under the direction's minimum. |
+| `card_readd_required` (409) | The user must add the card again. |
+| `card_account_pending_verification` (409) | The user's card account isn't ready. Retry later. |
+| `payment_cooldown` (429) | The user just made a payment. Retry shortly. |

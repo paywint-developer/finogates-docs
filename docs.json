@@ -90,6 +90,9 @@
               "api-reference/verification/start-user-kyc",
               "api-reference/verification/sync-user-kyc",
               "api-reference/verification/create-user-kyb-record",
+              "api-reference/verification/update-user-kyb-record",
+              "api-reference/verification/update-user-kyc-record",
+              "api-reference/verification/replace-kyb-beneficial-owners",
               "api-reference/verification/list-document-requests",
               "api-reference/verification/get-check-document-requests",
               "api-reference/verification/submit-document-request-response",
@@ -109,6 +112,8 @@
             "group": "Bank Accounts",
             "expanded": false,
             "pages": [
+              "api-reference/bank-accounts/get-manual-bank-requirements",
+              "api-reference/bank-accounts/lookup-bank-by-numbers",
               "api-reference/bank-accounts/add-bank-account",
               "api-reference/bank-accounts/list-bank-accounts",
               "api-reference/bank-accounts/add-account-instantly",
@@ -176,9 +181,12 @@
               "api-reference/card-transfers/overview",
               "api-reference/card-transfers/enable-card-transfer",
               "api-reference/card-transfers/get-card-transfer-status",
-              "api-reference/card-transfers/add-transfer-card",
+              "api-reference/card-transfers/create-card-session",
+              "api-reference/card-transfers/get-card-session",
               "api-reference/card-transfers/get-transfer-card",
-              "api-reference/card-transfers/list-transfer-cards"
+              "api-reference/card-transfers/list-transfer-cards",
+              "api-reference/card-transfers/get-card-page-appearance",
+              "api-reference/card-transfers/set-card-page-appearance"
             ]
           },
           {
@@ -370,6 +378,17 @@
               "api-reference/file-scans/list-submitted-files",
               "api-reference/file-scans/get-submitted-file"
             ]
+          },
+          {
+            "group": "Redirect URLs",
+            "expanded": false,
+            "pages": [
+              "api-reference/redirect-urls/list-redirect-urls",
+              "api-reference/redirect-urls/set-redirect-url",
+              "api-reference/redirect-urls/remove-redirect-url",
+              "api-reference/redirect-urls/add-additional-redirect-url",
+              "api-reference/redirect-urls/remove-additional-redirect-url"
+            ]
           }
         ]
       },
@@ -444,6 +463,10 @@
     }
   },
   "redirects": [
+    {
+      "source": "/api-reference/card-transfers/add-transfer-card",
+      "destination": "/api-reference/card-transfers/overview"
+    },
     {
       "source": "/",
       "destination": "/get-started/overview"

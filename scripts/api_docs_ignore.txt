@@ -11,3 +11,5 @@
 POST /v1/platform/card-transfers/card-to-account
 POST /v1/platform/card-transfers/account-to-card
 GET /v1/platform/card-transfers/transfers*
+# The sandbox test-card shortcut: cards are added with a card session.
+POST /v1/platform/card-transfers/cards
