@@ -1,4 +1,11 @@
 ---
-title: 'Get Banking Calendar'
-openapi: 'GET /v1/platform/payments/banking-calendar'
+title: "Get Banking Calendar"
+description: "See the days banks are closed."
+openapi: "GET /v1/platform/payments/banking-calendar"
 ---
+
+You get the bank holidays between `from_date` and `to_date`, and the weekdays that are never banking days. Both dates are included. By default, the list runs from today for one year. You can ask for up to 400 days at a time.
+
+Our delivery estimates use this calendar. A payment timed on a `business` basis only goes out and arrives on banking days.
+
+Dates are US Eastern. A holiday on a Sunday is shown on the Monday after. A holiday on a Saturday closes nothing, so it isn't listed.

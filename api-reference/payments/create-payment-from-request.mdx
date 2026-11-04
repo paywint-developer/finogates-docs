@@ -1,4 +1,59 @@
 ---
-title: 'Create a Payment from a Request'
-openapi: 'POST /v1/platform/payments/create-transaction'
+title: "Create a Payment from a Request"
+description: "Make a payment from a quote."
+openapi: "POST /v1/platform/payments/create-transaction"
 ---
+
+Send the `reference` from [Request a Payment Payload](/api-reference/payments/request-payment-payload), a new `idempotency_key` and the `fields` the quote listed. Don't send `amount` or `currency`: they come from the quote.
+
+We then make the payment, unless it needs a review first (`pending_review`). Some `bank` payments are always reviewed.
+
+## What we check, in order
+
+1. The quote is yours, hasn't been used and hasn't expired.
+2. You sent everything required, and nothing extra.
+3. The money source belongs to `user_id`. On a payment abroad, so does the payee.
+4. Everything the quote listed under `requirements` is in place. If not, fix it and try again with the same `reference`.
+5. The route and our fee haven't changed since the quote.
+
+## What you get back
+
+The payment: `payment_id`, `reference`, `status`, `source_type`, `destination_type`, `payment_type`, `amount`, `currency`, `fee`, `user_id`, and the IDs that apply. `destinations` is included on a split payment. Our fee goes on your monthly invoice and is never taken from the amount.
+
+[Get Payment](/api-reference/payments/get-payment) returns more detail.
+
+Sending the same `idempotency_key` again returns the payment as it is now. A `reference` makes only one payment.
+
+## Errors
+
+| Code | What it means |
+| --- | --- |
+| `payment_request_expired` (409) | The quote has expired. Get a new one. |
+| `payment_request_consumed` (409) | The quote was already used. `payment_id` shows the payment. |
+| `payment_request_stale` (409) | The route or fee changed. Get a new quote. |
+| `payload_incomplete` (422) | Something required is missing. |
+| `field_not_allowed` (422) | You sent something this payment doesn't use, such as `amount`. |
+| `not_owned_by_user` (422) | Something doesn't belong to `user_id`. `field` tells you what. |
+| `destinations_not_supported` (422) | This payment can't be split across wallets. |
+| `payment_request_unavailable` (503) | We can't make this payment right now. Try again later. |
+
+## Card transfers
+
+These apply to `account` to `card` and `card` to `account`:
+
+| Code | What it means |
+| --- | --- |
+| `payload_incomplete` (422) | Also used when the card can't take this transfer, such as a credit card receiving money or a rejected card, or when the user hasn't passed KYC. |
+| `amount_below_minimum` (422) | The amount is below the minimum. See `min`. |
+| `card_readd_required` (409) | The user needs to add the card again. |
+| `card_account_pending_verification` (409) | The user's card account isn't ready yet. Try again later. |
+
+## Card charges into a merchant
+
+These apply to `card` to `merchant`. None of them uses up your quote:
+
+| Code | What it means |
+| --- | --- |
+| `card_verification_required` (422) | The cardholder must complete a security check at `three_ds_url`. The payment is made with the same quote once they pass. |
+| `card_daily_limit_exceeded` (429) | The card has reached its daily limit. See `limit` and `used`. |
+| `card_payment_pending_review` (409) | An earlier payment on this card is waiting for review. See `payment_intent_id`. |

@@ -1,4 +1,21 @@
 ---
-title: 'Get Payment Delivery Windows'
-openapi: 'GET /v1/platform/payments/delivery-windows'
+title: "Get Payment Delivery Windows"
+description: "See when a payment made now would go out, and when it would arrive."
+openapi: "GET /v1/platform/payments/delivery-windows"
 ---
+
+Use this to show today's cutoff times, or to check if a same-day payment made now still goes out today. It doesn't create a quote.
+
+Send the same `source_type`, `destination_type`, `delivery_speed` and country details you would use for a quote. Send `amount` if you know it, because it can change the timing. If you don't, we use `100.00`. A payment we can't quote is refused here in the same way.
+
+## What you get back
+
+| Field | What it means |
+| --- | --- |
+| `cutoffs` | The times a payment goes out on `next_cutoff.export_day`, earliest first. `open` means a payment made now still makes that time. `lands_at` shows when the money arrives, where we know it. |
+| `next_cutoff` | The time a payment made now goes out. `deferred` means it waits for a later day, because it was made after the last cutoff, on a weekend or on a bank holiday. A same-day payment would wait until `resume_at`. |
+| `settlement` | When we expect the money to arrive. If `source` is `unknown`, we don't have a time for this route yet. It doesn't mean instant. |
+
+Times shown as `HH:MM` are US Eastern. Every field ending in `_at` is UTC.
+
+This is an estimate, not a promise. We work it out again when the payment is sent, and the payment's own events show the real times.

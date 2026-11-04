@@ -1,4 +1,13 @@
 ---
-title: 'Get a Payment Request'
-openapi: 'GET /v1/platform/payments/request-payload/{reference}'
+title: "Get a Payment Request"
+description: "Look at a quote again, and see if it can still be used."
+openapi: "GET /v1/platform/payments/request-payload/{reference}"
 ---
+
+You get the same details as the original quote, plus what it was for: `source_type`, `destination_type`, `amount`, `currency` and `delivery_speed`.
+
+| `status` | What it means |
+| --- | --- |
+| `open` | You can still use it. |
+| `consumed` | A payment was already made from it. |
+| `expired` | Its time ran out before a payment was made. |

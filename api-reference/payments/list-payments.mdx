@@ -1,4 +1,7 @@
 ---
-title: 'List Payments'
-openapi: 'GET /v1/platform/payments'
+title: "List Payments"
+description: "See the payments made on your platform, newest first."
+openapi: "GET /v1/platform/payments"
 ---
+
+The list comes in pages. Use `limit` and `offset` to move through it. Each payment shows its `delivery_speed`: `standard`, `same_day` or `instant`.

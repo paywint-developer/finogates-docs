@@ -1,4 +1,81 @@
 ---
-title: 'Request a Payment Payload'
-openapi: 'POST /v1/platform/payments/request-payload'
+title: "Request a Payment Payload"
+description: "Get a quote before you make a payment."
+openapi: "POST /v1/platform/payments/request-payload"
 ---
+
+Tell us where the money comes from, where it goes and how much. We send back a `reference` to use with [Create a Payment from a Request](/api-reference/payments/create-payment-from-request), and a list of what that call needs.
+
+The quote locks the amount, currency and fee. It lasts 30 minutes (`expires_at`).
+
+## Payment options
+
+| `source_type` | `destination_type` | What it does |
+| --- | --- | --- |
+| `wallet` | `wallet` | Moves money between two wallets. |
+| `wallet` | `bank` | Pays a US bank: the user's own (`bank_account_id`) or a payee's (`payee_destination_id`). |
+| `wallet` | `bank_international` | Pays a payee's bank abroad. Also send `destination_country` and `destination_currency`. |
+| `bank` | `wallet` | Adds money to a wallet from the user's linked bank. |
+| `account` | `card` | Sends money from the user's wallet to their debit card. Minimum $10.00. |
+| `card` | `account` | Moves money from the user's debit or credit card to their wallet. Minimum $10.00. |
+| `card` | `wallet` | Charges a saved card into a wallet. |
+| `card` | `merchant` | Charges a saved card into a card-acquiring account. |
+
+For a card transfer, use `account`, not `wallet`. `card` to `wallet` is a card charge, and `wallet` to `card` isn't available.
+
+Sandbox only: `card` to `bank`, `bank` to `card` and `card` to `card`.
+
+## Adding a card
+
+- **`account` to `card`, or `card` to `account`:** add the card with [Open a Card Session](/api-reference/card-transfers/create-card-session). See [Card Transfers](/api-reference/card-transfers/overview).
+- **`card` to `wallet`, or `card` to `merchant`:** add the card with [Add Card](/api-reference/card-processing/add-card).
+
+## Speed
+
+`standard` is the default. Some bank payments also offer `same_day` or `instant`. Card transfers are `standard` only. See [Get Payment Delivery Windows](/api-reference/payments/get-payment-delivery-windows) for timing.
+
+## Tip for bank payments
+
+If you know the bank, send `bank_account_id` or `payee_destination_id` now. The quote is then made for that exact bank, so you won't need a new one later. If you don't, `payment_type` is `null` until the payment is created.
+
+## What you get back
+
+| Field | What it means |
+| --- | --- |
+| `reference`, `expires_at` | Your quote, and when it stops working. |
+| `fee` | Our fee. It goes on your monthly invoice and is never taken from the amount. For `wallet` to `wallet` it is `null`, because it is set when the payment is created. |
+| `payment_type` | `transfer` moves money between the user's own accounts. `send` pays someone else. |
+| `fields` | What to send when you make the payment, required fields first. `requirements` lists what must already be in place, such as a payee's last name. |
+| `one_of` | Choices where you send exactly one. For a `bank` payment, that's `bank_account_id` or `payee_destination_id`. |
+| `delivery_speeds_available` | Shown only when more than `standard` is offered. |
+| `settlement` | Shown only when we can estimate when the money lands. |
+| `destinations` | Shown only when the payment can be split across wallets, with the most wallets allowed and any split fees. |
+
+## Good to know
+
+- **`user_id`** is always needed. It is the owner of the wallet, bank account or card the money comes from. For a card charge into a merchant, it is the cardholder. For your master wallet, it is your master user.
+- **Payee address:** `payee_address_id` only goes with `payee_destination_id`. You need it when the payment needs the payee's address, as every payment abroad does, and we can't pick one. We pick one when the payee has one complete US address, or one marked default or `international`.
+- **User address:** `receiver_address` (`line1`, `city`, `state`, `postal_code`) only goes with `bank_account_id`. Send it when the payment needs the user's address and we don't have one.
+- **Master wallet mode:** when this is on for your platform, you can leave out the wallet on a bank deposit, a bank payout or a card transfer. We use your master wallet, and `user_id` stays the payer. On a card transfer, that user's KYC is still needed. `wallet` to `wallet` and `destinations` must always name every wallet.
+- **Repeat requests:** the same `idempotency_key` returns the same quote, even after it expires. Use a new key for a new quote.
+
+## Errors
+
+| Code | What it means |
+| --- | --- |
+| `movement_unsupported` (422) | We don't offer this payment option. |
+| `destination_country_required` / `destination_currency_required` (422) | A `bank_international` payment needs these. |
+| `field_not_allowed` (422) | You sent an ID this payment doesn't use, or both IDs for a `bank` payment. An ID that isn't yours returns `404`. |
+| `payload_incomplete` (422) | We can't make this payment with what you named. `missing` tells you what to fix. |
+| `speed_not_offered` (422) | This speed isn't available for this payment. |
+| `product_not_enabled` (403) | This payment type isn't turned on for your platform. |
+| `payment_not_available` (422) | We can't accept this payment. `reason` says why (see below). |
+| `payment_request_unavailable` (503) | We can't prepare a quote right now. Try again later. |
+
+| `reason` | What it means |
+| --- | --- |
+| `amount_out_of_bounds` | The amount is outside the limits. See `min` and `max`. |
+| `amount_outside_country_limit` | The amount is outside the limits for that country. |
+| `card_transaction_limit_exceeded` | A card charge into a merchant is over your limit for one payment. |
+| `country_not_enabled` | This country isn't turned on for your account. |
+| `sender_name_incomplete` | Your sender details need a separate first and last name. `detail` says which. |

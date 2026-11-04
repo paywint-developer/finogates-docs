@@ -1,4 +1,9 @@
 ---
-title: 'Get Payment'
-openapi: 'GET /v1/platform/payments/{payment_id}'
+title: "Get Payment"
+description: "See the full details of one payment."
+openapi: "GET /v1/platform/payments/{payment_id}"
 ---
+
+Use the `payment_id` or the number in `internal_id`. The payment must belong to your platform.
+
+**Documents:** files attached to the payment are listed in `documents`, oldest first. If there are none, you won't see this field. `download_url` only appears on a `clean` document and expires quickly, so get the payment again for a new link.

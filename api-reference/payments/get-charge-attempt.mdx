@@ -1,4 +1,15 @@
 ---
-title: 'Get a Parked Payer-Authentication Attempt'
-openapi: 'GET /v1/platform/payments/charge-attempts/{charge_attempt_id}'
+title: "Get a Card Security Check Attempt"
+description: "Find out how a card charge ended when it needed a security check."
+openapi: "GET /v1/platform/payments/charge-attempts/{charge_attempt_id}"
 ---
+
+A large card charge can need a security check (3-D Secure). The charge first returns `422` with a `charge_attempt_id` and a link for the cardholder. If they finish the check, you get the payment. If they close the page or the link expires, nothing tells you, so use this call to find out.
+
+| `status` | What it means |
+| --- | --- |
+| `pending` | Not finished. If `expires_at` has passed, the cardholder gave up and it will never become a payment. `is_open` shows this. |
+| `completed` | The payment was made. See `payment_id`. |
+| `failed` | The check failed. |
+
+An attempt that wasn't finished makes no payment, so it won't appear in your payments list. To try again, charge the card again. This starts a new attempt.

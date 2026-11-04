@@ -1,4 +1,19 @@
 ---
-title: 'Cancel a Payment'
-openapi: 'POST /v1/platform/payments/{payment_id}/cancel'
+title: "Cancel a Payment"
+description: "Stop a payment before it reaches the bank."
+openapi: "POST /v1/platform/payments/{payment_id}/cancel"
 ---
+
+You can cancel a payment when it is:
+
+- `pending_review`: waiting for review
+- `pending`: approved, but not started
+- `processing`, but still waiting with us, such as a same-day payment made after the last cutoff of the day
+
+The money goes back where it came from. The payment ends as `voided` with `failure_reason: cancelled_by_platform`, and we send the `payment_intent.voided` webhook. Cancelling the same payment again just returns it.
+
+## Errors
+
+| Code | What it means |
+| --- | --- |
+| `payment_not_cancellable` (409) | It's too late to cancel. `reason` says why, such as `in_progress` or `already_settled`. Card charges can't be cancelled here. |
